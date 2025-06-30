@@ -1,0 +1,53 @@
+# dependencies
+node_modules/
+
+# production build
+dist/
+build/
+
+# env
+.env
+.env.*          # .env.dev, .env.prod 등
+
+# logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS / Editor system files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# TypeScript
+*.tsbuildinfo
+
+# coverage reports
+coverage/
+
+# optional lock files (선택)
+# package-lock.json
+# yarn.lock
+
+# pm2 process file
+pids
+*.pid
+*.seed
+
+# misc
+*.swp
+*.swo
+
+# next.js나 react 포함 프로젝트라면
+.next/
+out/
+.cache/
+
+# jest
+jest-cache/
+jest-output.json
