@@ -1,39 +1,33 @@
-import figlet from "figlet";
-import express, { NextFunction, Request, Response} from 'express'
-import cors from 'cors'
+import "dotenv/config";
+import express from "express";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import passport from "passport";
+import errorHandler from "./middlewares/errorHandler";
+import authRouter from "./routers/auth.router";
+import "./configs/passport.config";
 
 const app = express();
-const PORT = 9000
 
-app.use(cors());
-app.use(express.json()); 
+// trust proxy 설정 (쿠키 보안 관련: production 시 필요)
+app.set("trust proxy", 1);
+
+// 미들웨어
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+  })
+);
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(cookieParser());
+app.use(passport.initialize());
 
-app.get('/', (req, res) => {
-    res.send("Hello, welcome to the Moving Platform Express Server.")
-})
+// 라우터 등록
+app.use("/auth", authRouter);
 
-app.use((req, res) => {
-    res.status(404).send('Page Not Found.');
-});
+// 에러 핸들러
+app.use(errorHandler);
 
-app.use((
-  err: any,
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  console.error('Server Error : ', err);
-  res.sendStatus(500);
-});
-
-app.listen(PORT, () => {
-  figlet("Team4 Server Started", (err, data) => {
-    if (err) {
-      console.log("Something went wrong with figlet");
-      console.dir(err);
-      return;
-    }
-    console.log(data);
-  });
-});
+export default app;

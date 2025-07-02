@@ -1,0 +1,163 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id     String   @id @default(uuid())
+  region String[]
+}
+
+model Client {
+  id             String         @id @default(uuid())
+  email          String         @unique
+  name           String
+  phone          String
+  hashedPassword String?
+  profileImage   String?
+  provider       Provider       @default(LOCAL)
+  providerId     String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  serviceType    MoveType[]
+  favorites      Favorite[]
+  requests       Request[]
+  estimates      Estimate[]
+  reviews        Review[]
+  notifications  Notification[]
+}
+
+model Mover {
+  id                  String         @id @default(uuid())
+  email               String         @unique
+  name                String
+  nickName            String         @unique
+  phone               String
+  hashedPassword      String?
+  profileImage        String?
+  provider            Provider       @default(LOCAL)
+  providerId          String?
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+  career              Int
+  introduction        String
+  description         String
+  serviceType         MoveType[]
+  favoriteCount       Int            @default(0)
+  estimateCount       Int            @default(0)
+  averageReviewRating Float          @default(0)
+  reviewCount         Int            @default(0)
+  requests            Request[]
+  estimates           Estimate[]
+  reviews             Review[]
+  favorites           Favorite[]
+  notifications       Notification[]
+}
+
+// 견적 요청
+model Request {
+  id             Int           @id @default(autoincrement())
+  clientId       String
+  moverId        String
+  moveType       MoveType
+  moveDate       DateTime
+  fromAddress    String
+  toAddress      String
+  isDesignated   Boolean       @default(false)
+  requestStatus  RequestStatus @default(PENDING)
+  rejectedReason String?
+  requestedAt    DateTime      @default(now())
+
+  client    Client     @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  mover     Mover      @relation(fields: [moverId], references: [id], onDelete: Cascade)
+  estimates Estimate[]
+}
+
+// 확정된 견적
+model Estimate {
+  id        Int      @id @default(autoincrement())
+  requestId Int
+  clientId  String
+  moverId   String
+  price     Int
+  isDone    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  review   Review?
+  requests Request @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  client   Client  @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  mover    Mover   @relation(fields: [moverId], references: [id], onDelete: Cascade)
+}
+
+model Review {
+  id         Int      @id @default(autoincrement())
+  rating     Int      @default(0)
+  content    String
+  createdAt  DateTime @default(now())
+  clientId   String
+  moverId    String
+  estimateId Int      @unique
+
+  client   Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  mover    Mover    @relation(fields: [moverId], references: [id], onDelete: Cascade)
+  estimate Estimate @relation(fields: [estimateId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  clientId  String
+  moverId   String
+  content   String
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+  type      NotificationType
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  mover  Mover? @relation(fields: [moverId], references: [id], onDelete: Cascade)
+}
+
+model Favorite {
+  id       Int    @id @default(autoincrement())
+  clientId String
+  moverId  String
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  mover  Mover  @relation(fields: [moverId], references: [id], onDelete: Cascade)
+
+  @@unique([clientId, moverId])
+}
+
+enum Provider {
+  LOCAL
+  GOOGLE
+  KAKAO
+  NAVER
+}
+
+enum MoveType {
+  SMALL
+  HOME
+  OFFICE
+}
+
+enum RequestStatus {
+  PENDING
+  CONFIRMED
+  REJECTED
+}
+
+enum NotificationType {
+  NEW_ESTIMATE
+  ESTIMATE_CONFIRMED
+  MOVING_DAY
+}
