@@ -11,7 +11,7 @@ import { NextFunction, Request, Response } from "express";
 import authService from "../services/auth.service";
 
 export async function signUpController(
-  req: Request<{}, {}, { email: string; nickname: string; password: string }>,
+  req: Request<{}, {}, { email: string; password: string }>,
   res: Response,
   next: NextFunction
 ) {
