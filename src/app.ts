@@ -1,12 +1,13 @@
 import "dotenv/config";
 import express from "express";
+import figlet from "figlet";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import passport from "passport";
+import "./configs/passport.config";
 import errorHandler from "./middlewares/errorHandler";
 import authRouter from "./routers/auth.router";
-import "./configs/passport.config";
-import figlet from "figlet";
+import infoRouter from "./routers/info.router";
 import { specs, swaggerUi } from "./swagger";
 
 const app = express();
@@ -28,6 +29,7 @@ app.use(cookieParser());
 app.use(passport.initialize());
 
 // 라우터 등록
+app.use("/", infoRouter);
 app.use("/auth", authRouter);
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(specs));
 

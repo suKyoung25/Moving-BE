@@ -66,7 +66,7 @@ model Mover {
 
 // 견적 요청
 model Request {
-  id             Int           @id @default(autoincrement())
+  id             String        @id @default(uuid())
   clientId       String
   moverId        String
   moveType       MoveType
@@ -85,8 +85,8 @@ model Request {
 
 // 확정된 견적
 model Estimate {
-  id        Int      @id @default(autoincrement())
-  requestId Int
+  id        String   @id @default(uuid())
+  requestId String
   clientId  String
   moverId   String
   price     Int
@@ -100,13 +100,13 @@ model Estimate {
 }
 
 model Review {
-  id         Int      @id @default(autoincrement())
+  id         String   @id @default(uuid())
   rating     Int      @default(0)
   content    String
   createdAt  DateTime @default(now())
   clientId   String
   moverId    String
-  estimateId Int      @unique
+  estimateId String   @unique
 
   client   Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
   mover    Mover    @relation(fields: [moverId], references: [id], onDelete: Cascade)
@@ -127,7 +127,7 @@ model Notification {
 }
 
 model Favorite {
-  id       Int    @id @default(autoincrement())
+  id       String @id @default(uuid())
   clientId String
   moverId  String
 
