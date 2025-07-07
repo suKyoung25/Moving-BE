@@ -12,7 +12,7 @@
 
 import { Mover } from "@prisma/client";
 import prisma from "../configs/prisma.config";
-import { createMoverInput, createMoverInputwithHash } from "../types/movers";
+import { createMoverInputwithHash } from "../types/movers";
 
 // 아래 코드는 예시입니다.
 // async function findByEmail(email: Client["email"]) {
@@ -37,7 +37,6 @@ async function saveMover(user: createMoverInputwithHash) {
   return { ...createdMover, userType: "mover" }; //userType은 FE의 header에서 필요
 }
 
-//기사님 생성 중복 방지 (닉네임, 이메일, 전화번호)
 async function findMoverBynickName(nickName: Mover["nickName"]) {
   return prisma.mover.findUnique({
     where: {
@@ -45,13 +44,17 @@ async function findMoverBynickName(nickName: Mover["nickName"]) {
     },
   });
 }
+
 async function findMoverByEmail(email: Mover["email"]) {
-  return prisma.mover.findUnique({
+  const mover = prisma.mover.findUnique({
     where: {
       email,
     },
   });
+
+  return { ...mover, userType: "mover" }; //userType은 FE의 header에서 필요
 }
+
 async function findMoverByPhone(phone: Mover["phone"]) {
   return prisma.mover.findUnique({
     where: {

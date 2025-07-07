@@ -6,11 +6,10 @@
  *
  */
 
-import { compare } from "bcrypt";
 import authRepository from "../repositories/auth.repository";
-import { BadRequestError, ConflictError } from "../types/errors";
+import { ConflictError, NotFoundError } from "../types/errors";
 import { ErrorMessage } from "../constants/ErrorMessage";
-import { createMoverInput } from "../types/movers";
+import { createMoverInput, getMoverInput } from "../types/movers";
 import { hashPassword } from "../utils/auth.utils";
 
 // 아래 코드는 예시입니다.
@@ -49,7 +48,18 @@ async function createMover(user: createMoverInput) {
   return await authRepository.saveMover({ ...user, hashedPassword });
 }
 
+//기사님 조회(로그인)
+async function getMoverByEmail(user: getMoverInput) {
+  const mover = await authRepository.findMoverByEmail(user.email);
+  if (!mover) {
+    throw new NotFoundError(ErrorMessage.USER_NOT_FOUND);
+  }
+
+  return mover;
+}
+
 export default {
   // createUser,
   createMover,
+  getMoverByEmail,
 };
