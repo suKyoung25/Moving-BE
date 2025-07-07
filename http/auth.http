@@ -1,3 +1,11 @@
 @token=
 
-### 회원가입
+### 기사님 회원가입
+POST http://localhost:3000/auth/movers/signup
+
+{
+    "nickName": "tester1",
+     "email": "test1@test.com", 
+     "phone": "01012345678", 
+     "password": "1111"
+}

@@ -11,6 +11,7 @@ export const ErrorMessage = {
   // Already Exist
   ALREADY_EXIST_EMAIL: "이미 사용중인 이메일입니다.",
   ALREADY_EXIST_NICKNAME: "이미 사용중인 닉네임입니다.",
+  ALREADY_EXIST_PHONE: "이미 사용중인 번호입니다.",
 
   // Invalid
   INVALID_EMAIL: "잘못된 이메일입니다.",
