@@ -11,6 +11,10 @@ import { ConflictError, NotFoundError } from "../types/errors";
 import { ErrorMessage } from "../constants/ErrorMessage";
 import { createMoverInput, getMoverInput } from "../types/mover.type";
 import { hashPassword } from "../utils/hash.util";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+} from "../utils/accessToken.util";
 
 // 아래 코드는 예시입니다.
 // async function createUser(email: string, password: string) {
@@ -45,9 +49,34 @@ async function createMover(user: createMoverInput) {
   }
 
   const hashedPassword = await hashPassword(user.password);
-  const createdMover = await authRepository.saveMover({ ...user, hashedPassword });
+  const createdMover = await authRepository.saveMover({
+    ...user,
+    hashedPassword,
+  });
 
-  const accessToken = 
+  const accessToken = generateAccessToken({
+    userId: createdMover.id,
+    email: createdMover.email,
+    nickName: createdMover.nickName,
+    userType: createdMover.userType,
+  });
+  const refreshToken = generateRefreshToken({
+    userId: createdMover.id,
+    email: createdMover.email,
+    nickName: createdMover.nickName,
+    userType: createdMover.userType,
+  });
+
+  return {
+    accessToken,
+    refreshToken,
+    user: {
+      userId: createdMover.id,
+      email: createdMover.email,
+      nickName: createdMover.nickName,
+      userType: createdMover.userType,
+    },
+  };
 }
 
 //기사님 조회(로그인)
