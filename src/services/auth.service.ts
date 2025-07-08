@@ -9,8 +9,8 @@
 import authRepository from "../repositories/auth.repository";
 import { ConflictError, NotFoundError } from "../types/errors";
 import { ErrorMessage } from "../constants/ErrorMessage";
-import { createMoverInput, getMoverInput } from "../types/movers";
-import { hashPassword } from "../utils/auth.utils";
+import { createMoverInput, getMoverInput } from "../types/mover.type";
+import { hashPassword } from "../utils/hash.util";
 
 // 아래 코드는 예시입니다.
 // async function createUser(email: string, password: string) {
@@ -45,7 +45,9 @@ async function createMover(user: createMoverInput) {
   }
 
   const hashedPassword = await hashPassword(user.password);
-  return await authRepository.saveMover({ ...user, hashedPassword });
+  const createdMover = await authRepository.saveMover({ ...user, hashedPassword });
+
+  const accessToken = 
 }
 
 //기사님 조회(로그인)

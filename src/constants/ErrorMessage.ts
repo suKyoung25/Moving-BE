@@ -3,6 +3,7 @@ export const ErrorMessage = {
   USER_NOT_FOUND: "사용자를 찾을 수 없습니다.",
   ACCESSTOKEN_NOT_FOUND: "accessToken을 찾을 수 없습니다.",
   REFRESHTOKEN_NOT_FOUND: "refreshToken을 찾을 수 없습니다.",
+  JWT_SECRET_NOT_FOUND: "jwt 시크릿키를 찾을 수 없습니다.",
 
   // Not Match
   PASSWORD_NOT_MATCH: "비밀번호가 일치하지 않습니다.",

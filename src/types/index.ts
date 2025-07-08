@@ -7,3 +7,6 @@
  * export * from "./user";
  * export * from "./service";
  */
+
+export * from "./mover.type";
+export * from "./token.type";
