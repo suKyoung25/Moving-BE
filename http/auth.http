@@ -9,3 +9,11 @@ POST http://localhost:3000/auth/movers/signup
      "phone": "01012345678", 
      "password": "1111"
 }
+
+### 기사님 로그인
+POST http://localhost:3000/auth/movers/signin
+
+{
+     "email": "test1@test.com", 
+     "password": "1111"
+}

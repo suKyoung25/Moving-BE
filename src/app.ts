@@ -9,6 +9,7 @@ import errorHandler from "./middlewares/errorHandler";
 import authRouter from "./routers/auth.router";
 import infoRouter from "./routers/info.router";
 import { specs, swaggerUi } from "./swagger";
+import profileRouter from "./routers/profile.router";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -31,6 +32,7 @@ app.use(passport.initialize());
 // 라우터 등록
 app.use("/", infoRouter);
 app.use("/auth", authRouter);
+app.use("/profile", profileRouter);
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 // 에러 핸들러
