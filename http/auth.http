@@ -11,14 +11,9 @@ Content-Type: application/json
      "password": "1111"
 }
 
-<<<<<<< HEAD
-### 기사님 로그인
-POST http://localhost:3000/auth/movers/signin
-=======
 ###기사님 로그인
 POST http://localhost:4000/auth/movers/signin
 Content-Type: application/json
->>>>>>> feat/mover-signUp,signIn
 
 {
      "email": "test1@test.com", 
