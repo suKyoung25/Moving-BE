@@ -27,15 +27,15 @@ import authService from "../services/auth.service";
 
 //기사님 회원가입
 export async function moverSignup(
-    req: Request<{}, {}, { nickName: string; email: string; phone: string; password: string }>,
+    req: Request<{}, {}, { name: string; email: string; phone: string; password: string }>,
     res: Response,
     next: NextFunction,
 ) {
-    const { nickName, email, phone, password } = req.body;
+    const { name, email, phone, password } = req.body;
 
     try {
         const mover = await authService.createMover({
-            nickName,
+            name,
             email,
             phone,
             password,

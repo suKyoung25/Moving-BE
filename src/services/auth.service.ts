@@ -29,37 +29,31 @@ import { hashPassword } from "../utils/auth.utils";
 
 //기사님 생성
 async function createMover(user: createMoverInput) {
-  const existedNickName = await authRepository.findMoverBynickName(
-    user.nickName
-  );
-  if (existedNickName) {
-    throw new ConflictError(ErrorMessage.ALREADY_EXIST_NICKNAME);
-  }
-  const existedEmail = await authRepository.findMoverByEmail(user.email);
-  if (existedEmail) {
-    throw new ConflictError(ErrorMessage.ALREADY_EXIST_EMAIL);
-  }
-  const existedPhone = await authRepository.findMoverByPhone(user.phone);
-  if (existedPhone) {
-    throw new ConflictError(ErrorMessage.ALREADY_EXIST_PHONE);
-  }
+    const existedEmail = await authRepository.findMoverByEmail(user.email);
+    if (existedEmail) {
+        throw new ConflictError(ErrorMessage.ALREADY_EXIST_EMAIL);
+    }
+    const existedPhone = await authRepository.findMoverByPhone(user.phone);
+    if (existedPhone) {
+        throw new ConflictError(ErrorMessage.ALREADY_EXIST_PHONE);
+    }
 
-  const hashedPassword = await hashPassword(user.password);
-  return await authRepository.saveMover({ ...user, hashedPassword });
+    const hashedPassword = await hashPassword(user.password);
+    return await authRepository.saveMover({ ...user, hashedPassword });
 }
 
 //기사님 조회(로그인)
 async function getMoverByEmail(user: getMoverInput) {
-  const mover = await authRepository.findMoverByEmail(user.email);
-  if (!mover) {
-    throw new NotFoundError(ErrorMessage.USER_NOT_FOUND);
-  }
+    const mover = await authRepository.findMoverByEmail(user.email);
+    if (!mover) {
+        throw new NotFoundError(ErrorMessage.USER_NOT_FOUND);
+    }
 
-  return mover;
+    return mover;
 }
 
 export default {
-  // createUser,
-  createMover,
-  getMoverByEmail,
+    // createUser,
+    createMover,
+    getMoverByEmail,
 };
