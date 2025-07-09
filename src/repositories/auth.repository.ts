@@ -25,48 +25,42 @@ import { createMoverInputwithHash } from "../types/mover.type";
 
 //기사님 생성
 async function saveMover(user: createMoverInputwithHash) {
-  const createdMover = await prisma.mover.create({
-    data: {
-      nickName: user.nickName,
-      email: user.email,
-      phone: user.phone,
-      hashedPassword: user.hashedPassword,
-    },
-  });
+    const createdMover = await prisma.mover.create({
+        data: {
+            name: user.name,
+            email: user.email,
+            phone: user.phone,
+            hashedPassword: user.hashedPassword,
+        },
+    });
 
-  return { ...createdMover, userType: "mover" }; //userType은 FE의 header에서 필요
-}
-
-async function findMoverBynickName(nickName: Mover["nickName"]) {
-  return prisma.mover.findUnique({
-    where: {
-      nickName,
-    },
-  });
+    return { ...createdMover, userType: "mover" }; //userType은 FE의 header에서 필요
 }
 
 async function findMoverByEmail(email: Mover["email"]) {
-  const mover = prisma.mover.findUnique({
-    where: {
-      email,
-    },
-  });
+    const mover = await prisma.mover.findUnique({
+        where: {
+            email,
+        },
+    });
 
-  return { ...mover, userType: "mover" }; //userType은 FE의 header에서 필요
+    if (!mover) return null;
+
+    return { ...mover, userType: "mover" }; //userType은 FE의 header에서 필요
 }
 
 async function findMoverByPhone(phone: Mover["phone"]) {
-  return prisma.mover.findUnique({
-    where: {
-      phone,
-    },
-  });
+    return await prisma.mover.findUnique({
+        where: {
+            phone,
+        },
+    });
 }
 
 export default {
-  // findByEmail,
-  saveMover,
-  findMoverBynickName,
-  findMoverByEmail,
-  findMoverByPhone,
+    // findByEmail,
+    saveMover,
+    // findMoverByName,
+    findMoverByEmail,
+    findMoverByPhone,
 };

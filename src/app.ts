@@ -12,22 +12,24 @@ import { specs, swaggerUi } from "./swagger";
 import profileRouter from "./routers/profile.router";
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 
 // trust proxy 설정 (쿠키 보안 관련: production 시 필요)
 app.set("trust proxy", 1);
 
 // 미들웨어
 app.use(
-  cors({
-    origin: process.env.FRONTEND_URL,
-    credentials: true,
-  })
+    cors({
+        origin: process.env.FRONTEND_URL,
+        credentials: true,
+    }),
 );
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 app.use(passport.initialize());
+
+app.use(express.json());
 
 // 라우터 등록
 app.use("/", infoRouter);
@@ -39,12 +41,12 @@ app.use("/docs", swaggerUi.serve, swaggerUi.setup(specs));
 app.use(errorHandler);
 
 app.listen(PORT, () => {
-  figlet("Team4 Moving", (err, data) => {
-    if (err) {
-      console.log("Something went wrong with figlet");
-      console.dir(err);
-      return;
-    }
-    console.log(data || `Server started at port ${PORT}`);
-  });
+    figlet("Team4 Moving", (err, data) => {
+        if (err) {
+            console.log("Something went wrong with figlet");
+            console.dir(err);
+            return;
+        }
+        console.log(data || `Server started at port ${PORT}`);
+    });
 });

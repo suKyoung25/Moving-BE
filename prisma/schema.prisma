@@ -13,16 +13,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id     String   @id @default(uuid())
-  region String[]
-}
-
 model Client {
   id             String         @id @default(uuid())
   email          String         @unique
   name           String
-  phone          String
+  phone          String         @unique
   hashedPassword String?
   profileImage   String?
   provider       Provider       @default(LOCAL)
@@ -30,6 +25,7 @@ model Client {
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
   serviceType    MoveType[]
+  livingArea     Region[]
   favorites      Favorite[]
   requests       Request[]
   estimates      Estimate[]
@@ -41,18 +37,19 @@ model Mover {
   id                  String         @id @default(uuid())
   email               String         @unique
   name                String
-  nickName            String         @unique
-  phone               String
+  nickName            String?        @unique
+  phone               String         @unique
   hashedPassword      String?
   profileImage        String?
   provider            Provider       @default(LOCAL)
   providerId          String?
   createdAt           DateTime       @default(now())
   updatedAt           DateTime       @updatedAt
-  career              Int
-  introduction        String
-  description         String
+  career              Int?
+  introduction        String?
+  description         String?
   serviceType         MoveType[]
+  serviceArea         Region[]
   favoriteCount       Int            @default(0)
   estimateCount       Int            @default(0)
   averageReviewRating Float          @default(0)
@@ -64,11 +61,17 @@ model Mover {
   notifications       Notification[]
 }
 
-// 견적 요청
+model Region {
+  id         String   @id @default(uuid())
+  regionName String   @unique
+  clients    Client[]
+  movers     Mover[]
+}
+
 model Request {
   id             String        @id @default(uuid())
   clientId       String
-  moverId        String
+  moverId        String?
   moveType       MoveType
   moveDate       DateTime
   fromAddress    String
@@ -79,11 +82,10 @@ model Request {
   requestedAt    DateTime      @default(now())
 
   client    Client     @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  mover     Mover      @relation(fields: [moverId], references: [id], onDelete: Cascade)
+  mover     Mover?     @relation(fields: [moverId], references: [id], onDelete: Cascade)
   estimates Estimate[]
 }
 
-// 확정된 견적
 model Estimate {
   id        String   @id @default(uuid())
   requestId String
