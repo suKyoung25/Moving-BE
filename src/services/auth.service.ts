@@ -13,21 +13,6 @@ import { createMoverInput, getMoverInput } from "../types/mover.type";
 import { hashPassword } from "../utils/hash.util";
 import { generateAccessToken, generateRefreshToken } from "../utils/accessToken.util";
 
-// 아래 코드는 예시입니다.
-// async function createUser(email: string, password: string) {
-//   const user = await authRepository.findByEmail(email);
-//   if (!user) {
-//     throw new BadRequestError(ErrorMessage.USER_NOT_FOUND);
-//   }
-
-//   const isValid = await compare(password, user.hashedPassword!);
-//   if (!isValid) {
-//     throw new BadRequestError(ErrorMessage.PASSWORD_NOT_MATCH);
-//   }
-
-//   return user;
-// }
-
 //기사님 생성
 async function createMover(user: createMoverInput) {
     const existedEmail = await authRepository.findMoverByEmail(user.email);
@@ -48,13 +33,13 @@ async function createMover(user: createMoverInput) {
     const accessToken = generateAccessToken({
         userId: createdMover.id,
         email: createdMover.email,
-        nickName: createdMover.nickName,
+        name: createdMover.name,
         userType: createdMover.userType,
     });
     const refreshToken = generateRefreshToken({
         userId: createdMover.id,
         email: createdMover.email,
-        nickName: createdMover.nickName,
+        name: createdMover.name,
         userType: createdMover.userType,
     });
 
@@ -68,8 +53,6 @@ async function createMover(user: createMoverInput) {
             userType: createdMover.userType,
         },
     };
-    // const hashedPassword = await hashPassword(user.password);
-    // return await authRepository.saveMover({ ...user, hashedPassword });
 }
 
 //기사님 조회(로그인)
@@ -79,7 +62,29 @@ async function getMoverByEmail(user: getMoverInput) {
         throw new NotFoundError(ErrorMessage.USER_NOT_FOUND);
     }
 
-    return mover;
+    const accessToken = generateAccessToken({
+        userId: mover.id,
+        email: mover.email,
+        name: mover.name,
+        userType: mover.userType,
+    });
+    const refreshToken = generateRefreshToken({
+        userId: mover.id,
+        email: mover.email,
+        name: mover.name,
+        userType: mover.userType,
+    });
+
+    return {
+        accessToken,
+        refreshToken,
+        user: {
+            userId: mover.id,
+            email: mover.email,
+            nickName: mover.nickName,
+            userType: mover.userType,
+        },
+    };
 }
 
 export default {
