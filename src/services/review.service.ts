@@ -38,10 +38,10 @@ async function createReview(data: CreateReviewBody) {
 async function updateReview(
   reviewId: Review["id"],
   clientId: Client["id"],
-  updateDto: Partial<{ rating: Review["rating"]; content: Review["content"] }>
+  data: Partial<{ rating: Review["rating"]; content: Review["content"] }>
 ) {
   if (!reviewId) throw new BadRequestError("reviewId가 필요합니다.");
-  if (!updateDto.rating && !updateDto.content)
+  if (!data.rating && !data.content)
     throw new BadRequestError("수정할 내용이 없습니다.");
 
   const review = await reviewRepository.findReviewById(reviewId);
@@ -49,7 +49,7 @@ async function updateReview(
   if (review.clientId !== clientId)
     throw new ForbiddenError("수정 권한이 없습니다.");
 
-  return reviewRepository.updateReview(reviewId, updateDto);
+  return reviewRepository.updateReview(reviewId, data);
 }
 
 // 리뷰 삭제
