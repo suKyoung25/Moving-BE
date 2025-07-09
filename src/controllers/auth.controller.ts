@@ -7,20 +7,20 @@
  * 아래 코드는 예시입니다.
  */
 
-import { NextFunction, Request, Response } from "express";
-import authService from "../services/auth.service";
+import { NextFunction, Request, Response } from 'express';
+import authService from '../services/auth.service';
 
 export async function signUpController(
-  req: Request<{}, {}, { email: string; password: string }>,
-  res: Response,
-  next: NextFunction
+    req: Request<{}, {}, { email: string; password: string }>,
+    res: Response,
+    next: NextFunction,
 ) {
-  const { email, password } = req.body;
+    const { email, password } = req.body;
 
-  try {
-    const user = await authService.createUser(email, password);
-    res.status(201).json({ user: user });
-  } catch (error) {
-    next(error);
-  }
+    try {
+        const user = await authService.createUser(email, password);
+        res.status(201).json({ user: user });
+    } catch (error) {
+        next(error);
+    }
 }
