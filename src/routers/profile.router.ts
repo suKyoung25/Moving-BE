@@ -8,7 +8,7 @@ const profileRouter = express.Router();
  * @description 프로필 관련 라우트 정의 모듈 (프로필 등록, 프로필 수정 등)
  */
 
-//기사님 프로필 등록과 수정
-profileRouter.patch("/mover", authMi, moverPatchProfile);
+// //기사님 프로필 등록과 수정
+// profileRouter.patch("/mover", authMi, moverPatchProfile);
 
 export default profileRouter;
