@@ -27,44 +27,40 @@ import authService from "../services/auth.service";
 
 //기사님 회원가입
 export async function moverSignup(
-  req: Request<
-    {},
-    {},
-    { nickName: string; email: string; phone: string; password: string }
-  >,
-  res: Response,
-  next: NextFunction
+    req: Request<{}, {}, { nickName: string; email: string; phone: string; password: string }>,
+    res: Response,
+    next: NextFunction,
 ) {
-  const { nickName, email, phone, password } = req.body;
+    const { nickName, email, phone, password } = req.body;
 
-  try {
-    const mover = await authService.createMover({
-      nickName,
-      email,
-      phone,
-      password,
-    });
-    res.status(201).json({ mover: mover });
-  } catch (error) {
-    next(error);
-  }
+    try {
+        const mover = await authService.createMover({
+            nickName,
+            email,
+            phone,
+            password,
+        });
+        res.status(201).json({ mover: mover });
+    } catch (error) {
+        next(error);
+    }
 }
 
 //기사님 로그인
 export async function moverSignin(
-  req: Request<{}, {}, { email: string; password: string }>,
-  res: Response,
-  next: NextFunction
+    req: Request<{}, {}, { email: string; password: string }>,
+    res: Response,
+    next: NextFunction,
 ) {
-  const { email, password } = req.body;
+    const { email, password } = req.body;
 
-  try {
-    const mover = await authService.getMoverByEmail({
-      email,
-      password,
-    });
-    res.status(201).json({ mover: mover });
-  } catch (error) {
-    next(error);
-  }
+    try {
+        const mover = await authService.getMoverByEmail({
+            email,
+            password,
+        });
+        res.status(201).json({ mover: mover });
+    } catch (error) {
+        next(error);
+    }
 }
