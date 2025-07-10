@@ -1,0 +1,13 @@
+@token="your_token_here"
+
+### 견적 요청
+POST http://localhost:4000/estimates/requests
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "moveType": "SMALL",
+  "moveDate": "2025-07-09T00:00:00.000Z",
+  "fromAddress": "서울특별시 강남구 테헤란로 123",
+  "toAddress": "서울특별시 서초구 강남대로 456"
+}
