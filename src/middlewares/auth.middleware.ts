@@ -8,8 +8,8 @@ if (!secretKey) {
   throw new ConflictError(ErrorMessage.JWT_SECRET_NOT_FOUND);
 }
 
-export const authenticateMover = expressjwt({
+export const verifiedAccessToken = expressjwt({
   secret: secretKey,
   algorithms: ["HS256"],
-  requestProperty: "auth", // req.auth에 moverId가 들어감
+  requestProperty: "auth", // req.auth에 payload가 들어감 {userId, email, name, userType,}
 });
