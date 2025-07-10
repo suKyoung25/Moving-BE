@@ -8,6 +8,6 @@
  * export * from "./service";
  */
 
-export * from "./mover/auth/auth-mover.type";
+export * from "./mover/auth/authMover.type";
 export * from "./token.type";
 export * from "./review";

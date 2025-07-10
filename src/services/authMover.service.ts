@@ -9,9 +9,9 @@
 import authRepository from "../repositories/authMover.repository";
 import { ConflictError, NotFoundError } from "../types/errors";
 import { ErrorMessage } from "../constants/ErrorMessage";
-import { createMoverInput, getMoverInput } from "../types/mover/auth/auth-mover.type";
-import { hashPassword } from "../utils/hash.util";
-import { generateAccessToken, generateRefreshToken } from "../utils/createToken.util";
+import { createMoverInput, getMoverInput } from "../types/mover/auth/authMover.type";
+import { hashPassword } from "../utils/auth.util";
+import { generateAccessToken, generateRefreshToken } from "../utils/token.util";
 
 //기사님 생성
 async function createMover(user: createMoverInput) {

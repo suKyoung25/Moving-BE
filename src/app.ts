@@ -34,12 +34,9 @@ app.use(passport.initialize());
 // 라우터 등록
 app.use("/", infoRouter);
 app.use("/auth", authRouter);
-<<<<<<< HEAD
 app.use("/profile", profileRouter);
-=======
 app.use("/reviews", reviewRouter);
 app.use("/estimates", estimateRouter);
->>>>>>> dev
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 // 에러 핸들러

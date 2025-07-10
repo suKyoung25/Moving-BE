@@ -8,10 +8,11 @@
 
 import { NextFunction, Request, Response } from "express";
 import authService from "../services/authMover.service";
+import { MoverSigninDto, MoverSignupDto } from "../dtos/auth/authMover.dto";
 
 //기사님 회원가입
 export async function moverSignup(
-    req: Request<{}, {}, { name: string; email: string; phone: string; password: string }>,
+    req: Request<{}, {}, MoverSignupDto>,
     res: Response,
     next: NextFunction,
 ) {
@@ -32,7 +33,7 @@ export async function moverSignup(
 
 //기사님 로그인
 export async function moverSignin(
-    req: Request<{}, {}, { email: string; password: string }>,
+    req: Request<{}, {}, MoverSigninDto>,
     res: Response,
     next: NextFunction,
 ) {

@@ -7,7 +7,7 @@
 import prisma from "../configs/prisma.config";
 import { ErrorMessage } from "../constants/ErrorMessage";
 import { NotFoundError } from "../types/errors";
-import { createMoverProfile } from "../types/mover/auth/auth-mover.type";
+import { createMoverProfile } from "../types/mover/auth/authMover.type";
 
 //기사님 프로필 생성
 async function saveMoverProfile(user: createMoverProfile) {
