@@ -5,10 +5,10 @@ POST http://localhost:4000/auth/movers/signup
 Content-Type: application/json
 
 {
-    "name": "tester2",
-     "email": "test2@test.com", 
-     "phone": "010123456789", 
-     "password": "2222"
+    "name": "tester3",
+     "email": "test3@test.com", 
+     "phone": "01033333333", 
+     "password": "3333"
 }
 
 ###기사님 로그인
