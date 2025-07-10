@@ -8,19 +8,15 @@ async function findWritableEstimatesByClientId(clientId: Client["id"]) {
     const estimate = await prisma.estimate.findMany({
       where: {
         clientId,
-        isDone: true,
+        status: "DONE",
         review: null,
       },
       select: {
         id: true,
         price: true,
-        requests: {
-          select: {
-            moveType: true,
-            isDesignated: true,
-            moveDate: true,
-          },
-        },
+        moveType: true,
+        isDesignated: true,
+        moveDate: true,
         mover: {
           select: {
             profileImage: true,
@@ -29,9 +25,7 @@ async function findWritableEstimatesByClientId(clientId: Client["id"]) {
         },
       },
       orderBy: {
-        requests: {
-          moveDate: "desc",
-        },
+        moveDate: "desc",
       },
     });
     if (estimate.length === 0) {
@@ -39,10 +33,7 @@ async function findWritableEstimatesByClientId(clientId: Client["id"]) {
     }
     return estimate;
   } catch (error) {
-    throw new ServerError(
-      "작성 가능한 리뷰 조회 중 서버 오류가 발생했습니다.",
-      error
-    );
+    throw new ServerError("작성 가능한 리뷰 조회 중 서버 오류가 발생했습니다.", error);
   }
 }
 
