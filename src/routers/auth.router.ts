@@ -1,4 +1,5 @@
 import express from "express";
+import { moverSignin, moverSignup } from "../controllers/authMover.controller";
 
 const authRouter = express.Router();
 
@@ -9,5 +10,15 @@ const authRouter = express.Router();
  * 예시:
  * authRouter.post("/auth/signup", validateSignup, signUpController);
  */
+
+//기사님 회원가입
+authRouter.post("/signup/mover", moverSignup);
+
+//기사님 로그인
+authRouter.post("/signin/mover", moverSignin);
+
+//todo: 일반유저 회원가임
+
+//todo: 일반유저 로그인
 
 export default authRouter;

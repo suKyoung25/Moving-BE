@@ -7,4 +7,7 @@
  * export * from "./user";
  * export * from "./service";
  */
+
+export * from "./mover/auth/authMover.type";
+export * from "./token.type";
 export * from "./review";

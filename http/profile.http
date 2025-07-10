@@ -1,0 +1,12 @@
+### 기사님 프로필 등록
+POST http://localhost:3000/profile/movers
+
+{
+     "image": , 
+     "nickName": "tester1", 
+     "career": "3", 
+     "introduction":"abcdefghijklmnopqrstuvwxyz",  
+     "description":"abcdefghijklmnopqrstuvwxyz" , 
+     "serviceType":["소형이사", "사무실이사"],
+     "region": ["경기"]
+}
