@@ -12,7 +12,7 @@
 
 import { Mover } from "@prisma/client";
 import prisma from "../configs/prisma.config";
-import { createMoverInputwithHash } from "../types/mover.type";
+import { createMoverInputwithHash } from "../types/mover/auth/auth-mover.type";
 
 // 아래 코드는 예시입니다.
 // async function findByEmail(email: Client["email"]) {

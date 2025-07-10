@@ -29,8 +29,6 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(passport.initialize());
 
-app.use(express.json());
-
 // 라우터 등록
 app.use("/", infoRouter);
 app.use("/auth", authRouter);

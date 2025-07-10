@@ -1,9 +1,9 @@
-import { createToken } from "../types";
 import jwt from "jsonwebtoken";
 import { ConflictError } from "../types/errors";
 import { ErrorMessage } from "../constants/ErrorMessage";
+import { createdToken } from "../types";
 
-export function generateAccessToken(user: createToken): string {
+export function generateAccessToken(user: createdToken): string {
     const payload = {
         userId: user.userId,
         email: user.email,
@@ -28,7 +28,7 @@ export function generateAccessToken(user: createToken): string {
     return accessToken;
 }
 
-export function generateRefreshToken(user: createToken): string {
+export function generateRefreshToken(user: createdToken): string {
     const payload = {
         userId: user.userId,
         email: user.email,

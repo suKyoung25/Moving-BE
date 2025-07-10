@@ -12,9 +12,9 @@ const authRouter = express.Router();
  */
 
 //기사님 회원가입
-authRouter.post("/movers/signup", moverSignup);
+authRouter.post("/signup/mover", moverSignup);
 
 //기사님 로그인
-authRouter.post("/movers/signin", moverSignin);
+authRouter.post("/signin/mover", moverSignin);
 
 export default authRouter;

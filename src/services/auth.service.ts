@@ -9,7 +9,7 @@
 import authRepository from "../repositories/auth.repository";
 import { ConflictError, NotFoundError } from "../types/errors";
 import { ErrorMessage } from "../constants/ErrorMessage";
-import { createMoverInput, getMoverInput } from "../types/mover.type";
+import { createMoverInput, getMoverInput } from "../types/mover/auth/auth-mover.type";
 import { hashPassword } from "../utils/hash.util";
 import { generateAccessToken, generateRefreshToken } from "../utils/accessToken.util";
 

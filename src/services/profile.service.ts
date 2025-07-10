@@ -6,13 +6,13 @@
  *
  */
 
-import { createMoverProfile } from "../types/mover.type";
+import { createMoverProfile } from "../types/mover/auth/auth-mover.type";
 import profileRespository from "../repositories/profile.respository";
 
 //기사님 프로필 생성
 async function createMoverProfile(user: createMoverProfile) {
-  return await profileRespository.saveMoverProfile(user);
+    return await profileRespository.saveMoverProfile(user);
 }
 export default {
-  createMoverProfile,
+    createMoverProfile,
 };

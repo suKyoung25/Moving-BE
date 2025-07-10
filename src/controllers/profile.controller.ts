@@ -9,17 +9,15 @@
 import { NextFunction, Request, Response } from "express";
 
 export async function moverPatchProfile(
-  req: Request<{}, {}, { email: string; password: string }>,
-  res: Response,
-  next: NextFunction
+    req: Request<{}, {}, { email: string; password: string }>,
+    res: Response,
+    next: NextFunction,
 ) {
-  const { image, nickName, career, introduction, description, serviceType } =
-    req.body;
-
-  try {
-    const user = await profileService.createUser(email, password);
-    res.status(201).json({ user: user });
-  } catch (error) {
-    next(error);
-  }
+    // const { image, name, career, introduction, description, serviceType } = req.body;
+    // try {
+    //     const user = await profileService.createUser(email, password);
+    //     res.status(201).json({ user });
+    // } catch (error) {
+    //     next(error);
+    // }
 }

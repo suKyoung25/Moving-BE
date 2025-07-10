@@ -1,7 +1,7 @@
 @token=
 
 ### 기사님 회원가입
-POST http://localhost:4000/auth/movers/signup
+POST http://localhost:4000/auth/signup/mover
 Content-Type: application/json
 
 {
@@ -12,7 +12,7 @@ Content-Type: application/json
 }
 
 ###기사님 로그인
-POST http://localhost:4000/auth/movers/signin
+POST http://localhost:4000/auth/signin/mover
 Content-Type: application/json
 
 {

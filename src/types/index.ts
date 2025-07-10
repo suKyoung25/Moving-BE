@@ -8,5 +8,5 @@
  * export * from "./service";
  */
 
-export * from "./mover.type";
+export * from "./mover/auth/auth-mover.type";
 export * from "./token.type";
