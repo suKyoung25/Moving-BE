@@ -27,7 +27,6 @@ model Client {
   serviceType    MoveType[]
   livingArea     Region[]
   favorites      Favorite[]
-  requests       Request[]
   estimates      Estimate[]
   reviews        Review[]
   notifications  Notification[]
@@ -54,7 +53,6 @@ model Mover {
   estimateCount       Int            @default(0)
   averageReviewRating Float          @default(0)
   reviewCount         Int            @default(0)
-  requests            Request[]
   estimates           Estimate[]
   reviews             Review[]
   favorites           Favorite[]
@@ -68,37 +66,24 @@ model Region {
   movers     Mover[]
 }
 
-model Request {
-  id             String        @id @default(uuid())
-  clientId       String
-  moverId        String?
-  moveType       MoveType
-  moveDate       DateTime
-  fromAddress    String
-  toAddress      String
-  isDesignated   Boolean       @default(false)
-  requestStatus  RequestStatus @default(PENDING)
-  rejectedReason String?
-  requestedAt    DateTime      @default(now())
-
-  client    Client     @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  mover     Mover?     @relation(fields: [moverId], references: [id], onDelete: Cascade)
-  estimates Estimate[]
-}
-
 model Estimate {
-  id        String   @id @default(uuid())
-  requestId String
-  clientId  String
-  moverId   String
-  price     Int
-  isDone    Boolean  @default(false)
-  createdAt DateTime @default(now())
+  id           String         @id @default(uuid())
+  clientId     String
+  moverId      String?
+  moveType     MoveType
+  moveDate     DateTime
+  fromAddress  String
+  toAddress    String
+  isDesignated Boolean        @default(false)
+  price        Int?
+  status       EstimateStatus @default(PENDING)
+  comment      String?
+  requestedAt  DateTime       @default(now())
+  confirmedAt  DateTime       @updatedAt
 
-  review   Review?
-  requests Request @relation(fields: [requestId], references: [id], onDelete: Cascade)
-  client   Client  @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  mover    Mover   @relation(fields: [moverId], references: [id], onDelete: Cascade)
+  client Client  @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  mover  Mover?  @relation(fields: [moverId], references: [id], onDelete: Cascade)
+  review Review?
 }
 
 model Review {
@@ -152,10 +137,11 @@ enum MoveType {
   OFFICE
 }
 
-enum RequestStatus {
+enum EstimateStatus {
   PENDING
   CONFIRMED
   REJECTED
+  DONE
 }
 
 enum NotificationType {
