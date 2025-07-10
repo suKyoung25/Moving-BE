@@ -10,6 +10,9 @@ async function getWritableEstimates(clientId: Client["id"]) {
   return estimateRepository.findWritableEstimatesByClientId(clientId);
 }
 
+async function getPendingEstimates(clientId: Client["id"]) {}
+
 export default {
   getWritableEstimates,
+  getPendingEstimates,
 };
