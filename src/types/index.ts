@@ -10,3 +10,4 @@
 
 export * from "./mover/auth/auth-mover.type";
 export * from "./token.type";
+export * from "./review";

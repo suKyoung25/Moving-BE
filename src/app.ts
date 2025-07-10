@@ -10,6 +10,8 @@ import authRouter from "./routers/auth.router";
 import infoRouter from "./routers/info.router";
 import { specs, swaggerUi } from "./swagger";
 import profileRouter from "./routers/profile.router";
+import reviewRouter from "./routers/review.router";
+import estimateRouter from "./routers/estimate.router";
 
 const app = express();
 const PORT = process.env.PORT;
@@ -32,7 +34,12 @@ app.use(passport.initialize());
 // 라우터 등록
 app.use("/", infoRouter);
 app.use("/auth", authRouter);
+<<<<<<< HEAD
 app.use("/profile", profileRouter);
+=======
+app.use("/reviews", reviewRouter);
+app.use("/estimates", estimateRouter);
+>>>>>>> dev
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 // 에러 핸들러
