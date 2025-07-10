@@ -1,23 +1,13 @@
 import { NextFunction, Request, Response } from "express";
 import reviewService from "../services/review.service";
-import {
-  CreateReviewDto,
-  ReviewIdParamsDto,
-  UpdateReviewDto,
-} from "../dtos/review.dto";
+import { CreateReviewDto, ReviewIdParamsDto, UpdateReviewDto } from "../dtos/review.dto";
 
 // 내가 작성한 리뷰 목록
 async function getMyReviews(req: Request, res: Response, next: NextFunction) {
   try {
-    const clientId = req.auth?.userId;
-    if (!clientId) {
-      res.status(401).json({ message: "인증 정보가 없습니다." });
-      return;
-    }
+    const clientId = req.auth!.userId;
     const reviews = await reviewService.getMyReviews(clientId);
-    res
-      .status(200)
-      .json({ status: 200, message: "리뷰 목록 조회 성공", data: reviews });
+    res.status(200).json({ message: "리뷰 목록 조회 성공", data: reviews });
   } catch (error) {
     next(error);
   }
@@ -27,14 +17,10 @@ async function getMyReviews(req: Request, res: Response, next: NextFunction) {
 async function createReview(
   req: Request<{}, {}, CreateReviewDto>,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
-    const clientId = req.auth?.userId;
-    if (!clientId) {
-      res.status(401).json({ message: "인증 정보가 없습니다." });
-      return;
-    }
+    const clientId = req.auth!.userId;
     const { estimateId, rating, content, moverId } = req.body;
     const review = await reviewService.createReview({
       estimateId,
@@ -44,9 +30,7 @@ async function createReview(
       moverId,
     });
 
-    res
-      .status(201)
-      .json({ status: 201, message: "리뷰 작성 성공", data: review });
+    res.status(201).json({ message: "리뷰 작성 성공", data: review });
   } catch (error) {
     next(error);
   }
@@ -56,14 +40,10 @@ async function createReview(
 async function updateReview(
   req: Request<ReviewIdParamsDto, {}, UpdateReviewDto>,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
-    const clientId = req.auth?.userId;
-    if (!clientId) {
-      res.status(401).json({ message: "인증 정보가 없습니다." });
-      return;
-    }
+    const clientId = req.auth!.userId;
     const { reviewId } = req.params;
     const { rating, content } = req.body;
     const updated = await reviewService.updateReview(reviewId, clientId, {
@@ -71,26 +51,16 @@ async function updateReview(
       content,
     });
 
-    res
-      .status(200)
-      .json({ status: 200, message: "리뷰 수정 성공", data: updated });
+    res.status(200).json({ message: "리뷰 수정 성공", data: updated });
   } catch (error) {
     next(error);
   }
 }
 
 // 리뷰 삭제
-async function deleteReview(
-  req: Request<ReviewIdParamsDto>,
-  res: Response,
-  next: NextFunction
-) {
+async function deleteReview(req: Request<ReviewIdParamsDto>, res: Response, next: NextFunction) {
   try {
-    const clientId = req.auth?.userId;
-    if (!clientId) {
-      res.status(401).json({ message: "인증 정보가 없습니다." });
-      return;
-    }
+    const clientId = req.auth!.userId;
     const { reviewId } = req.params;
     await reviewService.deleteReview(reviewId, clientId);
 

@@ -36,4 +36,3 @@ Content-Type: application/json
 ### 리뷰 삭제
 DELETE http://localhost:3000/reviews/{{reviewId}}
 Authorization: Bearer {{token}}
-Content-Type: application/json
