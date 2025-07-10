@@ -12,7 +12,7 @@ import { specs, swaggerUi } from "./swagger";
 import profileRouter from "./routers/profile.router";
 
 const app = express();
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT;
 
 // trust proxy 설정 (쿠키 보안 관련: production 시 필요)
 app.set("trust proxy", 1);
