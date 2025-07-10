@@ -1,5 +1,4 @@
 import express from "express";
-import { moverPatchProfile } from "../controllers/profile.controller";
 
 const profileRouter = express.Router();
 
@@ -10,5 +9,7 @@ const profileRouter = express.Router();
 
 // //기사님 프로필 등록과 수정
 // profileRouter.patch("/mover", authMi, moverPatchProfile);
+
+//todo:일반 유저 프로필 등록과 수정
 
 export default profileRouter;

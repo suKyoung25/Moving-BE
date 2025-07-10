@@ -6,12 +6,12 @@
  *
  */
 
-import authRepository from "../repositories/auth.repository";
+import authRepository from "../repositories/authMover.repository";
 import { ConflictError, NotFoundError } from "../types/errors";
 import { ErrorMessage } from "../constants/ErrorMessage";
 import { createMoverInput, getMoverInput } from "../types/mover/auth/auth-mover.type";
 import { hashPassword } from "../utils/hash.util";
-import { generateAccessToken, generateRefreshToken } from "../utils/accessToken.util";
+import { generateAccessToken, generateRefreshToken } from "../utils/createToken.util";
 
 //기사님 생성
 async function createMover(user: createMoverInput) {
@@ -88,7 +88,6 @@ async function getMoverByEmail(user: getMoverInput) {
 }
 
 export default {
-    // createUser,
     createMover,
     getMoverByEmail,
 };

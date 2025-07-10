@@ -7,23 +7,7 @@
  */
 
 import { NextFunction, Request, Response } from "express";
-import authService from "../services/auth.service";
-
-//아래 코드는 예시입니다.
-// export async function signUpController(
-//   req: Request<{}, {}, { email: string; password: string }>,
-//   res: Response,
-//   next: NextFunction
-// ) {
-//   const { email, password } = req.body;
-
-//   try {
-//     const user = await authService.createUser(email, password);
-//     res.status(201).json({ user: user });
-//   } catch (error) {
-//     next(error);
-//   }
-// }
+import authService from "../services/authMover.service";
 
 //기사님 회원가입
 export async function moverSignup(
