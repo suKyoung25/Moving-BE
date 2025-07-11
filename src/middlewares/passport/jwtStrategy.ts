@@ -45,4 +45,6 @@ passport.use(
 );
 
 // ✅ 이걸 쓰면 됨!
-export const authMiddleware: RequestHandler = passport.authenticate("jwt", { session: false });
+const authMiddleware: RequestHandler = passport.authenticate("jwt", { session: false });
+
+export default authMiddleware;

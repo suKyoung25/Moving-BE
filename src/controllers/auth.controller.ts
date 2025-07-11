@@ -5,7 +5,7 @@ import { ErrorMessage } from "../constants/ErrorMessage";
 import { generateAccessToken } from "../utils/token.util";
 
 // ✅ refreshToken Api
-export async function refreshTokenController(req: Request, res: Response, next: NextFunction) {
+async function setRefreshToken(req: Request, res: Response, next: NextFunction) {
   try {
     // 1. 쿠키에서 refreshToken 가져옴
     const refreshToken = req.cookies.refreshToken;
@@ -33,7 +33,7 @@ export async function refreshTokenController(req: Request, res: Response, next: 
 }
 
 // ✅ 토큰으로 사용자 불러오기
-export async function getMeController(req: Request, res: Response, next: NextFunction) {
+async function getMe(req: Request, res: Response, next: NextFunction) {
   try {
     const user = req.user;
 
@@ -46,3 +46,10 @@ export async function getMeController(req: Request, res: Response, next: NextFun
     next(error);
   }
 }
+
+const authController = {
+  setRefreshToken,
+  getMe,
+};
+
+export default authController;

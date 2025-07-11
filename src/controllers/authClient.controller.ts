@@ -8,11 +8,7 @@ import {
 } from "../dtos/auth/authClient.dto";
 
 // ✅ 일반 회원가입
-export async function clientSignUpController(
-  req: Request<{}, {}, TSignUpData>,
-  res: Response,
-  next: NextFunction,
-) {
+async function signUp(req: Request<{}, {}, TSignUpData>, res: Response, next: NextFunction) {
   try {
     // Zod 스키마로 데이터 검증 및 변환
     const parsedData = signUpClientSchema.parse(req.body);
@@ -32,11 +28,7 @@ export async function clientSignUpController(
 }
 
 // ✅ 일반 로그인
-export async function clientLoginController(
-  req: Request<{}, {}, TLoginData>,
-  res: Response,
-  next: NextFunction,
-) {
+async function login(req: Request<{}, {}, TLoginData>, res: Response, next: NextFunction) {
   try {
     const parsedData = loginClientSchema.parse(req.body);
 
@@ -51,3 +43,7 @@ export async function clientLoginController(
     next(error);
   }
 }
+
+const authClientController = { signUp, login };
+
+export default authClientController;
