@@ -61,14 +61,14 @@ async function findWritableEstimatesByClientId(clientId: Client["id"], skip: num
   }
 }
 
-// 견적 요청 생성
-async function createRequest(request: CreateRequestDto, clientId: string) {
-  return await prisma.estimate.create({
-    data: { ...request, client: { connect: { id: clientId } } },
-  });
-}
+// // 견적 요청 생성 //에러 나서 일단 주석 처리함
+// async function createRequest(request: CreateRequestDto, clientId: string) {
+//   return await prisma.estimate.create({
+//     data: { ...request, client: { connect: { id: clientId } } },
+//   });
+// }
 
 export default {
   findWritableEstimatesByClientId,
-  createRequest,
+  // createRequest, //에러 나서 일단 주석 처리함
 };
