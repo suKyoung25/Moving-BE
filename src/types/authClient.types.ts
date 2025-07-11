@@ -12,13 +12,6 @@ export interface ILoginDataLocal {
   hashedPassword: string;
 }
 
-// 토큰 자료 구조
-export interface IToken {
-  id: string;
-  email: string;
-  userType: "client" | "mover";
-}
-
 //
 export interface ISignUpFormSocial {
   email: string;

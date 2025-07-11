@@ -25,7 +25,7 @@ export async function clientSignUpController(
     };
 
     const client = await authClientService.create(signUpData);
-    res.status(201).json(client);
+    res.status(201).json({ message: "Client 일반 회원가입 성공", data: client });
   } catch (error) {
     next(error);
   }
@@ -46,7 +46,7 @@ export async function clientLoginController(
     };
 
     const client = await authClientService.loginWithLocal(loginData);
-    res.status(200).json(client);
+    res.status(200).json({ message: "Client 일반 로그인 성공", data: client });
   } catch (error) {
     next(error);
   }
