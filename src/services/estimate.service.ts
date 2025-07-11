@@ -4,11 +4,12 @@ import { BadRequestError } from "../types/errors";
 import { CreateRequestDto } from "../dtos/estimate.dto";
 
 // 작성 가능한 리뷰 목록
-async function getWritableEstimates(clientId: Client["id"]) {
+async function getWritableEstimates(clientId: Client["id"], page: number, pageSize: number) {
   if (!clientId) {
     throw new BadRequestError("clientId가 필요합니다.");
   }
-  return estimateRepository.findWritableEstimatesByClientId(clientId);
+  const skip = (page - 1) * pageSize;
+  return estimateRepository.findWritableEstimatesByClientId(clientId, skip, pageSize);
 }
 
 // 견적 요청 생성

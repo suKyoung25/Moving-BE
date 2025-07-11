@@ -6,10 +6,14 @@ import estimateService from "../services/estimate.service";
 async function getWritableEstimates(req: Request, res: Response, next: NextFunction) {
   try {
     const clientId = req.auth!.userId;
-    const estimates = await estimateService.getWritableEstimates(clientId);
+
+    const page = Number(req.query.page) || 1;
+    const pageSize = Number(req.query.pageSize) || 6;
+
+    const result = await estimateService.getWritableEstimates(clientId, page, pageSize);
     res.status(200).json({
       message: "작성 가능한 리뷰 견적 목록 조회 성공",
-      data: estimates,
+      data: result,
     });
   } catch (error) {
     next(error);

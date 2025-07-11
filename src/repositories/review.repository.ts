@@ -3,22 +3,35 @@ import prisma from "../configs/prisma.config";
 import { NotFoundError, ServerError, ValidationError } from "../types/errors";
 
 //내가 작성한 리뷰 목록 조회
-async function findReviewsByClientId(clientId: Client["id"]) {
+async function findReviewsByClientId(clientId: Client["id"], skip: number, take: number) {
   try {
-    const reviews = await prisma.review.findMany({
-      where: { clientId },
-      include: {
-        mover: true,
-        estimate: true,
-      },
-      orderBy: { createdAt: "desc" },
-    });
+    const [reviews, total] = await Promise.all([
+      prisma.review.findMany({
+        where: { clientId },
+        include: {
+          mover: true,
+          estimate: true,
+        },
+        orderBy: { createdAt: "desc" },
+        skip,
+        take,
+      }),
+      prisma.review.count({ where: { clientId } }),
+    ]);
 
     if (reviews.length === 0) {
       throw new NotFoundError("작성한 리뷰가 없습니다.");
     }
 
-    return reviews;
+    return {
+      reviews,
+      total,
+      pagination: {
+        page: Math.floor(skip / take) + 1,
+        pageSize: take,
+        totalPages: Math.ceil(total / take),
+      },
+    };
   } catch (error) {
     throw new ServerError("리뷰 조회 중 서버 오류가 발생했습니다.", error);
   }
@@ -58,7 +71,7 @@ async function findReviewById(reviewId: Review["id"]) {
 // 리뷰 수정
 async function updateReview(
   reviewId: Review["id"],
-  data: Partial<Pick<Review, "rating" | "content">>
+  data: Partial<Pick<Review, "rating" | "content">>,
 ) {
   try {
     return await prisma.review.update({
