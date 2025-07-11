@@ -1,10 +1,14 @@
 import { Client } from "@prisma/client";
 import prisma from "../configs/prisma.config";
-import { NotFoundError, ServerError } from "../types/errors";
-import { CreateRequestDto } from "../dtos/estimate.dto";
+import { ServerError } from "../types/errors";
 
 // 작성 가능한 리뷰 목록
-async function findWritableEstimatesByClientId(clientId: Client["id"], skip: number, take: number) {
+async function findWritableEstimatesByClientId(
+  clientId: Client["id"],
+  offset: number,
+  limit: number,
+  page: number,
+) {
   try {
     const [estimates, total] = await Promise.all([
       prisma.estimate.findMany({
@@ -31,8 +35,8 @@ async function findWritableEstimatesByClientId(clientId: Client["id"], skip: num
           },
         },
         orderBy: { createdAt: "desc" },
-        skip,
-        take,
+        skip: offset,
+        take: limit,
       }),
       prisma.estimate.count({
         where: {
@@ -43,17 +47,13 @@ async function findWritableEstimatesByClientId(clientId: Client["id"], skip: num
       }),
     ]);
 
-    if (estimates.length === 0) {
-      throw new NotFoundError("작성 가능한 리뷰가 없습니다.");
-    }
-
     return {
       estimates,
       total,
       pagination: {
-        page: Math.floor(skip / take) + 1,
-        pageSize: take,
-        totalPages: Math.ceil(total / take),
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
       },
     };
   } catch (error) {
@@ -61,14 +61,6 @@ async function findWritableEstimatesByClientId(clientId: Client["id"], skip: num
   }
 }
 
-// 견적 요청 생성
-async function createRequest(request: CreateRequestDto, clientId: string) {
-  return await prisma.estimate.create({
-    data: { ...request, client: { connect: { id: clientId } } },
-  });
-}
-
 export default {
   findWritableEstimatesByClientId,
-  createRequest,
 };

@@ -1,35 +1,41 @@
 import { Client, Prisma, Review } from "@prisma/client";
 import prisma from "../configs/prisma.config";
-import { NotFoundError, ServerError, ValidationError } from "../types/errors";
+import { ServerError, ValidationError } from "../types/errors";
 
 //내가 작성한 리뷰 목록 조회
-async function findReviewsByClientId(clientId: Client["id"], skip: number, take: number) {
+async function findReviewsByClientId(
+  clientId: Client["id"],
+  offset: number,
+  limit: number,
+  page: number,
+) {
   try {
     const [reviews, total] = await Promise.all([
       prisma.review.findMany({
         where: { clientId },
         include: {
-          mover: true,
-          estimate: true,
+          mover: { select: { nickName: true, profileImage: true } },
+          estimate: {
+            select: {
+              price: true,
+              request: { select: { moveType: true, moveDate: true, isDesignated: true } },
+            },
+          },
         },
         orderBy: { createdAt: "desc" },
-        skip,
-        take,
+        skip: offset,
+        take: limit,
       }),
       prisma.review.count({ where: { clientId } }),
     ]);
-
-    if (reviews.length === 0) {
-      throw new NotFoundError("작성한 리뷰가 없습니다.");
-    }
 
     return {
       reviews,
       total,
       pagination: {
-        page: Math.floor(skip / take) + 1,
-        pageSize: take,
-        totalPages: Math.ceil(total / take),
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
       },
     };
   } catch (error) {

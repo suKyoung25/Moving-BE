@@ -4,12 +4,12 @@ import { BadRequestError, ForbiddenError, NotFoundError } from "../types/errors"
 import { CreateReviewBody } from "../types";
 
 // 내가 작성한 리뷰 목록
-async function getMyReviews(clientId: Client["id"], page: number = 1, pageSize: number = 6) {
+async function getMyReviews(clientId: Client["id"], page: number = 1, limit: number = 6) {
   if (!clientId) {
     throw new BadRequestError("clientId가 필요합니다.");
   }
-  const skip = (page - 1) * pageSize;
-  return reviewRepository.findReviewsByClientId(clientId, skip, pageSize);
+  const offset = (page - 1) * limit;
+  return reviewRepository.findReviewsByClientId(clientId, offset, limit, page);
 }
 
 // 리뷰 작성
