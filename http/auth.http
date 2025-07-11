@@ -5,10 +5,11 @@ POST http://localhost:4000/auth/signup/mover
 Content-Type: application/json
 
 {
-    "name": "tester5",
-     "email": "test4@test.com", 
-     "phone": "01044444444", 
-     "password": "4444"
+    "name": "t5",
+     "email": "test5@test.com", 
+     "phone": "01055555555", 
+     "password": "a5555555",
+       "passwordConfirmation":"a5555555"
 }
 
 ###기사님 로그인(local)
@@ -16,8 +17,8 @@ POST http://localhost:4000/auth/signin/mover
 Content-Type: application/json
 
 {
-     "email": "test4@test.com", 
-     "password": "4444"
+     "email": "test5@test.com", 
+     "password": "a5555555"
 }
 
 ### 일반 회원 회원가입(local)

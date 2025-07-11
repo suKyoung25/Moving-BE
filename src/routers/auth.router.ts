@@ -1,14 +1,14 @@
 import express from "express";
-import { moverSignin, moverSignup } from "../controllers/authMover.controller";
 import {
   clientLoginController,
   clientSignUpController,
 } from "../controllers/authClient.controller";
+import { moverSignin, moverSingup } from "../controllers/authMover.controller";
 
 const authRouter = express.Router();
 
 //기사님 회원가입
-authRouter.post("/signup/mover", moverSignup);
+authRouter.post("/signup/mover", moverSingup);
 
 //기사님 로그인
 authRouter.post("/signin/mover", moverSignin);

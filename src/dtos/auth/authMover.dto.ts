@@ -15,7 +15,7 @@ export const signUpMoverSchema = z
 
     email: z.string().email().nonempty(ErrorMessage.NO_EMAIL),
 
-    phoneNumber: z
+    phone: z
       .string()
       .regex(/^\d{9,11}$/, ErrorMessage.PHONE_REGEX)
       .nonempty(ErrorMessage.NO_PHONE),

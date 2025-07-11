@@ -10,9 +10,10 @@ import { NextFunction, Request, Response } from "express";
 import authService from "../services/authMover.service";
 import { MoverSigninDto, MoverSignupDto, signUpMoverSchema } from "../dtos/auth/authMover.dto";
 import { BadRequestError } from "../types/errors";
+import { ErrorMessage } from "../constants/ErrorMessage";
 
 //기사님 회원가입
-export async function moverSignup(
+async function moverSingup(
   req: Request<{}, {}, MoverSignupDto>,
   res: Response,
   next: NextFunction,
@@ -20,10 +21,8 @@ export async function moverSignup(
   //req.body 유효성 검사
   const parsed = signUpMoverSchema.safeParse(req.body);
   if (!parsed.success) {
-    const ErrorMessage = Object.values(parsed.error.format())
-      .map((field: any) => field._errors.join(", "))
-      .join("; ");
-    throw new BadRequestError(ErrorMessage); //zod 에러메세지 사용함
+    const errorMessages = parsed.error.errors.map((err) => `${err.path.join(".")}: ${err.message}`);
+    throw new BadRequestError(errorMessages.join("; "));
   }
 
   const { name, email, phone, password } = req.body;
@@ -35,14 +34,14 @@ export async function moverSignup(
       phone,
       password,
     });
-    res.status(201).json({ mover: mover });
+    res.status(200).json({ mover: mover });
   } catch (error) {
     next(error);
   }
 }
 
 //기사님 로그인
-export async function moverSignin(
+async function moverSignin(
   req: Request<{}, {}, MoverSigninDto>,
   res: Response,
   next: NextFunction,
@@ -59,3 +58,5 @@ export async function moverSignin(
     next(error);
   }
 }
+
+export { moverSingup, moverSignin };
