@@ -22,7 +22,7 @@ Content-Type: application/json
 }
 
 ### 일반 회원 회원가입(local)
-POST http://localhost:3000/auth/signup/client
+POST http://localhost:4000/auth/signup/client
 Content-Type: application/json
 
 {
@@ -34,10 +34,20 @@ Content-Type: application/json
 }
 
 ### 일반 회원 로그인(local)
-POST http://localhost:3000/auth/signin/client
+POST http://localhost:4000/auth/signin/client
 Content-Type: application/json
 
 {
      "email": "test4@test.com", 
      "password": "asdf1234"
 }
+
+### RefreshToken
+POST http://localhost:4000/auth/refresh-token
+Content-Type: application/json
+Cookie: refreshToken=값
+
+### 사용자 불러오기
+GET http://localhost:4000/auth
+Content-Type: application/json
+Authorization: Bearer 값

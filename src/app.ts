@@ -36,8 +36,8 @@ app.use(passport.initialize());
 app.use("/", infoRouter);
 app.use("/auth", authRouter);
 app.use("/profile", verifyAccessToken, profileRouter);
-app.use("/reviews", reviewRouter);
-app.use("/estimates", estimateRouter);
+app.use("/reviews", verifyAccessToken, reviewRouter);
+app.use("/estimates", verifyAccessToken, estimateRouter);
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 // 에러 핸들러

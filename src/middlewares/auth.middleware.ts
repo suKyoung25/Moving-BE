@@ -11,5 +11,5 @@ if (!secretKey) {
 export const verifyAccessToken = expressjwt({
   secret: secretKey,
   algorithms: ["HS256"],
-  requestProperty: "auth", // req.auth에 payload가 들어감 {userId, email, name, userType,}
+  requestProperty: "auth", // req.auth에 payload가 들어감 { userId, email, name, userType }
 });

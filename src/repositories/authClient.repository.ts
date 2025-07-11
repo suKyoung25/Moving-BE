@@ -8,10 +8,13 @@ async function findById(id: Client["id"]): Promise<Client | null> {
   });
 }
 
-async function findByEmail(email: Client["email"]): Promise<Client | null> {
-  return prisma.client.findUnique({
+async function findByEmail(email: Client["email"]) {
+  const client = await prisma.client.findUnique({
     where: { email },
   });
+
+  if (!client) return null;
+  return { ...client, userType: "client" };
 }
 
 async function findByPhone(phone: Client["phone"]): Promise<Client | null> {
