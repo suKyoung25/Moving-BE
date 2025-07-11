@@ -12,18 +12,6 @@ async function getWritableEstimates(clientId: Client["id"], page: number, pageSi
   return estimateRepository.findWritableEstimatesByClientId(clientId, skip, pageSize);
 }
 
-// 견적 요청 생성
-async function createEstimateRequest({
-  request,
-  clientId,
-}: {
-  request: CreateRequestDto;
-  clientId: string;
-}) {
-  return await estimateRepository.createRequest(request, clientId);
-}
-
 export default {
   getWritableEstimates,
-  createEstimateRequest,
 };
