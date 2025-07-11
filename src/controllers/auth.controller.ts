@@ -31,3 +31,18 @@ export async function refreshTokenController(req: Request, res: Response, next: 
     next(error);
   }
 }
+
+// ✅ 토큰으로 사용자 불러오기
+export async function getMeController(req: Request, res: Response, next: NextFunction) {
+  try {
+    const user = req.user;
+
+    if (!user) {
+      res.status(401).json({ message: "사용자 인증 정보가 없습니다." });
+    }
+
+    res.status(200).json({ message: "사용자 데이터 반환 성공", user });
+  } catch (error) {
+    next(error);
+  }
+}
