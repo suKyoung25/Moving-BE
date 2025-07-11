@@ -49,4 +49,4 @@ Cookie: refreshToken=값
 ### 사용자 불러오기
 GET http://localhost:4000/auth
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MmRkNTY2OC02Nzg3LTQ1MTktYjliMS0zN2Y4OGMyY2QxN2UiLCJlbWFpbCI6InRlc3Q0QHRlc3QuY29tIiwibmFtZSI6IuydvOuwmOyduCIsInVzZXJUeXBlIjoiY2xpZW50IiwiaWF0IjoxNzUyMjA4NzUxLCJleHAiOjE3NTIyMTIzNTF9.rGiRN1zS-MiUs9O5RwX9fMkpaoBV_pBQHgmN8pDj_78
+Authorization: Bearer 값
