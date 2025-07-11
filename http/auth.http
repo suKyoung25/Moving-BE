@@ -5,7 +5,7 @@ POST http://localhost:4000/auth/signup/mover
 Content-Type: application/json
 
 {
-    "name": "tester4",
+    "name": "tester5",
      "email": "test4@test.com", 
      "phone": "01044444444", 
      "password": "4444"
@@ -17,7 +17,7 @@ Content-Type: application/json
 
 {
      "email": "test4@test.com", 
-     "password": "4443"
+     "password": "4444"
 }
 
 ### 일반 회원 회원가입(local)
