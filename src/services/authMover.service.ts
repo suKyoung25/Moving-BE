@@ -85,14 +85,14 @@ async function getMoverByEmail(user: getMoverInput) {
   });
 
   return {
-    accessToken,
-    refreshToken,
     user: {
       userId: mover.id,
       email: mover.email,
       nickName: mover.nickName,
       userType: mover.userType,
     },
+    accessToken,
+    refreshToken,
   };
 }
 
