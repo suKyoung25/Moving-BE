@@ -17,7 +17,7 @@ export const ErrorMessage = {
 
   // Invalid
   INVALID_EMAIL: "잘못된 이메일입니다.",
-  INVALID_INPUT: "필수 정보를 모두 입력해주세요.",
+  INVALID_INPUT: "유효한 필수 정보를 입력해주세요.",
   INVALID_ACCESS_TOKEN: "유효하지 않은 accessToken입니다.",
   INVALID_REFRESH_TOKEN: "유효하지 않은 refreshToken입니다.",
 

@@ -7,87 +7,96 @@
  */
 
 import authRepository from "../repositories/authMover.repository";
-import { ConflictError, NotFoundError } from "../types/errors";
+import { ConflictError, NotFoundError, UnauthorizedError } from "../types/errors";
 import { ErrorMessage } from "../constants/ErrorMessage";
 import { createMoverInput, getMoverInput } from "../types/mover/auth/authMover.type";
 import { hashPassword } from "../utils/auth.util";
 import { generateAccessToken, generateRefreshToken } from "../utils/token.util";
+import bcrypt from "bcrypt";
 
 //기사님 생성
 async function createMover(user: createMoverInput) {
-    const existedEmail = await authRepository.findMoverByEmail(user.email);
-    if (existedEmail) {
-        throw new ConflictError(ErrorMessage.ALREADY_EXIST_EMAIL);
-    }
-    const existedPhone = await authRepository.findMoverByPhone(user.phone);
-    if (existedPhone) {
-        throw new ConflictError(ErrorMessage.ALREADY_EXIST_PHONE);
-    }
+  const existedEmail = await authRepository.findMoverByEmail(user.email);
+  if (existedEmail) {
+    throw new ConflictError(ErrorMessage.ALREADY_EXIST_EMAIL);
+  }
+  const existedPhone = await authRepository.findMoverByPhone(user.phone);
+  if (existedPhone) {
+    throw new ConflictError(ErrorMessage.ALREADY_EXIST_PHONE);
+  }
 
-    const hashedPassword = await hashPassword(user.password);
-    const createdMover = await authRepository.saveMover({
-        ...user,
-        hashedPassword,
-    });
+  const hashedPassword = await hashPassword(user.password);
+  const createdMover = await authRepository.saveMover({
+    ...user,
+    hashedPassword,
+  });
 
-    const accessToken = generateAccessToken({
-        userId: createdMover.id,
-        email: createdMover.email,
-        name: createdMover.name,
-        userType: createdMover.userType,
-    });
-    const refreshToken = generateRefreshToken({
-        userId: createdMover.id,
-        email: createdMover.email,
-        name: createdMover.name,
-        userType: createdMover.userType,
-    });
+  const accessToken = generateAccessToken({
+    userId: createdMover.id,
+    email: createdMover.email,
+    name: createdMover.name,
+    userType: createdMover.userType,
+  });
+  const refreshToken = generateRefreshToken({
+    userId: createdMover.id,
+    email: createdMover.email,
+    name: createdMover.name,
+    userType: createdMover.userType,
+  });
 
-    return {
-        accessToken,
-        refreshToken,
-        user: {
-            userId: createdMover.id,
-            email: createdMover.email,
-            nickName: createdMover.nickName,
-            userType: createdMover.userType,
-        },
-    };
+  return {
+    accessToken,
+    refreshToken,
+    user: {
+      userId: createdMover.id,
+      email: createdMover.email,
+      nickName: createdMover.nickName,
+      userType: createdMover.userType,
+    },
+  };
 }
 
 //기사님 조회(로그인)
 async function getMoverByEmail(user: getMoverInput) {
-    const mover = await authRepository.findMoverByEmail(user.email);
-    if (!mover) {
-        throw new NotFoundError(ErrorMessage.USER_NOT_FOUND);
-    }
+  //사용자 조회
+  const mover = await authRepository.findMoverByEmail(user.email);
+  if (!mover) {
+    throw new NotFoundError(ErrorMessage.USER_NOT_FOUND);
+  }
 
-    const accessToken = generateAccessToken({
-        userId: mover.id,
-        email: mover.email,
-        name: mover.name,
-        userType: mover.userType,
-    });
-    const refreshToken = generateRefreshToken({
-        userId: mover.id,
-        email: mover.email,
-        name: mover.name,
-        userType: mover.userType,
-    });
+  //비밀번호 대조
+  const isPasswordValid = await bcrypt.compare(user.password, mover.hashedPassword!);
+  if (!isPasswordValid) {
+    throw new UnauthorizedError(ErrorMessage.PASSWORD_NOT_MATCH);
+  }
 
-    return {
-        accessToken,
-        refreshToken,
-        user: {
-            userId: mover.id,
-            email: mover.email,
-            nickName: mover.nickName,
-            userType: mover.userType,
-        },
-    };
+  //토큰 생성
+  const accessToken = generateAccessToken({
+    userId: mover.id,
+    email: mover.email,
+    name: mover.name,
+    userType: mover.userType,
+  });
+  const refreshToken = generateRefreshToken({
+    userId: mover.id,
+    email: mover.email,
+    name: mover.name,
+    userType: mover.userType,
+  });
+
+  return {
+    user: {
+      userId: mover.id,
+      email: mover.email,
+      nickName: mover.nickName,
+      userType: mover.userType,
+    },
+    accessToken,
+    refreshToken,
+  };
 }
 
 export default {
-    createMover,
-    getMoverByEmail,
+  createMover,
+  getMoverByEmail,
 };

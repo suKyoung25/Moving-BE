@@ -1,6 +1,5 @@
 import express from "express";
-import { moverSignin, moverSignup } from "../controllers/authMover.controller";
-
+import { moverSignin, moverSingup } from "../controllers/authMover.controller";
 import authMiddleware from "../middlewares/passport/jwtStrategy";
 import authController from "../controllers/auth.controller";
 import authClientController from "../controllers/authClient.controller";
@@ -14,7 +13,7 @@ authRouter.post("/refresh-token", authController.setRefreshToken);
 authRouter.get("/", authMiddleware, authController.getMe);
 
 //기사님 회원가입
-authRouter.post("/signup/mover", moverSignup);
+authRouter.post("/signup/mover", moverSingup);
 
 //기사님 로그인
 authRouter.post("/signin/mover", moverSignin);
