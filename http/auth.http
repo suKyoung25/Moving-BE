@@ -1,23 +1,23 @@
 @token=
 
-### 기사님 회원가입
+### 기사님 회원가입(local)
 POST http://localhost:4000/auth/signup/mover
 Content-Type: application/json
 
 {
-    "name": "tester3",
-     "email": "test3@test.com", 
-     "phone": "01033333333", 
-     "password": "3333"
+    "name": "tester4",
+     "email": "test4@test.com", 
+     "phone": "01044444444", 
+     "password": "4444"
 }
 
-###기사님 로그인
+###기사님 로그인(local)
 POST http://localhost:4000/auth/signin/mover
 Content-Type: application/json
 
 {
-     "email": "test2@test.com", 
-     "password": "2222"
+     "email": "test4@test.com", 
+     "password": "4443"
 }
 
 ### 일반 회원 회원가입(local)
