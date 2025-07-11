@@ -2,12 +2,8 @@ import { ErrorMessage } from "../constants/ErrorMessage";
 import authClientRepository from "../repositories/authClient.repository";
 import { ILoginDataLocal, ISignUpDataLocal } from "../types";
 import { BadRequestError } from "../types/errors";
-import {
-  filterSensitiveUserData,
-  generateClientTokens,
-  hashPassword,
-  verifyPassword,
-} from "../utils/authClient.utils";
+import { filterSensitiveUserData, hashPassword, verifyPassword } from "../utils/auth.util";
+import { generateAccessToken, generateRefreshToken } from "../utils/token.util";
 
 // ✅ 회원가입 - Local
 async function create(
@@ -37,10 +33,18 @@ async function loginWithLocal({ email, hashedPassword }: ILoginDataLocal) {
   await verifyPassword(hashedPassword, client.hashedPassword as string);
 
   // 토큰 넣음
-  const { accessToken, refreshToken } = generateClientTokens({
-    id: client.id,
+  const accessToken = generateAccessToken({
+    userId: client.id,
     email: client.email,
-    userType: "client",
+    name: client.name,
+    userType: client.userType,
+  });
+
+  const refreshToken = generateRefreshToken({
+    userId: client.id,
+    email: client.email,
+    name: client.name,
+    userType: client.userType,
   });
 
   // 비밀번호와 전화번호 빼고 반환

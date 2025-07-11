@@ -1,11 +1,15 @@
 import { Request, Response, NextFunction } from "express";
 import authClientService from "../services/authClient.service";
-import { ILoginRequest, ISignUpRequest } from "../types";
-import { loginClientSchema, signUpClientSchema } from "../dtos/auth/authClient.dto";
+import {
+  loginClientSchema,
+  signUpClientSchema,
+  TLoginData,
+  TSignUpData,
+} from "../dtos/auth/authClient.dto";
 
 // ✅ 일반 회원가입
 export async function clientSignUpController(
-  req: Request<{}, {}, ISignUpRequest>,
+  req: Request<{}, {}, TSignUpData>,
   res: Response,
   next: NextFunction,
 ) {
@@ -29,7 +33,7 @@ export async function clientSignUpController(
 
 // ✅ 일반 로그인
 export async function clientLoginController(
-  req: Request<{}, {}, ILoginRequest>,
+  req: Request<{}, {}, TLoginData>,
   res: Response,
   next: NextFunction,
 ) {
