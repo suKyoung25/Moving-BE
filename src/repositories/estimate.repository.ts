@@ -1,6 +1,7 @@
 import { Client } from "@prisma/client";
 import prisma from "../configs/prisma.config";
 import { NotFoundError, ServerError } from "../types/errors";
+import { CreateRequestDto } from "../dtos/estimate.dto";
 
 // 작성 가능한 리뷰 목록
 async function findWritableEstimatesByClientId(clientId: Client["id"]) {
@@ -37,6 +38,14 @@ async function findWritableEstimatesByClientId(clientId: Client["id"]) {
   }
 }
 
+// 견적 요청 생성
+async function createRequest(request: CreateRequestDto, clientId: string) {
+  return await prisma.estimate.create({
+    data: { ...request, client: { connect: { id: clientId } } },
+  });
+}
+
 export default {
   findWritableEstimatesByClientId,
+  createRequest,
 };
