@@ -7,6 +7,6 @@ const estimateRouter = Router();
 estimateRouter.get("/writable/me", estimateController.getWritableEstimates);
 
 // 견적 요청 생성
-estimateRouter.post("/requests", estimateController.createEstimateRequest);
+// estimateRouter.post("/requests", estimateController.createEstimateRequest);
 
 export default estimateRouter;

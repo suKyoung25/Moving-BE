@@ -16,7 +16,7 @@ export const signUpClientSchema = z
 
     name: z.string().max(4, ErrorMessage.NAME_LENGTH_LIMIT).nonempty(ErrorMessage.NO_NAME),
 
-    phoneNumber: z
+    phone: z
       .string()
       .regex(/^\d{9,11}$/, ErrorMessage.PHONE_REGEX)
       .nonempty(ErrorMessage.NO_PHONE),

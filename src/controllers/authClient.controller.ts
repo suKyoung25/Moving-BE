@@ -16,7 +16,7 @@ async function signUp(req: Request<{}, {}, TSignUpData>, res: Response, next: Ne
     const signUpData = {
       name: parsedData.name,
       email: parsedData.email,
-      phone: parsedData.phoneNumber,
+      phone: parsedData.phone,
       hashedPassword: parsedData.password,
     };
 
