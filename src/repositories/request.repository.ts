@@ -4,7 +4,7 @@ import { CreateRequestDto } from "../dtos/request.dto";
 
 type GetFilteredRequestsInput = {
   moveType?: MoveType[];
-  serviceArea?: string;
+  serviceAreaList?: string[];
   isDesignated?: boolean;
   keyword?: string;
   sort?: "moveDate" | "requestedAt";
@@ -30,7 +30,7 @@ async function createEstimateRequest(request: CreateRequestDto, clientId: string
 // 받은 요청 조회 (기사님)
 async function getFilteredRequests({
   moveType,
-  serviceArea,
+  serviceAreaList,
   isDesignated,
   keyword,
   sort,
@@ -40,14 +40,13 @@ async function getFilteredRequests({
 }: GetFilteredRequestsInput) {
   const where: Prisma.RequestWhereInput = {
     ...(moveType && { moveType: { in: moveType } }),
-    ...(serviceArea && {
-      OR: [
-        {
-          fromAddress: { contains: serviceArea },
-        },
-        { toAddress: { contains: serviceArea } },
-      ],
-    }),
+    ...(serviceAreaList &&
+      serviceAreaList.length > 0 && {
+        OR: serviceAreaList.flatMap((area) => [
+          { fromAddress: { contains: area } },
+          { toAddress: { contains: area } },
+        ]),
+      }),
     ...(isDesignated === true && {
       designatedRequest: {
         some: {
@@ -67,9 +66,12 @@ async function getFilteredRequests({
     }),
   };
 
-  const orderBy: Prisma.RequestOrderByWithRelationInput = {
-    requestedAt: sort === "requestedAt" ? "desc" : "asc",
-  };
+  const orderBy: Prisma.RequestOrderByWithRelationInput =
+    sort === "moveDate"
+      ? { moveDate: "asc" } // 이사일 빠른순
+      : sort === "requestedAt"
+      ? { requestedAt: "asc" } // 요청일 빠른순
+      : { requestedAt: "asc" }; // 기본 정렬: 요청일 빠른순
 
   const args = {
     where,
