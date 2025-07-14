@@ -3,6 +3,7 @@ import { ExtractJwt, Strategy as JwtStrategy } from "passport-jwt";
 import prisma from "../../configs/prisma.config";
 import dotenv from "dotenv";
 import { RequestHandler } from "express";
+import { filterSensitiveUserData } from "../../utils/auth.util";
 
 dotenv.config();
 
@@ -25,7 +26,8 @@ passport.use(
         });
 
         if (user) {
-          return done(null, { ...user, userType: "client" }); // client
+          const userData = filterSensitiveUserData(user);
+          return done(null, { ...userData, userType: "client" }); // client
         }
       } else if (jwt_payload.userType === "mover") {
         user = await prisma.mover.findUnique({
@@ -33,7 +35,8 @@ passport.use(
         });
 
         if (user) {
-          return done(null, { ...user, userType: "mover" }); // mover
+          const userData = filterSensitiveUserData(user);
+          return done(null, { ...userData, userType: "mover" }); // mover
         }
       }
 
