@@ -1,5 +1,9 @@
+@token={{$dotenv TOKEN}}
+
 ### 기사님 프로필 등록
 POST http://localhost:3000/profile/movers
+Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
      "image": , 
