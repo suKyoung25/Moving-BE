@@ -1,32 +1,41 @@
 import { Client } from "@prisma/client";
 import prisma from "../configs/prisma.config";
-import { ISignUpDataLocal } from "../types";
+import { SignUpDataLocal } from "../types";
 import { Prisma } from "@prisma/client";
 import { ConflictError } from "../types/errors";
 
-async function findById(id: Client["id"]): Promise<Client | null> {
-  return prisma.client.findUnique({
+async function findById(id: Client["id"]) {
+  return await prisma.client.findUnique({
     where: { id },
   });
 }
 
 async function findByEmail(email: Client["email"]) {
-  const client = await prisma.client.findUnique({
-    where: { email },
-  });
+  console.log("findByEmail start");
+  try {
+    const client = await prisma.client.findUnique({
+      where: { email },
+    });
+    console.log("findByEmail result:", client);
 
-  if (!client) return null;
-  return { ...client, userType: "client" };
+    if (!client) return null;
+    return { ...client, userType: "client" };
+  } catch (error) {
+    console.error("findByEmail error:", error);
+    throw error;
+  }
 }
 
-async function findByPhone(phone: Client["phone"]): Promise<Client | null> {
-  return prisma.client.findUnique({
+async function findByPhone(phone: Client["phone"]) {
+  console.log("findByPhone start:", phone);
+
+  return await prisma.client.findUnique({
     where: { phone },
   });
 }
 
 // ✅ 회원가입 - Local
-async function create(user: ISignUpDataLocal) {
+async function create(user: SignUpDataLocal) {
   try {
     const newClient = await prisma.client.create({
       data: {
@@ -36,8 +45,9 @@ async function create(user: ISignUpDataLocal) {
         hashedPassword: user.hashedPassword!,
       },
     });
+    console.log(newClient);
 
-    return { ...newClient, userType: "client" }; // userType: 헤더에서 씀
+    return { ...newClient, userType: "client", profileCompleted: false }; // userType: 헤더에서 씀
   } catch (error) {
     console.error("회원가입 시 오류 발생:", error);
 

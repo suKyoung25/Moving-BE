@@ -1,24 +1,34 @@
 import { ErrorMessage } from "../constants/ErrorMessage";
 import authClientRepository from "../repositories/authClient.repository";
-import { ILoginDataLocal, ISignUpDataLocal } from "../types";
-import { NotFoundError } from "../types/errors";
+import { LoginDataLocal, SignUpDataLocal } from "../types";
+import { ConflictError, NotFoundError } from "../types/errors";
 import { filterSensitiveUserData, hashPassword, verifyPassword } from "../utils/auth.util";
-import { validateSignUpData } from "../utils/auth.util";
 import { generateAccessToken, generateRefreshToken } from "../utils/token.util";
 
 // ✅ 회원가입 - Local
 async function create(
-  user: ISignUpDataLocal,
-): Promise<Omit<ISignUpDataLocal, "hashedPassword" | "phone">> {
+  user: SignUpDataLocal,
+): Promise<Omit<SignUpDataLocal, "hashedPassword" | "phone">> {
+  // 이미 사용한 정보 확인
+  const existingEmail = await authClientRepository.findByEmail(user.email);
+  const existingPhone = await authClientRepository.findByPhone(user.phone);
+
+  if (existingEmail) {
+    throw new ConflictError(ErrorMessage.ALREADY_EXIST_EMAIL);
+  }
+
+  if (existingPhone) {
+    throw new ConflictError(ErrorMessage.ALREADY_EXIST_PHONE);
+  }
+
   // 비밀번호 해시
   const hashedPassword = await hashPassword(user.hashedPassword);
-
-  await validateSignUpData({ ...user, hashedPassword });
 
   const newClient = await authClientRepository.create({
     ...user,
     hashedPassword,
   });
+  console.log(newClient);
 
   // 비밀번호와 전화번호 빼고 반환
   const clientInfo = filterSensitiveUserData(newClient);
@@ -26,7 +36,7 @@ async function create(
 }
 
 // ✅ 로그인 - Local
-async function loginWithLocal({ email, hashedPassword }: ILoginDataLocal) {
+async function loginWithLocal({ email, hashedPassword }: LoginDataLocal) {
   const client = await authClientRepository.findByEmail(email);
 
   if (!client) {
