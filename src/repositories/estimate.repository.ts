@@ -26,9 +26,6 @@ async function findWritableEstimatesByClientId(
           request: {
             select: {
               moveType: true,
-
-              // isDesignated: true,
-
               moveDate: true,
               designatedRequest: {
                 select: { moverId: true },
@@ -56,20 +53,20 @@ async function findWritableEstimatesByClientId(
       }),
     ]);
 
-    // const result = estimates.map((e) => ({
-    //   estimateId: e.id,
-    //   price: e.price,
-    //   moveType: e.request.moveType,
-    //   moveDate: e.request.moveDate,
-    //   isDesignatedEstimate:
-    //     Array.isArray(e.request.designatedRequest) &&
-    //     e.request.designatedRequest.some((dr) => dr.moverId === e.moverId),
-    //   moverProfileImage: e.mover.profileImage,
-    //   moverNickName: e.mover.nickName,
-    // }));
+    const result = estimates.map((e) => ({
+      estimateId: e.id,
+      price: e.price,
+      moveType: e.request.moveType,
+      moveDate: e.request.moveDate,
+      isDesignatedEstimate:
+        Array.isArray(e.request.designatedRequest) &&
+        e.request.designatedRequest.some((dr) => dr.moverId === e.moverId),
+      moverProfileImage: e.mover.profileImage,
+      moverNickName: e.mover.nickName,
+    }));
 
     return {
-      // estimates: result,
+      estimates: result,
       total,
       pagination: {
         page,
@@ -151,9 +148,7 @@ async function isFavoritMover(clientId: Client["id"], moverId: Mover["id"]) {
 
 export default {
   findWritableEstimatesByClientId,
-
   findPendingEstimatesByClientId,
   isFavoritMover,
-
   getEstimateMoverId,
 };
