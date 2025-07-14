@@ -7,15 +7,16 @@
  * - req.user: Passport 전략에서 주입하는 Prisma User 객체
  */
 
-import { User as PrismaUser } from "@prisma/client";
+import { Client, Mover } from "@prisma/client";
 
 declare global {
   namespace Express {
     interface Request {
       auth?: {
         userId: string;
+        userType: "client" | "mover";
       };
-      user?: PrismaUser;
+      user?: Client | Mover;
     }
   }
 }

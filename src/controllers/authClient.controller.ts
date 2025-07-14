@@ -1,14 +1,14 @@
 import { Request, Response, NextFunction } from "express";
 import authClientService from "../services/authClient.service";
-import { ILoginRequest, ISignUpRequest } from "../types";
-import { loginClientSchema, signUpClientSchema } from "../dtos/auth/authClient.dto";
+import {
+  loginClientSchema,
+  signUpClientSchema,
+  TLoginData,
+  TSignUpData,
+} from "../dtos/auth/authClient.dto";
 
 // ✅ 일반 회원가입
-export async function clientSignUpController(
-  req: Request<{}, {}, ISignUpRequest>,
-  res: Response,
-  next: NextFunction,
-) {
+async function signUp(req: Request<{}, {}, TSignUpData>, res: Response, next: NextFunction) {
   try {
     // Zod 스키마로 데이터 검증 및 변환
     const parsedData = signUpClientSchema.parse(req.body);
@@ -16,23 +16,19 @@ export async function clientSignUpController(
     const signUpData = {
       name: parsedData.name,
       email: parsedData.email,
-      phone: parsedData.phoneNumber,
+      phone: parsedData.phone,
       hashedPassword: parsedData.password,
     };
 
     const client = await authClientService.create(signUpData);
-    res.status(201).json(client);
+    res.status(201).json({ message: "Client 일반 회원가입 성공", data: client });
   } catch (error) {
     next(error);
   }
 }
 
 // ✅ 일반 로그인
-export async function clientLoginController(
-  req: Request<{}, {}, ILoginRequest>,
-  res: Response,
-  next: NextFunction,
-) {
+async function login(req: Request<{}, {}, TLoginData>, res: Response, next: NextFunction) {
   try {
     const parsedData = loginClientSchema.parse(req.body);
 
@@ -42,8 +38,12 @@ export async function clientLoginController(
     };
 
     const client = await authClientService.loginWithLocal(loginData);
-    res.status(200).json(client);
+    res.status(200).json({ message: "Client 일반 로그인 성공", data: client });
   } catch (error) {
     next(error);
   }
 }
+
+const authClientController = { signUp, login };
+
+export default authClientController;

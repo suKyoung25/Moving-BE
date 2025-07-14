@@ -6,8 +6,12 @@ import { CreateReviewDto, ReviewIdParamsDto, UpdateReviewDto } from "../dtos/rev
 async function getMyReviews(req: Request, res: Response, next: NextFunction) {
   try {
     const clientId = req.auth!.userId;
-    const reviews = await reviewService.getMyReviews(clientId);
-    res.status(200).json({ message: "리뷰 목록 조회 성공", data: reviews });
+
+    const page = Number(req.query.page) || 1;
+    const pageSize = Number(req.query.pageSize) || 6;
+
+    const result = await reviewService.getMyReviews(clientId, page, pageSize);
+    res.status(200).json({ message: "리뷰 목록 조회 성공", data: result });
   } catch (error) {
     next(error);
   }

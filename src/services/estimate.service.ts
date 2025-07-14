@@ -4,45 +4,54 @@ import { BadRequestError } from "../types/errors";
 import { CreateRequestDto } from "../dtos/estimate.dto";
 
 // 작성 가능한 리뷰 목록
-async function getWritableEstimates(clientId: Client["id"]) {
+async function getWritableEstimates(clientId: Client["id"], page: number, pageSize: number) {
   if (!clientId) {
     throw new BadRequestError("clientId가 필요합니다.");
   }
-  return estimateRepository.findWritableEstimatesByClientId(clientId);
-}
-
-// 견적 요청 생성
-async function createEstimateRequest({
-  request,
-  clientId,
-}: {
-  request: CreateRequestDto;
-  clientId: string;
-}) {
-  return await estimateRepository.createRequest(request, clientId);
+  const skip = (page - 1) * pageSize;
+  return estimateRepository.findWritableEstimatesByClientId(clientId, skip, pageSize);
 }
 
 // 데기 중인 견적서 조회
-async function getPendingEstimate(clientId: Client["id"]) {
-  const estimates = await estimateRepository.getPendingEstimatesByClientId(clientId);
+async function getPendingEstimates(clientId: Client["id"]) {
+  const requests = await estimateRepository.findPendingEstimatesByClientId(clientId);
 
-  const enrichedEstimates = await Promise.all(
-    estimates.map(async (estimate) => {
-      const isFavorite = estimate.moverId
-        ? await estimateRepository.isFavoritMover(clientId, estimate.moverId)
-        : false;
+  return Promise.all(
+    requests.map(async (req) => {
+      const designatedMoverIds = req.designatedRequest.map((d) => d.moverId);
+
+      const estimates = await Promise.all(
+        req.estimate.map(async (e) => {
+          const isDesignated = designatedMoverIds.includes(e.moverId);
+          const isFavorited = await estimateRepository.isFavoritMover(clientId, e.moverId);
+
+          return {
+            estimateId: e.id,
+            moverId: e.mover.id,
+            moverName: e.mover.name,
+            moverNickName: e.mover.nickName,
+            profileImage: e.mover.profileImage,
+            comment: e.comment,
+            price: e.price,
+            created: e.createdAt,
+            isDesignated,
+            isFavorited,
+          };
+        }),
+      );
 
       return {
-        ...estimate,
-        isFavorite,
+        requestId: req.id,
+        moveDate: req.moveDate,
+        fromAddress: req.fromAddress,
+        toAddress: req.toAddress,
+        estimates,
       };
     }),
   );
-  return enrichedEstimates;
 }
 
 export default {
   getWritableEstimates,
-  createEstimateRequest,
-  getPendingEstimate,
+  getPendingEstimates,
 };

@@ -4,71 +4,94 @@ import { NotFoundError, ServerError } from "../types/errors";
 import { CreateRequestDto } from "../dtos/estimate.dto";
 
 // 작성 가능한 리뷰 목록
-async function findWritableEstimatesByClientId(clientId: Client["id"]) {
+async function findWritableEstimatesByClientId(clientId: Client["id"], skip: number, take: number) {
   try {
-    const estimate = await prisma.estimate.findMany({
-      where: {
-        clientId,
-        status: "DONE",
-        review: null,
-      },
-      select: {
-        id: true,
-        price: true,
-        moveType: true,
-        isDesignated: true,
-        moveDate: true,
-        mover: {
-          select: {
-            profileImage: true,
-            nickName: true,
+    const [estimates, total] = await Promise.all([
+      prisma.estimate.findMany({
+        where: {
+          clientId,
+          request: { moveDate: { lte: new Date() } },
+          review: null,
+        },
+        select: {
+          id: true,
+          price: true,
+          request: {
+            select: {
+              moveType: true,
+              // isDesignated: true,
+              moveDate: true,
+            },
+          },
+          mover: {
+            select: {
+              profileImage: true,
+              nickName: true,
+            },
           },
         },
-      },
-      orderBy: {
-        moveDate: "desc",
-      },
-    });
-    if (estimate.length === 0) {
+        orderBy: { createdAt: "desc" },
+        skip,
+        take,
+      }),
+      prisma.estimate.count({
+        where: {
+          clientId,
+          request: { moveDate: { lte: new Date() } },
+          review: null,
+        },
+      }),
+    ]);
+
+    if (estimates.length === 0) {
       throw new NotFoundError("작성 가능한 리뷰가 없습니다.");
     }
-    return estimate;
+
+    return {
+      estimates,
+      total,
+      pagination: {
+        page: Math.floor(skip / take) + 1,
+        pageSize: take,
+        totalPages: Math.ceil(total / take),
+      },
+    };
   } catch (error) {
     throw new ServerError("작성 가능한 리뷰 조회 중 서버 오류가 발생했습니다.", error);
   }
 }
 
-// 견적 요청 생성
-async function createRequest(request: CreateRequestDto, clientId: string) {
-  return await prisma.estimate.create({
-    data: { ...request, client: { connect: { id: clientId } } },
-  });
-}
-
 // 대기 중인 견적서 조회
-async function getPendingEstimatesByClientId(clientId: Client["id"]) {
+async function findPendingEstimatesByClientId(clientId: Client["id"]) {
   try {
-    const estimate = await prisma.estimate.findMany({
+    const estimates = prisma.request.findMany({
       where: {
         clientId,
-        isClientConfirmed: false,
-      },
-      include: {
-        mover: {
-          select: {
-            id: true,
-            name: true,
-            nickName: true,
-            profileImage: true,
+        isPending: true,
+        estimate: {
+          some: {
+            moverStatus: "CONFIRMED",
+            isClientConfirmed: false,
           },
         },
       },
-      orderBy: {
-        requestedAt: "desc",
+      include: {
+        estimate: {
+          where: {
+            moverStatus: "CONFIRMED",
+            isClientConfirmed: false,
+          },
+          include: {
+            mover: true,
+          },
+        },
+        designatedRequest: true,
       },
     });
 
-    return estimate;
+    const result = await estimates;
+
+    return result;
   } catch (e) {
     throw new ServerError("대기 중인 견적서 조회 중 서버 오류가 발생했습니다", e);
   }
@@ -94,7 +117,6 @@ async function isFavoritMover(clientId: Client["id"], moverId: Mover["id"]) {
 
 export default {
   findWritableEstimatesByClientId,
-  getPendingEstimatesByClientId,
+  findPendingEstimatesByClientId,
   isFavoritMover,
-  createRequest,
 };

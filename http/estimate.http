@@ -1,4 +1,4 @@
-@token="your_token_here"
+@token="your token"
 
 ### 견적 요청
 POST http://localhost:4000/estimates/requests
@@ -11,3 +11,8 @@ Authorization: Bearer {{token}}
   "fromAddress": "서울특별시 강남구 테헤란로 123",
   "toAddress": "서울특별시 서초구 강남대로 456"
 }
+
+### 대기 중인 견적 조회
+GET http://localhost:4000/estimates/estimates/pending
+Content-Type: application/json
+Authorization: Bearer {{token}}
