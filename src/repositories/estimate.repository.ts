@@ -1,6 +1,7 @@
 import { Client, Mover } from "@prisma/client";
 import prisma from "../configs/prisma.config";
 import { NotFoundError, ServerError } from "../types/errors";
+import { CreateRequestDto } from "../dtos/estimate.dto";
 
 // 작성 가능한 리뷰 목록
 async function findWritableEstimatesByClientId(clientId: Client["id"]) {
@@ -37,12 +38,20 @@ async function findWritableEstimatesByClientId(clientId: Client["id"]) {
   }
 }
 
+// 견적 요청 생성
+async function createRequest(request: CreateRequestDto, clientId: string) {
+  return await prisma.estimate.create({
+    data: { ...request, client: { connect: { id: clientId } } },
+  });
+}
+
+// 대기 중인 견적서 조회
 async function getPendingEstimatesByClientId(clientId: Client["id"]) {
   try {
     const estimate = await prisma.estimate.findMany({
       where: {
         clientId,
-        status: "PENDING",
+        isClientConfirmed: false,
       },
       include: {
         mover: {
@@ -65,6 +74,7 @@ async function getPendingEstimatesByClientId(clientId: Client["id"]) {
   }
 }
 
+// 찜한 기사님 조회
 async function isFavoritMover(clientId: Client["id"], moverId: Mover["id"]) {
   try {
     const favoirte = await prisma.favorite.findUnique({
@@ -86,4 +96,5 @@ export default {
   findWritableEstimatesByClientId,
   getPendingEstimatesByClientId,
   isFavoritMover,
+  createRequest,
 };

@@ -12,6 +12,7 @@ import { specs, swaggerUi } from "./swagger";
 import profileRouter from "./routers/profile.router";
 import reviewRouter from "./routers/review.router";
 import estimateRouter from "./routers/estimate.router";
+import { verifiedAccessToken } from "./middlewares/auth.middleware";
 
 const app = express();
 const PORT = process.env.PORT;
@@ -21,10 +22,10 @@ app.set("trust proxy", 1);
 
 // 미들웨어
 app.use(
-    cors({
-        origin: process.env.FRONTEND_URL,
-        credentials: true,
-    }),
+  cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+  }),
 );
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -34,7 +35,7 @@ app.use(passport.initialize());
 // 라우터 등록
 app.use("/", infoRouter);
 app.use("/auth", authRouter);
-app.use("/profile", profileRouter);
+app.use("/profile", verifiedAccessToken, profileRouter);
 app.use("/reviews", reviewRouter);
 app.use("/estimates", estimateRouter);
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(specs));
@@ -43,12 +44,12 @@ app.use("/docs", swaggerUi.serve, swaggerUi.setup(specs));
 app.use(errorHandler);
 
 app.listen(PORT, () => {
-    figlet("Team4 Moving", (err, data) => {
-        if (err) {
-            console.log("Something went wrong with figlet");
-            console.dir(err);
-            return;
-        }
-        console.log(data || `Server started at port ${PORT}`);
-    });
+  figlet("Team4 Moving", (err, data) => {
+    if (err) {
+      console.log("Something went wrong with figlet");
+      console.dir(err);
+      return;
+    }
+    console.log(data || `Server started at port ${PORT}`);
+  });
 });
