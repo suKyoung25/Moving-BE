@@ -1,8 +1,9 @@
 import { ErrorMessage } from "../constants/ErrorMessage";
 import authClientRepository from "../repositories/authClient.repository";
 import { ILoginDataLocal, ISignUpDataLocal } from "../types";
-import { BadRequestError } from "../types/errors";
+import { NotFoundError } from "../types/errors";
 import { filterSensitiveUserData, hashPassword, verifyPassword } from "../utils/auth.util";
+import { validateSignUpData } from "../utils/auth.util";
 import { generateAccessToken, generateRefreshToken } from "../utils/token.util";
 
 // ✅ 회원가입 - Local
@@ -11,6 +12,9 @@ async function create(
 ): Promise<Omit<ISignUpDataLocal, "hashedPassword" | "phone">> {
   // 비밀번호 해시
   const hashedPassword = await hashPassword(user.hashedPassword);
+
+  await validateSignUpData({ ...user, hashedPassword });
+
   const newClient = await authClientRepository.create({
     ...user,
     hashedPassword,
@@ -26,7 +30,7 @@ async function loginWithLocal({ email, hashedPassword }: ILoginDataLocal) {
   const client = await authClientRepository.findByEmail(email);
 
   if (!client) {
-    throw new BadRequestError(ErrorMessage.USER_NOT_FOUND);
+    throw new NotFoundError(ErrorMessage.USER_NOT_FOUND);
   }
 
   // 비밀번호 확인 유효성 검사

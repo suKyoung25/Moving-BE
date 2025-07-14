@@ -31,8 +31,8 @@ Content-Type: application/json
 
 {
      "name": "일반인",
-     "email": "test4@test.com", 
-     "phoneNumber": "03112345678", 
+     "email": "test5@test.com", 
+     "phone": "03112345679", 
      "password": "asdf1234",
      "passwordConfirmation": "asdf1234"
 }
@@ -42,8 +42,8 @@ POST http://localhost:4000/auth/signin/client
 Content-Type: application/json
 
 {
-     "email": "test4@test.com", 
-     "password": "asdf1234"
+     "email": "client1@test.com", 
+     "password": "password123"
 }
 
 ### RefreshToken
@@ -54,4 +54,4 @@ Cookie: refreshToken=값
 ### 사용자 불러오기
 GET http://localhost:4000/auth
 Content-Type: application/json
-Authorization: Bearer 값
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MmRkNTY2OC02Nzg3LTQ1MTktYjliMS0zN2Y4OGMyY2QxN2UiLCJlbWFpbCI6InRlc3Q0QHRlc3QuY29tIiwibmFtZSI6IuydvOuwmOyduCIsInVzZXJUeXBlIjoiY2xpZW50IiwiaWF0IjoxNzUyMjE0NjM5LCJleHAiOjE3NTIyMTgyMzl9.Tvtjd5YECuv3JGN-YfAXvHEYApqC6LRf9MtpjtSB8SQ
