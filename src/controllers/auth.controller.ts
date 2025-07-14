@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import { ConflictError, UnauthorizedError } from "../types/errors";
 import { ErrorMessage } from "../constants/ErrorMessage";
 import { generateAccessToken } from "../utils/token.util";
+import { filterSensitiveUserData } from "../utils/auth.util";
 
 // ✅ refreshToken Api
 async function setRefreshToken(req: Request, res: Response, next: NextFunction) {
