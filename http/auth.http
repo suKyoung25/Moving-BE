@@ -1,3 +1,42 @@
 @token=
 
-### 회원가입
+### 기사님 회원가입
+POST http://localhost:4000/auth/signup/mover
+Content-Type: application/json
+
+{
+    "name": "tester3",
+     "email": "test3@test.com", 
+     "phone": "01033333333", 
+     "password": "3333"
+}
+
+###기사님 로그인
+POST http://localhost:4000/auth/signin/mover
+Content-Type: application/json
+
+{
+     "email": "test2@test.com", 
+     "password": "2222"
+}
+
+### 일반 회원 회원가입(local)
+POST http://localhost:3000/auth/signup/client
+Content-Type: application/json
+
+{
+     "name": "일반인",
+     "email": "test4@test.com", 
+     "phoneNumber": "03112345678", 
+     "password": "asdf1234",
+     "passwordConfirmation": "asdf1234"
+}
+
+### 일반 회원 로그인(local)
+POST http://localhost:3000/auth/signin/client
+Content-Type: application/json
+
+{
+     "email": "test4@test.com", 
+     "password": "asdf1234"
+}

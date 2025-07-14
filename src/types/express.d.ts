@@ -11,7 +11,9 @@ import { Client as PrismaClientUser } from '@prisma/client';
 declare global {
   namespace Express {
     interface Request {
+
       user?: PrismaClientUser; // Client로 명확히 지정
+
     }
   }
 }
