@@ -9,6 +9,7 @@ import errorHandler from "./middlewares/errorHandler";
 import authRouter from "./routers/auth.router";
 import infoRouter from "./routers/info.router";
 import { specs, swaggerUi } from "./swagger";
+import moverRouter from "./routers/mover.router";
 import profileRouter from "./routers/profile.router";
 import reviewRouter from "./routers/review.router";
 import estimateRouter from "./routers/estimate.router";
@@ -37,10 +38,12 @@ app.use(passport.initialize());
 app.use("/", infoRouter);
 app.use("/auth", authRouter);
 app.use("/profile", verifyAccessToken, profileRouter);
+app.use("/movers", moverRouter)
 app.use("/reviews", verifyAccessToken, reviewRouter);
 app.use("/estimates", verifyAccessToken, estimateRouter);
 app.use("/requests", requestRouter);
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(specs));
+
 
 // 에러 핸들러
 app.use(errorHandler);
