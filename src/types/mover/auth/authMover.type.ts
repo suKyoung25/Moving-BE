@@ -1,3 +1,5 @@
+import { MoveType } from "@prisma/client";
+
 //기사님 회원가입할 때 필요한 값 (컨트롤러, 서비스 단)
 export type createMoverInput = {
   name: string;
@@ -23,12 +25,13 @@ export type getMoverInput = {
 
 //기사님 프로필 등록할 때 필요한 값 (레포지토리 단)
 export type createMoverProfile = {
+  userId: string;
   email: string;
   image: string;
   nickName: string;
-  career: string;
+  career: number;
   introduction: string;
   description: string;
-  serviceType: string[];
-  region: string[];
+  serviceType: MoveType[];
+  // region: string[];
 };

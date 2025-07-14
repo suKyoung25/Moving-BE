@@ -1,9 +1,9 @@
-@token={{$dotenv TOKEN}}
+# @token={{$dotenv TOKEN}}
 
 ### 기사님 프로필 등록
-POST http://localhost:3000/profile/movers
+POST http://localhost:3000/profile/1/mover
 Content-Type: application/json
-Authorization: Bearer {{token}}
+Authorization: Bearer 
 
 {
      "image": , 
