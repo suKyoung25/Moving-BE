@@ -1,15 +1,14 @@
 import { Client } from "@prisma/client";
 import estimateRepository from "../repositories/estimate.repository";
 import { BadRequestError } from "../types/errors";
-import { CreateRequestDto } from "../dtos/estimate.dto";
 
 // 작성 가능한 리뷰 목록
-async function getWritableEstimates(clientId: Client["id"], page: number, pageSize: number) {
+async function getWritableEstimates(clientId: Client["id"], page: number, limit: number) {
   if (!clientId) {
     throw new BadRequestError("clientId가 필요합니다.");
   }
-  const skip = (page - 1) * pageSize;
-  return estimateRepository.findWritableEstimatesByClientId(clientId, skip, pageSize);
+  const offset = (page - 1) * limit;
+  return estimateRepository.findWritableEstimatesByClientId(clientId, offset, limit, page);
 }
 
 export default {
