@@ -6,18 +6,31 @@
  *
  */
 
-import { moverSignin } from "../controllers/authMover.controller";
-import profileRespository from "../repositories/profileMover.respository";
-import { CreateMoverProfile } from "../types";
+import profileMoverRespository from "../repositories/profileMover.respository";
+import { MoverProfile } from "../types";
 import { serviceTypeMap } from "../utils/dataMapper.util";
 
-//기사님 프로필 생성/수정
-async function createMoverProfile(user: CreateMoverProfile) {
+//기사님 프로필 생성
+async function createMoverProfile(user: MoverProfile) {
   //serviceType 데이터 맞추기
   const mappedServiceType = user.serviceType.map((label) => serviceTypeMap[label]);
-  return await profileRespository.saveMoverProfile({ ...user, serviceType: mappedServiceType });
+  return await profileMoverRespository.saveMoverProfile({
+    ...user,
+    serviceType: mappedServiceType,
+  });
+}
+
+//기사님 프로필 수정
+async function patchMoverProfile(user: MoverProfile) {
+  //serviceType 데이터 맞추기
+  const mappedServiceType = user.serviceType.map((label) => serviceTypeMap[label]);
+  return await profileMoverRespository.patchMoverProfile({
+    ...user,
+    serviceType: mappedServiceType,
+  });
 }
 
 export default {
   createMoverProfile,
+  patchMoverProfile,
 };

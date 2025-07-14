@@ -9,6 +9,7 @@ export const ErrorMessage = {
   // Not Match
   PASSWORD_NOT_MATCH: "비밀번호가 일치하지 않습니다.",
   PASSWORD_CONFIRMATION_NOT_MATCH: "비밀번호 확인 결과가 일치하지 않습니다.",
+  PROFILE_NOT_MATCH: "등록된 프로필이 없습니다.",
 
   // Already Exist
   ALREADY_EXIST_EMAIL: "이미 사용 중인 이메일입니다.",

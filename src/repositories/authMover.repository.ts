@@ -25,7 +25,7 @@ async function saveMover(user: CreateMoverInputwithHash) {
     },
   });
 
-  return { ...createdMover, userType: "mover" }; //userType은 FE의 header에서 필요
+  return { ...createdMover, userType: "mover", profileCompleted: false }; //userType은 FE의 header에서 필요
 }
 
 //이메일로 기사님 조회
@@ -38,7 +38,7 @@ async function findMoverByEmail(email: Mover["email"]) {
 
   if (!mover) return null;
 
-  return { ...mover, userType: "mover" }; //userType은 FE의 header에서 필요
+  return { ...mover, userType: "mover", profileCompleted: false }; //userType은 FE의 header에서 필요
 }
 
 //전화번호로 기사님 조회

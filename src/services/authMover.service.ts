@@ -47,12 +47,11 @@ async function createMover(user: CreateMoverInput) {
   return {
     accessToken,
     refreshToken,
-    user: {
-      userId: createdMover.id,
-      email: createdMover.email,
-      nickName: createdMover.nickName,
-      userType: createdMover.userType,
-    },
+    userId: createdMover.id,
+    email: createdMover.email,
+    nickName: createdMover.nickName,
+    userType: createdMover.userType,
+    profileCompleted: createdMover.profileCompleted,
   };
 }
 
@@ -85,14 +84,13 @@ async function getMoverByEmail(user: GetMoverInput) {
   });
 
   return {
-    user: {
-      userId: mover.id,
-      email: mover.email,
-      nickName: mover.nickName,
-      userType: mover.userType,
-    },
     accessToken,
     refreshToken,
+    userId: mover.id,
+    email: mover.email,
+    nickName: mover.nickName,
+    userType: mover.userType,
+    profileCompleted: mover.profileCompleted,
   };
 }
 

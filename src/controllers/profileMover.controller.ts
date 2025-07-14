@@ -6,10 +6,11 @@
 
 import { NextFunction, Request, Response } from "express";
 import profileMoverService from "../services/profileMover.service";
-import { MoverProfile } from "../dtos/profile.dto";
+import { MoverProfileDto } from "../dtos/profile.dto";
 
+//기사님 프로필 생성 (=기사님 모델 정보 추가)
 async function moverCreateProfile(
-  req: Request<{}, {}, MoverProfile>,
+  req: Request<{}, {}, MoverProfileDto>,
   res: Response,
   next: NextFunction,
 ) {
@@ -28,27 +29,40 @@ async function moverCreateProfile(
       serviceType,
       serviceArea,
     });
-    res.status(201).json({ user });
+    res.status(201).json(user);
   } catch (error) {
     next(error);
   }
 }
 
-// async function moverPatchProfile(
-//   req: Request<{}, {}, { email: string; password: string }>,
-//   res: Response,
-//   next: NextFunction,
-// ) {
-//   const { userId } = req.auth;
-//   const { image, name, career, introduction, description, serviceType } = req.body;
-//   try {
-//     const user = await profileService.pathchMover(userId, email, password);
-//     res.status(201).json({ user });
-//   } catch (error) {
-//     next(error);
-//   }
-// }
+//기사님 프로필 수정(=기사님 모델 정보 수정)
+async function moverPatchProfile(
+  req: Request<{}, {}, MoverProfileDto>,
+  res: Response,
+  next: NextFunction,
+) {
+  const { userId } = req.auth!;
+  const { email, image, nickName, career, introduction, description, serviceType, serviceArea } =
+    req.body;
+  try {
+    const user = await profileMoverService.patchMoverProfile({
+      userId,
+      email,
+      image,
+      nickName,
+      career,
+      introduction,
+      description,
+      serviceType,
+      serviceArea,
+    });
+    res.status(200).json(user);
+  } catch (error) {
+    next(error);
+  }
+}
 
 export default {
   moverCreateProfile,
+  moverPatchProfile,
 };

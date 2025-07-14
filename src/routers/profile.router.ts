@@ -11,8 +11,8 @@ const profileRouter = express.Router();
 //기사님 프로필 등록
 profileRouter.post("/mover", profileMoverController.moverCreateProfile);
 
-// //기사님 프로필 수정
-// profileRouter.patch("/:profileId/mover", profileMoverController.moverPatchProfile);
+//기사님 프로필 수정
+profileRouter.patch("/mover", profileMoverController.moverPatchProfile);
 
 //todo:일반 유저 프로필 등록과 수정
 
