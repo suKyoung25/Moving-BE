@@ -7,6 +7,8 @@
 import { NextFunction, Request, Response } from "express";
 import profileMoverService from "../services/profileMover.service";
 import { MoverProfileDto } from "../dtos/profile.dto";
+import { filterSensitiveUserData } from "../utils/auth.util";
+import { create } from "domain";
 
 //기사님 프로필 생성 (=기사님 모델 정보 추가)
 async function moverCreateProfile(
@@ -18,7 +20,7 @@ async function moverCreateProfile(
   const { email, image, nickName, career, introduction, description, serviceType, serviceArea } =
     req.body;
   try {
-    const user = await profileMoverService.createMoverProfile({
+    const createdMoverProfile = await profileMoverService.createMoverProfile({
       userId,
       email,
       image,
@@ -29,7 +31,9 @@ async function moverCreateProfile(
       serviceType,
       serviceArea,
     });
-    res.status(201).json(user);
+
+    const filteredMoverProfile = filterSensitiveUserData(createdMoverProfile);
+    res.status(201).json(filteredMoverProfile);
   } catch (error) {
     next(error);
   }
@@ -45,7 +49,7 @@ async function moverPatchProfile(
   const { email, image, nickName, career, introduction, description, serviceType, serviceArea } =
     req.body;
   try {
-    const user = await profileMoverService.patchMoverProfile({
+    const updatedMoverProfile = await profileMoverService.patchMoverProfile({
       userId,
       email,
       image,
@@ -56,7 +60,9 @@ async function moverPatchProfile(
       serviceType,
       serviceArea,
     });
-    res.status(200).json(user);
+
+    const filteredMoverProfile = filterSensitiveUserData(updatedMoverProfile);
+    res.status(200).json(filteredMoverProfile);
   } catch (error) {
     next(error);
   }
