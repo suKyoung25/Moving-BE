@@ -12,7 +12,6 @@ async function signUp(req: Request<{}, {}, SignUpRequest>, res: Response, next: 
   try {
     // Zod 스키마로 데이터 검증 및 변환
     const parsedData = signUpClientSchema.parse(req.body);
-    console.log(parsedData);
 
     const signUpData = {
       name: parsedData.name,

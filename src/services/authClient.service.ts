@@ -10,25 +10,32 @@ async function create(
   user: SignUpDataLocal,
 ): Promise<Omit<SignUpDataLocal, "hashedPassword" | "phone">> {
   // 이미 사용한 정보 확인
-  const existingEmail = await authClientRepository.findByEmail(user.email);
+  const existingEmail = await authClientRepository.findByEmailRaw(user.email);
   const existingPhone = await authClientRepository.findByPhone(user.phone);
 
+  const fieldErrors: Record<string, string> = {};
+
   if (existingEmail) {
-    throw new ConflictError(ErrorMessage.ALREADY_EXIST_EMAIL);
+    fieldErrors.email = ErrorMessage.ALREADY_EXIST_EMAIL;
+  }
+  if (existingPhone) {
+    fieldErrors.phone = ErrorMessage.ALREADY_EXIST_PHONE;
   }
 
-  if (existingPhone) {
-    throw new ConflictError(ErrorMessage.ALREADY_EXIST_PHONE);
+  if (Object.keys(fieldErrors).length > 0) {
+    throw new ConflictError("중복 정보로 인한 회원가입 실패: ", fieldErrors);
   }
 
   // 비밀번호 해시
   const hashedPassword = await hashPassword(user.hashedPassword);
 
+  console.log("🔐 비밀번호 해시 완료");
+
   const newClient = await authClientRepository.create({
     ...user,
     hashedPassword,
   });
-  console.log(newClient);
+  console.log("✅ 회원가입 성공:", newClient);
 
   // 비밀번호와 전화번호 빼고 반환
   const clientInfo = filterSensitiveUserData(newClient);

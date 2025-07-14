@@ -1,4 +1,4 @@
-import { MoveType, Region } from "@prisma/client";
+import { MoveType } from "@prisma/client";
 
 // 일반 회원가입 자료 구조 : DB에 저장
 export interface SignUpDataLocal {
