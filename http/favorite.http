@@ -1,0 +1,13 @@
+@token=
+
+### 내가 찜한 기사님 목록 조회 (페이지네이션, 찜 많은 순)
+GET http://localhost:4000/favorites/me?page=1&limit=6
+Authorization: Bearer {{token}}
+Accept: application/json
+
+###
+
+### 내가 찜한 기사님 목록 조회 (모바일/태블릿, 4개씩)
+GET http://localhost:4000/favorites/me?page=1&limit=4
+Authorization: Bearer {{token}}
+Accept: application/json

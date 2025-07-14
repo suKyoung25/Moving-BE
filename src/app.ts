@@ -13,6 +13,7 @@ import profileRouter from "./routers/profile.router";
 import reviewRouter from "./routers/review.router";
 import estimateRouter from "./routers/estimate.router";
 import { verifyAccessToken } from "./middlewares/auth.middleware";
+import favoriteRouter from "./routers/favorite.router";
 
 const app = express();
 const PORT = process.env.PORT;
@@ -38,6 +39,7 @@ app.use("/auth", authRouter);
 app.use("/profile", verifyAccessToken, profileRouter);
 app.use("/reviews", verifyAccessToken, reviewRouter);
 app.use("/estimates", verifyAccessToken, estimateRouter);
+app.use("/favorites", verifyAccessToken, favoriteRouter);
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 // 에러 핸들러
