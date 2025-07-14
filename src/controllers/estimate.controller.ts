@@ -19,6 +19,23 @@ async function getWritableEstimates(req: Request, res: Response, next: NextFunct
   }
 }
 
+// 대기 중인 견적 조회
+async function getPendingEstimates(req: Request, res: Response, next: NextFunction) {
+  try {
+    const clientId = req.auth!.userId;
+
+    const data = await estimateService.getPendingEstimates(clientId);
+
+    return res.status(200).json({
+      message: "대기 중인 견적 조회 성공",
+      data: data,
+    });
+  } catch (e) {
+    next(e);
+  }
+}
+
 export default {
   getWritableEstimates,
+  getPendingEstimates,
 };
