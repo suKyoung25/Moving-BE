@@ -1,4 +1,4 @@
-import { Client, Prisma, Review } from "@prisma/client";
+import { Client, MoveType, Prisma, Review } from "@prisma/client";
 import prisma from "../configs/prisma.config";
 import { ServerError, ValidationError } from "../types/errors";
 
@@ -13,12 +13,23 @@ async function findReviewsByClientId(
     const [reviews, total] = await Promise.all([
       prisma.review.findMany({
         where: { clientId },
-        include: {
+        select: {
+          id: true,
+          rating: true,
+          content: true,
+          createdAt: true,
+          moverId: true,
           mover: { select: { nickName: true, profileImage: true } },
           estimate: {
             select: {
               price: true,
-              request: { select: { moveType: true, moveDate: true, isDesignated: true } },
+              request: {
+                select: {
+                  moveType: true,
+                  moveDate: true,
+                  designatedRequest: { select: { moverId: true } },
+                },
+              },
             },
           },
         },
@@ -29,8 +40,23 @@ async function findReviewsByClientId(
       prisma.review.count({ where: { clientId } }),
     ]);
 
+    const result = reviews.map((e) => ({
+      id: e.id,
+      rating: e.rating,
+      content: e.content,
+      createdAt: e.createdAt,
+      moverNickname: e.mover.nickName,
+      moverProfileImage: e.mover.profileImage,
+      price: e.estimate.price,
+      MoveType: e.estimate.request.moveType,
+      moveDate: e.estimate.request.moveDate,
+      isDesignatedEstimate:
+        Array.isArray(e.estimate.request.designatedRequest) &&
+        e.estimate.request.designatedRequest.some((dr) => dr.moverId === e.moverId),
+    }));
+
     return {
-      reviews,
+      reviews: result,
       total,
       pagination: {
         page,

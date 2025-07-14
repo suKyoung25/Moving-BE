@@ -14,17 +14,21 @@ async function findWritableEstimatesByClientId(
       prisma.estimate.findMany({
         where: {
           clientId,
+          isClientConfirmed: true,
           request: { moveDate: { lte: new Date() } },
           review: null,
         },
         select: {
           id: true,
           price: true,
+          moverId: true,
           request: {
             select: {
               moveType: true,
-              isDesignated: true,
               moveDate: true,
+              designatedRequest: {
+                select: { moverId: true },
+              },
             },
           },
           mover: {
@@ -41,14 +45,27 @@ async function findWritableEstimatesByClientId(
       prisma.estimate.count({
         where: {
           clientId,
+          isClientConfirmed: true,
           request: { moveDate: { lte: new Date() } },
           review: null,
         },
       }),
     ]);
 
+    const result = estimates.map((e) => ({
+      estimateId: e.id,
+      price: e.price,
+      moveType: e.request.moveType,
+      moveDate: e.request.moveDate,
+      isDesignatedEstimate:
+        Array.isArray(e.request.designatedRequest) &&
+        e.request.designatedRequest.some((dr) => dr.moverId === e.moverId),
+      moverProfileImage: e.mover.profileImage,
+      moverNickName: e.mover.nickName,
+    }));
+
     return {
-      estimates,
+      estimates: result,
       total,
       pagination: {
         page,
