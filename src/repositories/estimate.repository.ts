@@ -1,4 +1,4 @@
-import { Client } from "@prisma/client";
+import { Client, Estimate } from "@prisma/client";
 import prisma from "../configs/prisma.config";
 import { ServerError } from "../types/errors";
 
@@ -61,6 +61,20 @@ async function findWritableEstimatesByClientId(
   }
 }
 
+async function getEstimateMoverId(estimateId: Estimate["id"]) {
+  try {
+    return await prisma.estimate.findUnique({
+      where: { id: estimateId },
+      select: {
+        moverId: true,
+      },
+    });
+  } catch (error) {
+    throw new ServerError("견적 조회 중 서버 오류가 발생했습니다.", error);
+  }
+}
+
 export default {
   findWritableEstimatesByClientId,
+  getEstimateMoverId,
 };

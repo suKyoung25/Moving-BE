@@ -25,14 +25,8 @@ async function createReview(
 ) {
   try {
     const clientId = req.auth!.userId;
-    const { estimateId, rating, content, moverId } = req.body;
-    const review = await reviewService.createReview({
-      estimateId,
-      rating,
-      content,
-      clientId,
-      moverId,
-    });
+    const { estimateId, rating, content } = req.body;
+    const review = await reviewService.createReview({ estimateId, rating, content }, clientId);
 
     res.status(201).json({ message: "리뷰 작성 성공", data: review });
   } catch (error) {
