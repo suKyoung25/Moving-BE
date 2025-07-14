@@ -12,6 +12,7 @@ import { specs, swaggerUi } from "./swagger";
 import profileRouter from "./routers/profile.router";
 import reviewRouter from "./routers/review.router";
 import estimateRouter from "./routers/estimate.router";
+import requestRouter from "./routers/request.router";
 import { verifyAccessToken } from "./middlewares/auth.middleware";
 
 const app = express();
@@ -38,6 +39,7 @@ app.use("/auth", authRouter);
 app.use("/profile", verifyAccessToken, profileRouter);
 app.use("/reviews", verifyAccessToken, reviewRouter);
 app.use("/estimates", verifyAccessToken, estimateRouter);
+app.use("/requests", requestRouter);
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 // 에러 핸들러
