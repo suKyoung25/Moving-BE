@@ -20,24 +20,6 @@ async function getWritableEstimates(req: Request, res: Response, next: NextFunct
   }
 }
 
-// 견적 요청 생성
-async function createEstimateRequest(
-  req: Request<{}, {}, CreateRequestDto>,
-  res: Response,
-  next: NextFunction,
-) {
-  try {
-    const newRequest = await estimateService.createEstimateRequest({
-      request: req.body,
-      clientId: req.auth?.userId ?? "e93cebbf-dedb-4f9c-aecd-7152fb6ad997", // TODO: 인증 미들웨어 추가시 수정
-    });
-    res.status(201).json({ data: newRequest });
-  } catch (error) {
-    next(error);
-  }
-}
-
 export default {
   getWritableEstimates,
-  createEstimateRequest,
 };

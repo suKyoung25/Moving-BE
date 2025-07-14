@@ -17,8 +17,8 @@ POST http://localhost:4000/auth/signin/mover
 Content-Type: application/json
 
 {
-     "email": "test5@test.com", 
-     "password": "a5555555"
+     "email": "local1@test.com", 
+     "password": "a9999999"
 }
 
 ### 일반 회원 회원가입(local)
