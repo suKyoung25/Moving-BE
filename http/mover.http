@@ -1,0 +1,40 @@
+@token=
+
+### 전체 기사님 리스트 조회 (비회원도 가능)
+GET http://localhost:4000/movers
+Content-Type: application/json
+
+###
+
+### 기사님 상세 조회
+GET http://localhost:4000/movers/{{moverId}}
+Content-Type: application/json
+
+###
+
+### 기사님 찜하기
+POST http://localhost:4000/movers/{{moverId}}/favorite
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{}
+
+###
+
+### 기사님 찜 취소
+DELETE http://localhost:4000/movers/{{moverId}}/favorite
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+###
+
+### 기사님 지정 요청 (견적서와 매칭)
+PATCH http://localhost:4000/movers/{{moverId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "requestId": "request-uuid"
+}
+
+###

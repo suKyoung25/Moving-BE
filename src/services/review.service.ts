@@ -1,18 +1,15 @@
 import { Client, Review } from "@prisma/client";
 import reviewRepository from "../repositories/review.repository";
-import {
-  BadRequestError,
-  ForbiddenError,
-  NotFoundError,
-} from "../types/errors";
+import { BadRequestError, ForbiddenError, NotFoundError } from "../types/errors";
 import { CreateReviewBody } from "../types";
 
 // 내가 작성한 리뷰 목록
-async function getMyReviews(clientId: Client["id"]) {
+async function getMyReviews(clientId: Client["id"], page: number = 1, pageSize: number = 6) {
   if (!clientId) {
     throw new BadRequestError("clientId가 필요합니다.");
   }
-  return reviewRepository.findReviewsByClientId(clientId);
+  const skip = (page - 1) * pageSize;
+  return reviewRepository.findReviewsByClientId(clientId, skip, pageSize);
 }
 
 // 리뷰 작성
@@ -38,16 +35,14 @@ async function createReview(data: CreateReviewBody) {
 async function updateReview(
   reviewId: Review["id"],
   clientId: Client["id"],
-  data: Partial<{ rating: Review["rating"]; content: Review["content"] }>
+  data: Partial<{ rating: Review["rating"]; content: Review["content"] }>,
 ) {
   if (!reviewId) throw new BadRequestError("reviewId가 필요합니다.");
-  if (!data.rating && !data.content)
-    throw new BadRequestError("수정할 내용이 없습니다.");
+  if (!data.rating && !data.content) throw new BadRequestError("수정할 내용이 없습니다.");
 
   const review = await reviewRepository.findReviewById(reviewId);
   if (!review) throw new NotFoundError("리뷰를 찾을 수 없습니다.");
-  if (review.clientId !== clientId)
-    throw new ForbiddenError("수정 권한이 없습니다.");
+  if (review.clientId !== clientId) throw new ForbiddenError("수정 권한이 없습니다.");
 
   return reviewRepository.updateReview(reviewId, data);
 }
@@ -58,8 +53,7 @@ async function deleteReview(reviewId: Review["id"], clientId: Client["id"]) {
 
   const review = await reviewRepository.findReviewById(reviewId);
   if (!review) throw new NotFoundError("리뷰를 찾을 수 없습니다.");
-  if (review.clientId !== clientId)
-    throw new ForbiddenError("삭제 권한이 없습니다.");
+  if (review.clientId !== clientId) throw new ForbiddenError("삭제 권한이 없습니다.");
 
   await reviewRepository.deleteReview(reviewId);
 }
