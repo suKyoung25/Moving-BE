@@ -34,7 +34,7 @@ async function moverSingup(
       phone,
       password,
     });
-    res.status(200).json({ mover: mover });
+    res.status(201).json({ mover: mover });
   } catch (error) {
     next(error);
   }
@@ -53,7 +53,7 @@ async function moverSignin(
       email,
       password,
     });
-    res.status(201).json({ mover: mover });
+    res.status(200).json({ mover: mover });
   } catch (error) {
     next(error);
   }

@@ -1,16 +1,15 @@
 # @token={{$dotenv TOKEN}}
 
 ### 기사님 프로필 등록
-POST http://localhost:3000/profile/1/mover
+POST http://localhost:4000/profile/mover
 Content-Type: application/json
-Authorization: Bearer 
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3NzNmOTI2NC1hMGVkLTQxMzItYTQzNC04MzcwZDQ1NzhlYjkiLCJlbWFpbCI6InRlc3Q2QHRlc3QuY29tIiwibmFtZSI6InQ2IiwidXNlclR5cGUiOiJtb3ZlciIsImlhdCI6MTc1MjQ3MjEyNSwiZXhwIjoxNzUyNDc1NzI1fQ.c4i_pD0mj2b73QcXkv085NsPAd4rHVqdkWeIkLzh9r4
 
 {
-     "image": , 
      "nickName": "tester1", 
-     "career": "3", 
+     "career": 3, 
      "introduction":"abcdefghijklmnopqrstuvwxyz",  
      "description":"abcdefghijklmnopqrstuvwxyz" , 
      "serviceType":["소형이사", "사무실이사"],
-     "region": ["경기"]
+     "serviceArea": ["경기"]
 }

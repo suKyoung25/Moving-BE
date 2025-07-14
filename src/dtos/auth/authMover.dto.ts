@@ -1,12 +1,12 @@
 import z from "zod";
-import { createMoverInput, getMoverInput } from "../../types";
+import { CreateMoverInput, GetMoverInput } from "../../types";
 import { ErrorMessage } from "../../constants/ErrorMessage";
 
 //기사님 회원가입 DTO
-export interface MoverSignupDto extends createMoverInput {}
+export interface MoverSignupDto extends CreateMoverInput {}
 
 //기사님 로그인 DTO
-export interface MoverSigninDto extends getMoverInput {}
+export interface MoverSigninDto extends GetMoverInput {}
 
 //기사님 회원가입 유효성 검사
 export const signUpMoverSchema = z

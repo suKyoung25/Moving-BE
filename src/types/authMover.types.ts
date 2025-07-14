@@ -1,7 +1,7 @@
 import { MoveType } from "@prisma/client";
 
 //기사님 회원가입할 때 필요한 값 (컨트롤러, 서비스 단)
-export type createMoverInput = {
+export type CreateMoverInput = {
   name: string;
   email: string;
   phone: string;
@@ -9,7 +9,7 @@ export type createMoverInput = {
 };
 
 //기사님 회원가입할 때 필요한 값 (레포지토리 단)
-export type createMoverInputwithHash = {
+export type CreateMoverInputwithHash = {
   name: string;
   email: string;
   phone: string;
@@ -18,13 +18,13 @@ export type createMoverInputwithHash = {
 };
 
 //기사님 로그인할 때 필요한 값 (컨트롤러, 서비스 단)
-export type getMoverInput = {
+export type GetMoverInput = {
   email: string;
   password: string;
 };
 
 //기사님 프로필 등록할 때 필요한 값 (레포지토리 단)
-export type createMoverProfile = {
+export type CreateMoverProfile = {
   userId: string;
   email: string;
   image: string;
@@ -33,5 +33,5 @@ export type createMoverProfile = {
   introduction: string;
   description: string;
   serviceType: MoveType[];
-  // region: string[];
+  serviceArea: string[];
 };

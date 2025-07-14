@@ -9,13 +9,13 @@
 import authRepository from "../repositories/authMover.repository";
 import { ConflictError, NotFoundError, UnauthorizedError } from "../types/errors";
 import { ErrorMessage } from "../constants/ErrorMessage";
-import { createMoverInput, getMoverInput } from "../types/mover/auth/authMover.type";
 import { hashPassword } from "../utils/auth.util";
 import { generateAccessToken, generateRefreshToken } from "../utils/token.util";
 import bcrypt from "bcrypt";
+import { CreateMoverInput, GetMoverInput } from "../types";
 
 //기사님 생성
-async function createMover(user: createMoverInput) {
+async function createMover(user: CreateMoverInput) {
   const existedEmail = await authRepository.findMoverByEmail(user.email);
   if (existedEmail) {
     throw new ConflictError(ErrorMessage.ALREADY_EXIST_EMAIL);
@@ -57,7 +57,7 @@ async function createMover(user: createMoverInput) {
 }
 
 //기사님 조회(로그인)
-async function getMoverByEmail(user: getMoverInput) {
+async function getMoverByEmail(user: GetMoverInput) {
   //사용자 조회
   const mover = await authRepository.findMoverByEmail(user.email);
   if (!mover) {
