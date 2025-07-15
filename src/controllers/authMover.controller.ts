@@ -9,7 +9,6 @@
 import { NextFunction, Request, Response } from "express";
 import authService from "../services/authMover.service";
 import { MoverSigninDto, MoverSignupDto, signUpMoverSchema } from "../dtos/auth/authMover.dto";
-import { BadRequestError } from "../types/errors";
 import { loginClientSchema } from "../dtos/authClient.dto";
 
 //기사님 회원가입
