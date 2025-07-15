@@ -1,4 +1,5 @@
-import { Client, Estimate } from "@prisma/client";
+import { Client, Estimate, Mover } from "@prisma/client";
+
 import prisma from "../configs/prisma.config";
 import { ServerError } from "../types/errors";
 
@@ -91,7 +92,63 @@ async function getEstimateMoverId(estimateId: Estimate["id"]) {
   }
 }
 
+// 대기 중인 견적서 조회
+async function findPendingEstimatesByClientId(clientId: Client["id"]) {
+  try {
+    const estimates = prisma.request.findMany({
+      where: {
+        clientId,
+        isPending: true,
+        estimate: {
+          some: {
+            moverStatus: "CONFIRMED",
+            isClientConfirmed: false,
+          },
+        },
+      },
+      include: {
+        estimate: {
+          where: {
+            moverStatus: "CONFIRMED",
+            isClientConfirmed: false,
+          },
+          include: {
+            mover: true,
+          },
+        },
+        designatedRequest: true,
+      },
+    });
+
+    const result = await estimates;
+
+    return result;
+  } catch (e) {
+    throw new ServerError("대기 중인 견적서 조회 중 서버 오류가 발생했습니다", e);
+  }
+}
+
+// 찜한 기사님 조회
+async function isFavoritMover(clientId: Client["id"], moverId: Mover["id"]) {
+  try {
+    const favoirte = await prisma.favorite.findUnique({
+      where: {
+        clientId_moverId: {
+          clientId,
+          moverId,
+        },
+      },
+    });
+
+    return favoirte;
+  } catch (e) {
+    throw new ServerError("찜한 기사님을 조회 중 서버 오류가 발생했습니다", e);
+  }
+}
+
 export default {
   findWritableEstimatesByClientId,
+  findPendingEstimatesByClientId,
+  isFavoritMover,
   getEstimateMoverId,
 };
