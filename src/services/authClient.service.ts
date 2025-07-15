@@ -29,13 +29,10 @@ async function create(
   // 비밀번호 해시
   const hashedPassword = await hashPassword(user.hashedPassword);
 
-  console.log("🔐 비밀번호 해시 완료");
-
   const newClient = await authClientRepository.create({
     ...user,
     hashedPassword,
   });
-  console.log("✅ 회원가입 성공:", newClient);
 
   // 비밀번호와 전화번호 빼고 반환
   const clientInfo = filterSensitiveUserData(newClient);
