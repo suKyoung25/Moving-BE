@@ -1,18 +1,15 @@
 @token=
 
 ### 기사님 회원가입(local)
-# POST http://localhost:4000/auth/signup/mover
-
-### 기사님 회원가입(배포)
-POST https://sixth-moving-4team-be.onrender.com/auth/signup/mover
+POST http://localhost:4000/auth/signup/mover
 Content-Type: application/json
 
 {
-    "name": "t1",
-     "email": "test1@test.com", 
-     "phone": "01011111111", 
-     "password": "a11111111",
-       "passwordConfirmation":"a11111111"
+    "name": "t6",
+     "email": "test6@test.com", 
+     "phone": "06066666666", 
+     "password": "a66666666",
+     "passwordConfirmation":"a66666666"
 }
 
 ###기사님 로그인(local)
@@ -28,13 +25,25 @@ Content-Type: application/json
      "password": "a66666666"
 }
 
-### 기사님 로그인(배포)
+### 기사님 회원가입(배포주소)
+POST https://sixth-moving-4team-be.onrender.com/auth/signup/mover
+Content-Type: application/json
+
+{
+    "name": "t6",
+     "email": "test66@test.com", 
+     "phone": "01012121212", 
+     "password": "a66666666",
+     "passwordConfirmation":"a66666666"
+}
+
+### 기사님 로그인(배포주소)
 POST https://sixth-moving-4team-be.onrender.com/auth/signin/mover
 Content-Type: application/json
 
 {
-     "email": "test1@test.com", 
-     "password": "a11111111"
+     "email": "MLocal2@test.com", 
+     "password": "a2222222"
 }
 
 ### 일반 회원 회원가입(local)

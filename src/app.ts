@@ -25,7 +25,7 @@ app.set("trust proxy", 1);
 // 미들웨어
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: ["http://localhost:3000", "https://www.moving-web.site"],
     credentials: true,
   }),
 );
@@ -38,12 +38,11 @@ app.use(passport.initialize());
 app.use("/", infoRouter);
 app.use("/auth", authRouter);
 app.use("/profile", verifyAccessToken, profileRouter);
-app.use("/movers", moverRouter)
+app.use("/movers", moverRouter);
 app.use("/reviews", verifyAccessToken, reviewRouter);
 app.use("/estimates", verifyAccessToken, estimateRouter);
 app.use("/requests", requestRouter);
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(specs));
-
 
 // 에러 핸들러
 app.use(errorHandler);
