@@ -10,7 +10,6 @@ import { NextFunction, Request, Response } from "express";
 import authService from "../services/authMover.service";
 import { MoverSigninDto, MoverSignupDto, signUpMoverSchema } from "../dtos/auth/authMover.dto";
 import { BadRequestError } from "../types/errors";
-import { ErrorMessage } from "../constants/ErrorMessage";
 
 //기사님 회원가입
 async function moverSingup(
@@ -53,7 +52,7 @@ async function moverSignin(
       email,
       password,
     });
-    res.status(201).json({ mover: mover });
+    res.status(201).json(mover);
   } catch (error) {
     next(error);
   }
