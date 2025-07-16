@@ -4,12 +4,14 @@ import { Client, MoveType } from "@prisma/client";
 
 // ✅ 사용자 반환 (id로)
 async function findById(id: Client["id"]) {
-  return prisma.client.findUnique({
+  const client = await prisma.client.findUnique({
     where: { id },
     include: {
-      livingArea: true,
+      livingArea: { select: { regionName: true } },
     },
   });
+
+  return { ...client, userType: "client", isProfileCompleted: false };
 }
 
 // ✅ 프로필 생성
@@ -38,7 +40,7 @@ async function create(userId: Client["id"], profile: ClientProfileRegister) {
     },
   });
 
-  return { newProfile, userType: "client", profileCompleted: true };
+  return { newProfile, userType: "client", isProfileCompleted: true };
 }
 
 const profileClientRepository = {

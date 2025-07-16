@@ -3,6 +3,8 @@ import jwt from "jsonwebtoken";
 import { ConflictError, UnauthorizedError } from "../types/errors";
 import { ErrorMessage } from "../constants/ErrorMessage";
 import { generateAccessToken } from "../utils/token.util";
+import profileClientRepository from "../repositories/profileClient.repository";
+import profileMoverRespository from "../repositories/profileMover.respository";
 
 // ✅ refreshToken Api
 async function setRefreshToken(req: Request, res: Response, next: NextFunction) {
@@ -41,7 +43,19 @@ async function getMe(req: Request, res: Response, next: NextFunction) {
       res.status(401).json({ message: "사용자 인증 정보가 없습니다." });
     }
 
-    res.status(200).json({ message: "사용자 데이터 반환 성공", user });
+    // ✅ userType에 따라 불러오는 정보 달라짐
+    let newUser;
+
+    if (user?.userType === "client") {
+      newUser = await profileClientRepository.findById(user.userId);
+    }
+
+    // ✅ 수경 님 여기 써주세요.
+    // if (user?.userType === "mover") {
+    //   newUser =profileMoverRespository.
+    // }
+
+    res.status(200).json({ message: "사용자 데이터 반환 성공", user: newUser });
   } catch (error) {
     next(error);
   }

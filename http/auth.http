@@ -1,4 +1,4 @@
-@token=
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjMjVhMzk0Mi01MzYzLTRkMDYtOGYzYS01MjY1NzY3NDE4YzQiLCJlbWFpbCI6IjBza3lAZXhhbXBsZS5jb20iLCJuYW1lIjoi7JaR7ISx6rK9IiwidXNlclR5cGUiOiJjbGllbnQiLCJpYXQiOjE3NTI2NDIwNDMsImV4cCI6MTc1MjY0NTY0M30.cGy4KKNqYQa4qC71SxayxFUYSSjc7XhnAyZDBGx0OVs
 
 ### 기사님 회원가입(local)
 POST http://localhost:4000/auth/signup/mover
@@ -68,7 +68,7 @@ POST http://localhost:4000/auth/refresh-token
 Content-Type: application/json
 Cookie: refreshToken={{token}}
 
-### 사용자 불러오기 (토큰만 간단하게)
+### 사용자 불러오기
 GET http://localhost:4000/auth
 Content-Type: application/json
 Authorization: Bearer {{token}}
