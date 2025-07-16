@@ -56,7 +56,7 @@ async function createMover(user: createMoverInput) {
     user: {
       userId: createdMover.id,
       email: createdMover.email,
-      nickName: createdMover.nickName,
+      name: createdMover.name,
       userType: createdMover.userType,
     },
   };
