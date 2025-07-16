@@ -1,0 +1,154 @@
+tags:
+  - name: Request
+    description: 견적 요청 관련 API
+
+paths:
+  /requests:
+    post:
+      tags:
+        - Request
+      summary: 견적 요청 생성
+      description: 일반 유저가 새로운 이사 견적 요청을 생성합니다.
+      security:
+        - jwt: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateRequestDto"
+      responses:
+        "201":
+          description: 견적 요청 생성 완료
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Request"
+        "400":
+          description: 잘못된 요청
+        "401":
+          description: 인증 실패
+        "500":
+          description: 서버 오류
+
+    get:
+      tags:
+        - Request
+      summary: 받은 요청 목록 조회
+      description: 기사님이 자신에게 온 견적 요청 목록을 조회합니다.
+      security:
+        - jwt: []
+      parameters:
+        - name: moveType
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: isDesignated
+          in: query
+          required: false
+          schema:
+            type: boolean
+        - name: serviceArea
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: keyword
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: sort
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [moveDate, requestedAt]
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: 요청 목록 조회 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "받은 요청 조회 성공"
+                  totalCount:
+                    type: number
+                  nextCursor:
+                    type: string
+                    nullable: true
+                  requests:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Request"
+        "401":
+          description: 인증 실패
+        "500":
+          description: 서버 오류
+
+components:
+  schemas:
+    CreateRequestDto:
+      type: object
+      required:
+        - moveType
+        - moveDate
+        - fromAddress
+        - toAddress
+      properties:
+        moveType:
+          type: string
+          enum: [SMALL, HOME, OFFICE]
+        moveDate:
+          type: string
+          format: date
+        fromAddress:
+          type: string
+        toAddress:
+          type: string
+
+    Request:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        clientId:
+          type: string
+          format: uuid
+        moverId:
+          type: string
+          format: uuid
+          nullable: true
+        moveType:
+          type: string
+        moveDate:
+          type: string
+          format: date
+        fromAddress:
+          type: string
+        toAddress:
+          type: string
+        isPending:
+          type: boolean
+        requestedAt:
+          type: string
+          format: date-time
+        isDesignated:
+          type: boolean
+        clientName:
+          type: string
