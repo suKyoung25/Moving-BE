@@ -17,14 +17,20 @@ import bcrypt from "bcrypt";
 //기사님 생성
 async function createMover(user: createMoverInput) {
   const existedEmail = await authRepository.findMoverByEmail(user.email);
-  if (existedEmail) {
-    throw new ConflictError(ErrorMessage.ALREADY_EXIST_EMAIL);
-  }
   const existedPhone = await authRepository.findMoverByPhone(user.phone);
+
+  const fieldErrors: Record<string, string> = {};
+
+  if (existedEmail) {
+    fieldErrors.email = ErrorMessage.ALREADY_EXIST_EMAIL;
+  }
   if (existedPhone) {
-    throw new ConflictError(ErrorMessage.ALREADY_EXIST_PHONE);
+    fieldErrors.phone = ErrorMessage.ALREADY_EXIST_PHONE;
   }
 
+  if (Object.keys(fieldErrors).length > 0) {
+    throw new ConflictError("중복 정보로 인한 회원가입 실패: ", fieldErrors);
+  }
   const hashedPassword = await hashPassword(user.password);
   const createdMover = await authRepository.saveMover({
     ...user,
