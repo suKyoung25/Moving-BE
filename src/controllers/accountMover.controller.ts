@@ -20,8 +20,10 @@ async function editAccountMover(req: Request, res: Response, next: NextFunction)
 
     const patchedMoverAccount = await accountMoverService.patchMoverAccount(newData);
 
-    res.status(200).json({ message: "Mocer 기본정보 수정 완료", data: patchedMoverAccount });
-  } catch (error) {}
+    res.status(200).json({ message: "Mover 기본정보 수정 완료", data: patchedMoverAccount });
+  } catch (error) {
+    next(error);
+  }
 }
 
 export default {

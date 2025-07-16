@@ -1,0 +1,15 @@
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxMjkwZjU1Mi1kMzg0LTRmNmQtOTlhYS04N2ZiM2I3ZTQwMDIiLCJlbWFpbCI6Ik1Mb2NhbDJAdGVzdC5jb20iLCJuYW1lIjoi66Gc7LusMiIsInVzZXJUeXBlIjoibW92ZXIiLCJpYXQiOjE3NTI2NDM0MjgsImV4cCI6MTc1MjY0NzAyOH0.SMP_x9ZcTDVaRndm8n2vhej0_91GreSFk1HgI7JRXRQ
+
+### 기사님 기본정보 수정
+PATCH http://localhost:4000/dashboard/edit/mover
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "name": "M2",
+     "email": "MLocal22@test.com", 
+     "phone": "01022222221", 
+     "existedPassword": "a2222222",
+     "newPassword":"a2222222",
+   "newPasswordConfirmation":"a2222222"
+}
