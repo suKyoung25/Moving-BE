@@ -50,7 +50,7 @@ async function createMover(user: createMoverInput) {
     user: {
       userId: createdMover.id,
       email: createdMover.email,
-      nickName: createdMover.nickName,
+      name: createdMover.name,
       userType: createdMover.userType,
     },
   };
@@ -88,7 +88,7 @@ async function getMoverByEmail(user: getMoverInput) {
     user: {
       userId: mover.id,
       email: mover.email,
-      nickName: mover.nickName,
+      name: mover.name,
       userType: mover.userType,
     },
     accessToken,

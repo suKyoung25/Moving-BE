@@ -5,11 +5,11 @@ POST http://localhost:4000/auth/signup/mover
 Content-Type: application/json
 
 {
-     "name": "t6",
-     "email": "test6@test.com", 
-     "phone": "01066666666", 
-     "password": "a66666666",
-     "passwordConfirmation":"a66666666"
+     "name": "t7",
+     "email": "test7@test.com", 
+     "phone": "0107777777", 
+     "password": "a7777777",
+     "passwordConfirmation":"a7777777"
 }
 
 ### 기사님 로그인(local)
@@ -17,8 +17,8 @@ POST http://localhost:4000/auth/signin/mover
 Content-Type: application/json
 
 {
-     "email": "test5@test.com", 
-     "password": "a5555555"
+     "email": "test7@test.com", 
+     "password": "a7777777"
 }
 
 ### 일반 회원 회원가입(local)
@@ -47,7 +47,9 @@ POST http://localhost:4000/auth/refresh-token
 Content-Type: application/json
 Cookie: refreshToken={{token}}
 
-### 사용자 불러오기
+### 사용자 불러오기 (토큰만 간단하게)
 GET http://localhost:4000/auth
 Content-Type: application/json
 Authorization: Bearer {{token}}
+
+### 일반 회원 정보 전체 반환
