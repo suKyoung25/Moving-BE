@@ -50,10 +50,10 @@ async function getMe(req: Request, res: Response, next: NextFunction) {
       newUser = await profileClientRepository.findById(user.userId);
     }
 
-    // ✅ 수경 님 여기 써주세요.
-    // if (user?.userType === "mover") {
-    //   newUser =profileMoverRespository.
-    // }
+    // ✅ userType에 따라 불러오는 정보 달라짐
+    if (user?.userType === "mover") {
+      newUser = await profileMoverRespository.findById(user.userId);
+    }
 
     res.status(200).json({ message: "사용자 데이터 반환 성공", user: newUser });
   } catch (error) {
