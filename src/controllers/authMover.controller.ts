@@ -51,7 +51,7 @@ async function moverSignin(
     };
 
     const mover = await authService.getMoverByEmail(loginData);
-    res.status(200).json({ message: "Mover 일반 로그인 성공", date: mover });
+    res.status(200).json({ message: "Mover 일반 로그인 성공", data: mover });
   } catch (error) {
     next(error);
   }

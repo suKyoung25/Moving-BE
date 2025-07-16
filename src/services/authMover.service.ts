@@ -94,7 +94,7 @@ async function getMoverByEmail(user: getMoverInput) {
     user: {
       userId: mover.id,
       email: mover.email,
-      nickName: mover.nickName,
+      name: mover.name,
       userType: mover.userType,
     },
     accessToken,
