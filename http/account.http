@@ -1,4 +1,4 @@
-@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxMjkwZjU1Mi1kMzg0LTRmNmQtOTlhYS04N2ZiM2I3ZTQwMDIiLCJlbWFpbCI6Ik1Mb2NhbDJAdGVzdC5jb20iLCJuYW1lIjoi66Gc7LusMiIsInVzZXJUeXBlIjoibW92ZXIiLCJpYXQiOjE3NTI2NDM0MjgsImV4cCI6MTc1MjY0NzAyOH0.SMP_x9ZcTDVaRndm8n2vhej0_91GreSFk1HgI7JRXRQ
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxMjkwZjU1Mi1kMzg0LTRmNmQtOTlhYS04N2ZiM2I3ZTQwMDIiLCJlbWFpbCI6Ik1Mb2NhbDIyQHRlc3QuY29tIiwibmFtZSI6Ik0yIiwidXNlclR5cGUiOiJtb3ZlciIsImlhdCI6MTc1MjY3MDkyMSwiZXhwIjoxNzUyNjc0NTIxfQ.WBXHW76HysbCU6AF1xwTlwrJXgZFHHjzalFPCx5VbiE
 
 ### 기사님 기본정보 수정
 PATCH http://localhost:4000/dashboard/edit/mover
@@ -8,7 +8,7 @@ Authorization: Bearer {{token}}
 {
     "name": "M2",
      "email": "MLocal22@test.com", 
-     "phone": "01022222221", 
+     "phone": "01022222211", 
      "existedPassword": "a2222222",
      "newPassword":"a2222222",
    "newPasswordConfirmation":"a2222222"
