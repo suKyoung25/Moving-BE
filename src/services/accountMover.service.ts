@@ -8,7 +8,9 @@ import { hashPassword } from "../utils/auth.util";
 //기사님 기본 정보 수정
 async function patchMoverAccount(newData: EditMoverAccount) {
   //기본의 DB와 겹치는 데이터 있는지 확인 (authRepository쪽 로직 사용)
-  const existedEmail = await authMoverRepository.findMoverByEmail(newData.email);
+  const existedMoverData = await authMoverRepository.findMoverByEmail(newData.email);
+  const existedEmail = existedMoverData?.email;
+  const isMatchedWithDB = existedMoverData?.hashedPassword === newData.existedPassword; //기존 비밀번호 일치하는지 확인
   const existedPhone = await authMoverRepository.findMoverByPhone(newData.phone);
 
   const fieldErrors: Record<string, string> = {};
@@ -16,11 +18,14 @@ async function patchMoverAccount(newData: EditMoverAccount) {
   if (existedEmail) {
     fieldErrors.email = ErrorMessage.ALREADY_EXIST_EMAIL;
   }
+  if (isMatchedWithDB) {
+    fieldErrors.existedPassword = ErrorMessage.PASSWORD_NOT_MATCH;
+  }
   if (existedPhone) {
     fieldErrors.phone = ErrorMessage.ALREADY_EXIST_PHONE;
   }
 
-  //겹치는 데이터 있으면 프론트로 에러 보내기
+  //안 맞는 데이터 있으면 프론트로 에러 보내기
   if (Object.keys(fieldErrors).length > 0) {
     throw new ConflictError("중복 정보로 인한 회원가입 실패: ", fieldErrors);
   }

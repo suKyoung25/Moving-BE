@@ -15,6 +15,7 @@ async function editAccountMover(req: Request, res: Response, next: NextFunction)
       name: parsedDate.name,
       email: parsedDate.email,
       phone: parsedDate.phone,
+      existedPassword: parsedDate.existedPassword,
       newPassword: parsedDate.newPassword,
     };
 
