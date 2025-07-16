@@ -1,0 +1,14 @@
+@token=
+
+### 기사님 기본정보 수정
+PATCH  http://localhost:4000/dashboard/edit/mover
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "name": "t6",
+     "email": "test6@test.com", 
+     "phone": "06066666666", 
+     "existedPassword": "a66666666",
+     "newPassword":"a66666666"
+}

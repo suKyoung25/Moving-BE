@@ -57,6 +57,7 @@ async function createMover(user: createMoverInput) {
       userId: createdMover.id,
       email: createdMover.email,
       name: createdMover.name,
+      phone: createdMover.phone,
       userType: createdMover.userType,
     },
   };
@@ -96,6 +97,7 @@ async function getMoverByEmail(user: getMoverInput) {
       email: mover.email,
       name: mover.name,
       userType: mover.userType,
+      phone: mover.phone,
     },
     accessToken,
     refreshToken,
