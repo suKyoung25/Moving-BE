@@ -3,24 +3,45 @@ import accountMoverRepository from "../repositories/accountMover.repository";
 import authMoverRepository from "../repositories/authMover.repository";
 import { EditMoverAccount } from "../types/account.types";
 import { ConflictError } from "../types/errors";
-import { hashPassword } from "../utils/auth.util";
+import { hashPassword, verifyPassword } from "../utils/auth.util";
+import bcrypt from "bcrypt";
 
 //기사님 기본 정보 수정
 async function patchMoverAccount(newData: EditMoverAccount) {
-  //기본의 DB와 겹치는 데이터 있는지 확인 (authRepository쪽 로직 사용)
-  const existedEmail = await authMoverRepository.findMoverByEmail(newData.email);
-  const existedPhone = await authMoverRepository.findMoverByPhone(newData.phone);
+  //DB에 존재하는 본인 확인 (authRepository쪽 로직 사용)
+  const existedMoverData = await authMoverRepository.findMoverByEmail(newData.email);
+
+  // "현재 비밀번호"가 DB에 있는 비밀번호와 일치하는지 검사 (본인 확인)
+  const isPasswordCorrect = await bcrypt.compare(
+    newData.existedPassword,
+    existedMoverData?.hashedPassword!,
+  );
+
+  //내 이메일을 제외하고 존재하는 이메일인지 확인
+  const isExistedEmail = await accountMoverRepository.findMoverByEmailExcludingSelf(
+    newData.email,
+    newData.moverId,
+  );
+
+  //내 폰번호를 제외하고 존재하는 폰번호인지 확인
+  const isExistedPhone = await accountMoverRepository.findMoverByPhoneExcludingSelf(
+    newData.phone,
+    newData.moverId,
+  );
 
   const fieldErrors: Record<string, string> = {};
 
-  if (existedEmail) {
+  if (isExistedEmail) {
     fieldErrors.email = ErrorMessage.ALREADY_EXIST_EMAIL;
   }
-  if (existedPhone) {
+  if (!isPasswordCorrect) {
+    fieldErrors.existedPassword = ErrorMessage.PASSWORD_NOT_MATCH;
+  }
+  if (isExistedPhone) {
     fieldErrors.phone = ErrorMessage.ALREADY_EXIST_PHONE;
   }
 
-  //겹치는 데이터 있으면 프론트로 에러 보내기
+  //안 맞는 데이터 있으면 프론트로 에러 보내기
   if (Object.keys(fieldErrors).length > 0) {
     throw new ConflictError("중복 정보로 인한 회원가입 실패: ", fieldErrors);
   }

@@ -8,11 +8,11 @@
 
 import { NextFunction, Request, Response } from "express";
 
-export async function moverPatchProfile(
-    req: Request<{}, {}, { email: string; password: string }>,
-    res: Response,
-    next: NextFunction,
-) {
+// export async function moverPatchProfile(
+//     req: Request<{}, {}, { email: string; password: string }>,
+//     res: Response,
+//     next: NextFunction,
+// ) {
     // const { image, name, career, introduction, description, serviceType } = req.body;
     // try {
     //     const user = await profileService.createUser(email, password);
@@ -20,4 +20,4 @@ export async function moverPatchProfile(
     // } catch (error) {
     //     next(error);
     // }
-}
+// }

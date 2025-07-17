@@ -19,15 +19,10 @@ const options = {
         },
       },
     },
-    security: [
-      {
-        jwt: [],
-      },
-    ],
+    security: [],
     servers: [
       {
-        url: "localhost:3000",
-        describe: "local development server",
+        url: "/",
       },
     ],
   },

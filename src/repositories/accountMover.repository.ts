@@ -21,6 +21,32 @@ async function patchMoverAccount(patchData: EditMoverAccountWithHash) {
   });
 }
 
+//본인을 제외한 데이터가 있는지 확인 (전화번호)
+async function findMoverByPhoneExcludingSelf(phone: string, selfId: string) {
+  const mover = await prisma.mover.findFirst({
+    where: {
+      phone,
+      NOT: { id: selfId },
+    },
+  });
+
+  return !!mover; //boolean으로 반환
+}
+
+//본인을 제외한 데이터가 있는지 확인(이메일)
+async function findMoverByEmailExcludingSelf(email: string, selfId: string) {
+  const mover = await prisma.mover.findFirst({
+    where: {
+      email,
+      NOT: { id: selfId },
+    },
+  });
+
+  return !!mover; //boolean으로 반환
+}
+
 export default {
   patchMoverAccount,
+  findMoverByPhoneExcludingSelf,
+  findMoverByEmailExcludingSelf,
 };
