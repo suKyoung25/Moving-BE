@@ -9,7 +9,7 @@ estimateRouter.get("/writable/me", estimateController.getWritableEstimates);
 
 // 대기 중인 견적 조회
 estimateRouter.get(
-  "/estimates/pending",
+  "/pending",
   verifyAccessToken,
   estimateController.getPendingEstimates as RequestHandler,
 );

@@ -1,4 +1,4 @@
-@token=
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjMjVhMzk0Mi01MzYzLTRkMDYtOGYzYS01MjY1NzY3NDE4YzQiLCJlbWFpbCI6IjBza3lAZXhhbXBsZS5jb20iLCJuYW1lIjoi7JaR7ISx6rK9IiwidXNlclR5cGUiOiJjbGllbnQiLCJpYXQiOjE3NTI3MTgwOTEsImV4cCI6MTc1MjcyMTY5MX0.zNnskJifDSjIvWA0aNBaa4Mfb95jj7luP1ije2QDeCs
 
 ### 기사님 회원가입(local)
 POST http://localhost:4000/auth/signup/mover
@@ -7,18 +7,39 @@ Content-Type: application/json
 {
     "name": "t6",
      "email": "test6@test.com", 
-     "phone": "01066666666", 
+     "phone": "06066666666", 
      "password": "a66666666",
-       "passwordConfirmation":"a66666666"
+     "passwordConfirmation":"a66666666"
 }
 
-###기사님 로그인(local)
+### 기사님 로그인(local)
 POST http://localhost:4000/auth/signin/mover
 Content-Type: application/json
 
 {
-     "email": "test5@test.com", 
-     "password": "a5555555"
+     "email": "MLocal4@test.com", 
+     "password": "a4444444"
+}
+
+### 기사님 회원가입(배포주소)
+POST https://sixth-moving-4team-be.onrender.com/auth/signup/mover
+Content-Type: application/json
+
+{
+    "name": "t6",
+     "email": "test66@test.com", 
+     "phone": "01012121212", 
+     "password": "a66666666",
+     "passwordConfirmation":"a66666666"
+}
+
+### 기사님 로그인(배포주소)
+POST https://sixth-moving-4team-be.onrender.com/auth/signin/mover
+Content-Type: application/json
+
+{
+     "email": "MLocal2@test.com", 
+     "password": "a2222222"
 }
 
 ### 일반 회원 회원가입(local)
@@ -38,16 +59,17 @@ POST http://localhost:4000/auth/signin/client
 Content-Type: application/json
 
 {
-     "email": "0sky@example.com", 
+     "email": "sky@example.com", 
      "password": "asdf1234"
 }
 
 ### RefreshToken
 POST http://localhost:4000/auth/refresh-token
 Content-Type: application/json
-Cookie: refreshToken=값
+Cookie: refreshToken={{token}}
 
 ### 사용자 불러오기
 GET http://localhost:4000/auth
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjMjVhMzk0Mi01MzYzLTRkMDYtOGYzYS01MjY1NzY3NDE4YzQiLCJlbWFpbCI6IjBza3lAZXhhbXBsZS5jb20iLCJuYW1lIjoi7JaR7ISx6rK9IiwidXNlclR5cGUiOiJjbGllbnQiLCJpYXQiOjE3NTI1MDQ2NDEsImV4cCI6MTc1MjUwODI0MX0.jFsM0pGbg1cn_DZX5Fgnj26f6Sxw2JDRlsMfCkeT4uU
+Authorization: Bearer {{token}}
+

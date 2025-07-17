@@ -1,3 +1,5 @@
+@token=
+
 ### 기사님 프로필 등록
 POST http://localhost:3000/profile/movers
 
@@ -9,4 +11,14 @@ POST http://localhost:3000/profile/movers
      "description":"abcdefghijklmnopqrstuvwxyz" , 
      "serviceType":["소형이사", "사무실이사"],
      "region": ["경기"]
+}
+
+### 일반 프로필 등록
+PATCH http://localhost:4000/profile/clients
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+     "serviceType": ["SMALL", "HOME"],
+     "livingArea": ["서울", "경기"]
 }
