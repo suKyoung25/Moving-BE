@@ -173,18 +173,11 @@ async function removeFavoriteMover(clientId: string, moverId: string) {
   });
 }
 
-// 지정
+// 지정 견적 요청
 async function designateMover(requestId: string, moverId: string) {
-  return await prisma.$transaction([
-    prisma.request.update({
-      where: { id: requestId },
-      data: { isPending: false },
-    }),
-    prisma.designatedRequest.update({
-      where: { requestId_moverId: { requestId, moverId } },
-      data: { moverId },
-    }),
-  ]);
+  return await prisma.designatedRequest.create({
+    data: { requestId, moverId },
+  });
 }
 
 export default {
