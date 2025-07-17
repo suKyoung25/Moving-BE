@@ -9,11 +9,11 @@
 import { createMoverProfile } from "../types/mover/auth/authMover.type";
 import profileRespository from "../repositories/profileMover.respository";
 
-//기사님 프로필 생성
-async function createMoverProfile(user: createMoverProfile) {
-    return await profileRespository.saveMoverProfile(user);
-}
+// //기사님 프로필 생성
+// async function createMoverProfile(user: createMoverProfile) {
+//     return await profileRespository.saveMoverProfile(user);
+// }
 
 export default {
-    createMoverProfile,
+  // createMoverProfile,
 };
