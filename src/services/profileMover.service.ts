@@ -15,5 +15,5 @@ import profileRespository from "../repositories/profileMover.respository";
 // }
 
 export default {
-    // createMoverProfile,
+  // createMoverProfile,
 };

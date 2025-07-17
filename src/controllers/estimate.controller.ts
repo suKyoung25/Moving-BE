@@ -7,7 +7,7 @@ async function getWritableEstimates(req: Request, res: Response, next: NextFunct
     const clientId = req.auth!.userId;
 
     const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.pageSize) || 6;
+    const limit = Number(req.query.limit) || 6;
 
     const result = await estimateService.getWritableEstimates(clientId, page, limit);
     res.status(200).json({
