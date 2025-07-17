@@ -33,6 +33,11 @@ async function getPendingEstimates(clientId: Client["id"]) {
             comment: e.comment,
             price: e.price,
             created: e.createdAt,
+            reviewRating: e.mover.averageReviewRating,
+            reviewCount: e.mover.reviewCount,
+            career: e.mover.career,
+            estimateCount: e.mover.estimateCount,
+            favoriteCount: e.mover.favoriteCount,
             isDesignated,
             isFavorited,
           };
@@ -44,6 +49,7 @@ async function getPendingEstimates(clientId: Client["id"]) {
         moveDate: req.moveDate,
         fromAddress: req.fromAddress,
         toAddress: req.toAddress,
+        moveType: req.moveType,
         estimates,
       };
     }),
