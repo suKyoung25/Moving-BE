@@ -7,12 +7,13 @@
  */
 
 import authRepository from "../repositories/authMover.repository";
-import { ConflictError, NotFoundError, UnauthorizedError } from "../types/errors";
+import { ConflictError, NotFoundError } from "../types/errors";
 import { ErrorMessage } from "../constants/ErrorMessage";
-import { createMoverInput, getMoverInput } from "../types/mover/auth/authMover.type";
 import { hashPassword } from "../utils/auth.util";
 import { generateAccessToken, generateRefreshToken } from "../utils/token.util";
 import bcrypt from "bcrypt";
+import { createMoverInput, getMoverInput } from "../types";
+import { UnauthorizedError } from "express-jwt";
 
 //기사님 생성
 async function createMover(user: createMoverInput) {
@@ -31,6 +32,7 @@ async function createMover(user: createMoverInput) {
   if (Object.keys(fieldErrors).length > 0) {
     throw new ConflictError("중복 정보로 인한 회원가입 실패: ", fieldErrors);
   }
+
   const hashedPassword = await hashPassword(user.password);
   const createdMover = await authRepository.saveMover({
     ...user,
@@ -64,38 +66,46 @@ async function createMover(user: createMoverInput) {
 
 //기사님 조회(로그인)
 async function getMoverByEmail(user: getMoverInput) {
+  const fieldErrors: Record<string, string> = {};
+
   //사용자 조회
   const mover = await authRepository.findMoverByEmail(user.email);
   if (!mover) {
-    throw new NotFoundError(ErrorMessage.USER_NOT_FOUND);
+    fieldErrors.email = ErrorMessage.USER_NOT_FOUND;
+
+    throw new ConflictError("기사님 로그인 실패", fieldErrors);
   }
 
   //비밀번호 대조
-  const isPasswordValid = await bcrypt.compare(user.password, mover.hashedPassword!);
+  const isPasswordValid = await bcrypt.compare(user.password, mover?.hashedPassword!);
   if (!isPasswordValid) {
-    throw new UnauthorizedError(ErrorMessage.PASSWORD_NOT_MATCH);
+    fieldErrors.password = ErrorMessage.PASSWORD_NOT_MATCH;
+  }
+
+  if (Object.keys(fieldErrors).length > 0) {
+    throw new ConflictError("기사님 로그인 실패: ", fieldErrors);
   }
 
   //토큰 생성
   const accessToken = generateAccessToken({
-    userId: mover.id,
-    email: mover.email,
-    name: mover.name,
-    userType: mover.userType,
+    userId: mover?.id!,
+    email: mover?.email!,
+    name: mover?.name!,
+    userType: mover?.userType!,
   });
   const refreshToken = generateRefreshToken({
-    userId: mover.id,
-    email: mover.email,
-    name: mover.name,
-    userType: mover.userType,
+    userId: mover?.id!,
+    email: mover?.email!,
+    name: mover?.name!,
+    userType: mover?.userType!,
   });
 
   return {
     user: {
-      userId: mover.id,
-      email: mover.email,
-      name: mover.name,
-      userType: mover.userType,
+      userId: mover?.id,
+      email: mover?.email,
+      name: mover?.name,
+      userType: mover?.userType,
     },
     accessToken,
     refreshToken,
