@@ -1,6 +1,16 @@
-import { Client } from "@prisma/client";
+import { Client, PrismaClient, EstimateStatus } from "@prisma/client";
 import estimateRepository from "../repositories/estimate.repository";
 import { BadRequestError } from "../types/errors";
+
+interface EstimateInput {
+  price?: number;
+  comment: string;
+  moverId: string;
+  clientId: string;
+  requestId: string;
+}
+
+const prisma = new PrismaClient();
 
 // 작성 가능한 리뷰 목록
 async function getWritableEstimates(clientId: Client["id"], page: number, limit: number) {
@@ -56,7 +66,153 @@ async function getPendingEstimates(clientId: Client["id"]) {
   );
 }
 
+// 견적 요청하기
+async function createEstimate({ price, comment, moverId, clientId, requestId }: EstimateInput) {
+  return prisma.estimate.create({
+    data: {
+      price,
+      comment,
+      moverStatus: EstimateStatus.CONFIRMED,
+      client: { connect: { id: clientId } },
+      mover: { connect: { id: moverId } },
+      request: { connect: { id: requestId } },
+    },
+  });
+}
+
+// 견적 거절하기
+async function rejectEstimate({ comment, moverId, clientId, requestId }: EstimateInput) {
+  const newEstimate = await prisma.estimate.create({
+    data: {
+      comment,
+      moverStatus: EstimateStatus.REJECTED,
+      client: { connect: { id: clientId } },
+      mover: { connect: { id: moverId } },
+      request: { connect: { id: requestId } },
+    },
+  });
+
+  return newEstimate;
+}
+
+// 보낸 견적 조회
+async function findEstimatesByMoverId(moverId: string) {
+  return prisma.estimate.findMany({
+    where: {
+      moverId,
+      moverStatus: "CONFIRMED",
+    },
+    select: {
+      id: true,
+      price: true,
+      comment: true,
+      createdAt: true,
+      isClientConfirmed: true,
+      moverId: true,
+      request: {
+        select: {
+          moveDate: true,
+          fromAddress: true,
+          toAddress: true,
+          moveType: true,
+          client: {
+            select: {
+              name: true,
+            },
+          },
+          designatedRequest: {
+            select: {
+              moverId: true,
+            },
+          },
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+}
+
+// 보낸 견적 상세 조회
+async function findSentEstimateById(moverId: string, estimateId: string) {
+  return prisma.estimate.findFirst({
+    where: {
+      id: estimateId,
+      moverId,
+    },
+    select: {
+      id: true,
+      price: true,
+      moverId: true,
+      request: {
+        select: {
+          moveType: true,
+          moveDate: true,
+          fromAddress: true,
+          toAddress: true,
+          requestedAt: true,
+          client: {
+            select: {
+              name: true,
+            },
+          },
+          designatedRequest: {
+            select: {
+              moverId: true,
+            },
+          },
+        },
+      },
+    },
+  });
+}
+
+// 반려한 견적 조회
+async function getEstimatesByStatus(moverId: string) {
+  return prisma.estimate.findMany({
+    where: {
+      moverId,
+      moverStatus: "REJECTED",
+    },
+    select: {
+      id: true,
+      price: true,
+      comment: true,
+      createdAt: true,
+      isClientConfirmed: true,
+      moverId: true,
+      request: {
+        select: {
+          moveDate: true,
+          fromAddress: true,
+          toAddress: true,
+          moveType: true,
+          client: {
+            select: {
+              name: true,
+            },
+          },
+          designatedRequest: {
+            select: {
+              moverId: true,
+            },
+          },
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+}
+
 export default {
   getWritableEstimates,
   getPendingEstimates,
+  createEstimate,
+  findSentEstimateById,
+  rejectEstimate,
+  findEstimatesByMoverId,
+  getEstimatesByStatus,
 };
