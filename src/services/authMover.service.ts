@@ -9,7 +9,7 @@
 import authRepository from "../repositories/authMover.repository";
 import { ConflictError, NotFoundError, UnauthorizedError } from "../types/errors";
 import { ErrorMessage } from "../constants/ErrorMessage";
-import { createMoverInput, getMoverInput } from "../types/mover/auth/authMover.type";
+import { createMoverInput, getMoverInput } from "../types/authMover.type";
 import { hashPassword } from "../utils/auth.util";
 import { generateAccessToken, generateRefreshToken } from "../utils/token.util";
 import bcrypt from "bcrypt";

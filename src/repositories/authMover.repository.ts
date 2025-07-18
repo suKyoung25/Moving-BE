@@ -12,7 +12,7 @@
 
 import { Mover } from "@prisma/client";
 import prisma from "../configs/prisma.config";
-import { createMoverInputwithHash } from "../types/mover/auth/authMover.type";
+import { createMoverInputwithHash } from "../types/authMover.type";
 
 //기사님 생성
 async function saveMover(user: createMoverInputwithHash) {
