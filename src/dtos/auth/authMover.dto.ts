@@ -8,8 +8,8 @@ export interface MoverSignupDto extends createMoverInput {}
 //기사님 로그인 DTO
 export interface MoverSigninDto extends getMoverInput {}
 
-//기사님 회원가입 유효성 검사
-export const signUpMoverSchema = z
+//기사님 회원가입 유효성 검사 //TODO: 일반-회원가입 부분이랑 스키마 통일 시키기
+export const SignUpMoverSchema = z
   .object({
     email: z.string().email().nonempty(ErrorMessage.NO_EMAIL),
 
@@ -33,4 +33,13 @@ export const signUpMoverSchema = z
     path: ["passwordConfirmation"],
   });
 
-// export type SignUpMoverData = z.infer<typeof signUpMoverSchema>;
+//기사님 로그인 유효성 검사 //TODO: 일반-로그인 부분이랑 스키마 통일 시키기
+export const SignInMoverSchema = z.object({
+  email: z.string().email().nonempty(ErrorMessage.NO_EMAIL),
+
+  password: z
+    .string()
+    .min(8, ErrorMessage.PASSWORD_LENGTH_LIMIT)
+    .regex(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/, ErrorMessage.PASSWORD_REGEX)
+    .nonempty(ErrorMessage.NO_PASSWORD),
+});

@@ -8,8 +8,7 @@
 
 import { NextFunction, Request, Response } from "express";
 import authService from "../services/authMover.service";
-import { MoverSigninDto, MoverSignupDto, signUpMoverSchema } from "../dtos/auth/authMover.dto";
-import { loginClientSchema } from "../dtos/authClient.dto";
+import { MoverSigninDto, MoverSignupDto } from "../dtos/auth/authMover.dto";
 
 //기사님 회원가입
 async function moverSingup(
@@ -18,17 +17,9 @@ async function moverSingup(
   next: NextFunction,
 ) {
   try {
-    //req.body 유효성 검사
-    const parsedData = signUpMoverSchema.parse(req.body);
+    const { name, email, phone, password } = req.body; //주석: 미들웨어를 통해 유효성 통과된 req.body
 
-    const signUpData = {
-      name: parsedData.name,
-      email: parsedData.email,
-      phone: parsedData.phone,
-      password: parsedData.password,
-    };
-
-    const mover = await authService.createMover(signUpData);
+    const mover = await authService.createMover({ name, email, phone, password });
 
     res.status(201).json({ message: "Mover 일반 회원가입 성공", data: mover });
   } catch (error) {
@@ -43,14 +34,9 @@ async function moverSignin(
   next: NextFunction,
 ) {
   try {
-    const parsedData = loginClientSchema.parse(req.body);
+    const { email, password } = req.body; //주석: 미들웨어를 통해 유효성 통과된 req.body
 
-    const loginData = {
-      email: parsedData.email,
-      password: parsedData.password,
-    };
-
-    const mover = await authService.getMoverByEmail(loginData);
+    const mover = await authService.setMoverByEmail({ email, password });
     res.status(200).json({ message: "Mover 일반 로그인 성공", data: mover });
   } catch (error) {
     next(error);

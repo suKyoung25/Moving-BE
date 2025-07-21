@@ -7,32 +7,12 @@
  */
 
 import authRepository from "../repositories/authMover.repository";
-import { ConflictError, NotFoundError } from "../types/errors";
-import { ErrorMessage } from "../constants/ErrorMessage";
 import { hashPassword } from "../utils/auth.util";
 import { generateAccessToken, generateRefreshToken } from "../utils/token.util";
-import bcrypt from "bcrypt";
 import { createMoverInput, getMoverInput } from "../types";
-import { UnauthorizedError } from "express-jwt";
 
 //기사님 생성
 async function createMover(user: createMoverInput) {
-  const existedEmail = await authRepository.findMoverByEmail(user.email);
-  const existedPhone = await authRepository.findMoverByPhone(user.phone);
-
-  const fieldErrors: Record<string, string> = {};
-
-  if (existedEmail) {
-    fieldErrors.email = ErrorMessage.ALREADY_EXIST_EMAIL;
-  }
-  if (existedPhone) {
-    fieldErrors.phone = ErrorMessage.ALREADY_EXIST_PHONE;
-  }
-
-  if (Object.keys(fieldErrors).length > 0) {
-    throw new ConflictError("중복 정보로 인한 회원가입 실패: ", fieldErrors);
-  }
-
   const hashedPassword = await hashPassword(user.password);
   const createdMover = await authRepository.saveMover({
     ...user,
@@ -65,26 +45,8 @@ async function createMover(user: createMoverInput) {
 }
 
 //기사님 조회(로그인)
-async function getMoverByEmail(user: getMoverInput) {
-  const fieldErrors: Record<string, string> = {};
-
-  //사용자 조회
-  const mover = await authRepository.findMoverByEmail(user.email);
-  if (!mover) {
-    fieldErrors.email = ErrorMessage.USER_NOT_FOUND;
-
-    throw new ConflictError("기사님 로그인 실패", fieldErrors);
-  }
-
-  //비밀번호 대조
-  const isPasswordValid = await bcrypt.compare(user.password, mover?.hashedPassword!);
-  if (!isPasswordValid) {
-    fieldErrors.password = ErrorMessage.PASSWORD_NOT_MATCH;
-  }
-
-  if (Object.keys(fieldErrors).length > 0) {
-    throw new ConflictError("기사님 로그인 실패: ", fieldErrors);
-  }
+async function setMoverByEmail(user: getMoverInput) {
+  const mover = await authRepository.getMoverByEmail(user.email);
 
   //토큰 생성
   const accessToken = generateAccessToken({
@@ -114,5 +76,5 @@ async function getMoverByEmail(user: getMoverInput) {
 
 export default {
   createMover,
-  getMoverByEmail,
+  setMoverByEmail,
 };
