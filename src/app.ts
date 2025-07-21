@@ -15,6 +15,7 @@ import reviewRouter from "./routers/review.router";
 import estimateRouter from "./routers/estimate.router";
 import requestRouter from "./routers/request.router";
 import { verifyAccessToken } from "./middlewares/auth.middleware";
+import favoriteRouter from "./routers/favorite.router";
 import accountRouter from "./routers/account.router";
 
 const app = express();
@@ -42,6 +43,7 @@ app.use("/dashboard", verifyAccessToken, accountRouter);
 app.use("/movers", moverRouter);
 app.use("/reviews", verifyAccessToken, reviewRouter);
 app.use("/estimates", verifyAccessToken, estimateRouter);
+app.use("/favorites", verifyAccessToken, favoriteRouter);
 app.use("/requests", requestRouter);
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(specs));
 

@@ -1,6 +1,7 @@
 import prisma from "../configs/prisma.config";
 import { ClientProfileRegister } from "../types";
 import { Client, MoveType } from "@prisma/client";
+import { filterSensitiveUserData } from "../utils/auth.util";
 
 // ✅ 사용자 반환 (id로)
 async function findById(id: Client["id"]) {
@@ -11,7 +12,11 @@ async function findById(id: Client["id"]) {
     },
   });
 
-  return { ...client, userType: "client", isProfileCompleted: false };
+  const livingArea = client?.livingArea.map((area) => area.regionName);
+
+  const safeClient = filterSensitiveUserData(client!);
+
+  return { ...safeClient, userType: "client", livingArea };
 }
 
 // ✅ 프로필 생성

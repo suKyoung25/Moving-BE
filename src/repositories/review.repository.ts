@@ -48,7 +48,7 @@ async function findReviewsByClientId(
       moverNickname: e.mover.nickName,
       moverProfileImage: e.mover.profileImage,
       price: e.estimate.price,
-      MoveType: e.estimate.request.moveType,
+      moveType: e.estimate.request.moveType,
       moveDate: e.estimate.request.moveDate,
       isDesignatedEstimate:
         Array.isArray(e.estimate.request.designatedRequest) &&
