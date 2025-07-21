@@ -67,18 +67,11 @@ async function setMoverByEmail(user: getMoverInput) {
 
   return {
     user: {
-<<<<<<< HEAD
       userId: mover?.id,
       email: mover?.email,
       name: mover?.name,
       userType: mover?.userType,
-=======
-      userId: mover.id,
-      email: mover.email,
-      name: mover.name,
-      userType: mover.userType,
-      phone: mover.phone,
->>>>>>> feat/mover-myPage-basicInfo-fetch
+      phone: mover?.phone,
     },
     accessToken,
     refreshToken,
