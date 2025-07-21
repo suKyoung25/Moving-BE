@@ -8,7 +8,7 @@ import {
   validateReq,
   verifyAccessToken,
 } from "../middlewares/auth.middleware";
-import { SignInMoverSchema, SignUpMoverSchema } from "../dtos/auth/authMover.dto";
+import { SignInMoverSchema, SignUpMoverSchema } from "../dtos/authMover.dto";
 
 const authRouter = express.Router();
 
