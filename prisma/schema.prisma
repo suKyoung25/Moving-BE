@@ -21,12 +21,11 @@ model Client {
   serviceType        MoveType[]
   isProfileCompleted Boolean    @default(false)
 
-  livingArea    Region[]
-  requests      Request[]
-  estimates     Estimate[]
-  reviews       Review[]
-  favorites     Favorite[]
-  notifications Notification[]
+  livingArea Region[]
+  requests   Request[]
+  estimates  Estimate[]
+  reviews    Review[]
+  favorites  Favorite[]
 }
 
 model Mover {
@@ -55,7 +54,6 @@ model Mover {
   estimates          Estimate[]
   reviews            Review[]
   favorites          Favorite[]
-  notifications      Notification[]
   designatedRequests DesignatedRequest[]
 }
 
@@ -121,15 +119,11 @@ model Review {
 
 model Notification {
   id        String           @id @default(uuid())
-  clientId  String
-  moverId   String
+  userId    String
   content   String
+  type      NotificationType
   isRead    Boolean          @default(false)
   createdAt DateTime         @default(now())
-  type      NotificationType
-
-  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  mover  Mover? @relation(fields: [moverId], references: [id], onDelete: Cascade)
 }
 
 model Favorite {
