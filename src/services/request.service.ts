@@ -1,10 +1,9 @@
 import { MoveType } from "@prisma/client";
-import { CreateRequestDto } from "../dtos/request.dto";
+import { CreateRequestDto, CreateRequestSchema } from "../dtos/request.dto";
 import requestRepository from "../repositories/request.repository";
 import { GetReceivedRequestsQuery } from "../types";
 import { BadRequestError } from "../types/errors";
 import { ErrorMessage } from "../constants/ErrorMessage";
-import { CreateRequestSchema } from "../schemas/request.schema";
 
 // 견적 요청 (일반 유저)
 async function createRequest({
