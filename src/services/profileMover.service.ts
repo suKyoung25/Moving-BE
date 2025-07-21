@@ -6,6 +6,7 @@
  *
  */
 
+<<<<<<< HEAD
 import profileMoverRespository from "../repositories/profileMover.respository";
 import { MoverProfile } from "../types";
 import { serviceTypeMap } from "../utils/dataMapper.util";
@@ -33,4 +34,16 @@ async function patchMoverProfile(user: MoverProfile) {
 export default {
   createMoverProfile,
   patchMoverProfile,
+=======
+import { createMoverProfile } from "../types/authMover.type";
+import profileRespository from "../repositories/profileMover.respository";
+
+//기사님 프로필 생성
+// async function createMoverProfile(user: createMoverProfile) {
+//     return await profileRespository.saveMoverProfile(user);
+// }
+
+export default {
+  // createMoverProfile,
+>>>>>>> fix/mover-myPage-basicInfo-react-hook-form
 };

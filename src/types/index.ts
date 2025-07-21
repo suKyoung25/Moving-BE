@@ -8,7 +8,11 @@
  * export * from "./service";
  */
 
+<<<<<<< HEAD
 export * from "./authMover.types";
+=======
+export * from "./authMover.type";
+>>>>>>> fix/mover-myPage-basicInfo-react-hook-form
 export * from "./token.type";
 export * from "./authClient.types";
 export * from "./profile.types";

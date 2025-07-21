@@ -8,8 +8,7 @@
 
 import { NextFunction, Request, Response } from "express";
 import authService from "../services/authMover.service";
-import { MoverSigninDto, MoverSignupDto, signUpMoverSchema } from "../dtos/auth/authMover.dto";
-import { BadRequestError } from "../types/errors";
+import { MoverSigninDto, MoverSignupDto } from "../dtos/authMover.dto";
 
 //기사님 회원가입
 async function moverSingup(
@@ -17,23 +16,12 @@ async function moverSingup(
   res: Response,
   next: NextFunction,
 ) {
-  //req.body 유효성 검사
-  const parsed = signUpMoverSchema.safeParse(req.body);
-  if (!parsed.success) {
-    const errorMessages = parsed.error.errors.map((err) => `${err.path.join(".")}: ${err.message}`);
-    throw new BadRequestError(errorMessages.join("; "));
-  }
-
-  const { name, email, phone, password } = req.body;
-
   try {
-    const mover = await authService.createMover({
-      name,
-      email,
-      phone,
-      password,
-    });
-    res.status(201).json(mover);
+    const { name, email, phone, password } = req.body; //주석: 미들웨어를 통해 유효성 통과된 req.body
+
+    const mover = await authService.createMover({ name, email, phone, password });
+
+    res.status(201).json({ message: "Mover 일반 회원가입 성공", data: mover });
   } catch (error) {
     next(error);
   }
@@ -45,14 +33,11 @@ async function moverSignin(
   res: Response,
   next: NextFunction,
 ) {
-  const { email, password } = req.body;
-
   try {
-    const mover = await authService.getMoverByEmail({
-      email,
-      password,
-    });
-    res.status(200).json(mover);
+    const { email, password } = req.body; //주석: 미들웨어를 통해 유효성 통과된 req.body
+
+    const mover = await authService.setMoverByEmail({ email, password });
+    res.status(200).json({ message: "Mover 일반 로그인 성공", data: mover });
   } catch (error) {
     next(error);
   }

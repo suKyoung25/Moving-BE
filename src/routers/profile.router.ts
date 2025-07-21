@@ -1,5 +1,10 @@
 import express from "express";
+<<<<<<< HEAD
 import profileMoverController from "../controllers/profileMover.controller";
+=======
+import profileClientController from "../controllers/profileClient.controller";
+import { verifyAccessToken } from "../middlewares/auth.middleware";
+>>>>>>> fix/mover-myPage-basicInfo-react-hook-form
 
 const profileRouter = express.Router();
 
@@ -14,6 +19,7 @@ profileRouter.post("/mover", profileMoverController.moverCreateProfile);
 //기사님 프로필 수정
 profileRouter.patch("/mover", profileMoverController.moverPatchProfile);
 
-//todo:일반 유저 프로필 등록과 수정
+// 일반 유저 프로필 등록
+profileRouter.patch("/clients", verifyAccessToken, profileClientController.post);
 
 export default profileRouter;

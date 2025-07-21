@@ -11,6 +11,7 @@ import { ConflictError, NotFoundError, UnauthorizedError } from "../types/errors
 import { ErrorMessage } from "../constants/ErrorMessage";
 import { hashPassword } from "../utils/auth.util";
 import { generateAccessToken, generateRefreshToken } from "../utils/token.util";
+<<<<<<< HEAD
 import bcrypt from "bcrypt";
 import { CreateMoverInput, GetMoverInput } from "../types";
 
@@ -25,6 +26,12 @@ async function createMover(user: CreateMoverInput) {
     throw new ConflictError(ErrorMessage.ALREADY_EXIST_PHONE);
   }
 
+=======
+import { createMoverInput, getMoverInput } from "../types";
+
+//기사님 생성
+async function createMover(user: createMoverInput) {
+>>>>>>> fix/mover-myPage-basicInfo-react-hook-form
   const hashedPassword = await hashPassword(user.password);
   const createdMover = await authRepository.saveMover({
     ...user,
@@ -47,15 +54,26 @@ async function createMover(user: CreateMoverInput) {
   return {
     accessToken,
     refreshToken,
+<<<<<<< HEAD
     userId: createdMover.id,
     email: createdMover.email,
     nickName: createdMover.nickName,
     userType: createdMover.userType,
     profileCompleted: createdMover.profileCompleted,
+=======
+    user: {
+      userId: createdMover.id,
+      email: createdMover.email,
+      name: createdMover.name,
+      phone: createdMover.phone,
+      userType: createdMover.userType,
+    },
+>>>>>>> fix/mover-myPage-basicInfo-react-hook-form
   };
 }
 
 //기사님 조회(로그인)
+<<<<<<< HEAD
 async function getMoverByEmail(user: GetMoverInput) {
   //사용자 조회
   const mover = await authRepository.findMoverByEmail(user.email);
@@ -68,22 +86,36 @@ async function getMoverByEmail(user: GetMoverInput) {
   if (!isPasswordValid) {
     throw new UnauthorizedError(ErrorMessage.PASSWORD_NOT_MATCH);
   }
+=======
+async function setMoverByEmail(user: getMoverInput) {
+  const mover = await authRepository.getMoverByEmail(user.email);
+>>>>>>> fix/mover-myPage-basicInfo-react-hook-form
 
   //토큰 생성
   const accessToken = generateAccessToken({
-    userId: mover.id,
-    email: mover.email,
-    name: mover.name,
-    userType: mover.userType,
+    userId: mover?.id!,
+    email: mover?.email!,
+    name: mover?.name!,
+    userType: mover?.userType!,
   });
   const refreshToken = generateRefreshToken({
-    userId: mover.id,
-    email: mover.email,
-    name: mover.name,
-    userType: mover.userType,
+    userId: mover?.id!,
+    email: mover?.email!,
+    name: mover?.name!,
+    userType: mover?.userType!,
   });
 
   return {
+<<<<<<< HEAD
+=======
+    user: {
+      userId: mover?.id,
+      email: mover?.email,
+      name: mover?.name,
+      userType: mover?.userType,
+      phone: mover?.phone,
+    },
+>>>>>>> fix/mover-myPage-basicInfo-react-hook-form
     accessToken,
     refreshToken,
     userId: mover.id,
@@ -96,5 +128,5 @@ async function getMoverByEmail(user: GetMoverInput) {
 
 export default {
   createMover,
-  getMoverByEmail,
+  setMoverByEmail,
 };

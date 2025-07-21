@@ -40,7 +40,7 @@ async function create(user: SignUpDataLocal) {
     },
   });
 
-  return { ...newClient, userType: "client", profileCompleted: false }; // userType: 헤더에서 씀
+  return { ...newClient, userType: "client", isProfileCompleted: false }; // userType: 헤더에서 씀
 }
 
 const authClientRepository = {

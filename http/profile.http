@@ -1,4 +1,4 @@
-@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3NzNmOTI2NC1hMGVkLTQxMzItYTQzNC04MzcwZDQ1NzhlYjkiLCJlbWFpbCI6InRlc3Q2QHRlc3QuY29tIiwibmFtZSI6InQ2IiwidXNlclR5cGUiOiJtb3ZlciIsImlhdCI6MTc1MjQ4MDU1MCwiZXhwIjoxNzUyNDg0MTUwfQ.JkXNM5-srq7PIAwqlyFhnClrk9Pbwuja63K3VLLR1Ok
+@token=
 
 ### 기사님 프로필 등록
 POST http://localhost:4000/profile/mover
@@ -11,19 +11,15 @@ Authorization: Bearer {{token}}
      "introduction":"abcdefghijklmnopqrstuvwxyz",  
      "description":"abcdefghijklmnopqrstuvwxyz" , 
      "serviceType":["소형이사", "사무실이사"],
-     "serviceArea": ["경기", "인천"]
+     "region": ["경기"]
 }
 
-### 기사님 프로필 수정
-PATCH  http://localhost:4000/profile/mover
+### 일반 프로필 등록
+PATCH http://localhost:4000/profile/clients
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-     "nickName": "tester6-1", 
-     "career": 7, 
-     "introduction":"abcdefghijklmnopqrstuvwxyz",  
-     "description":"abcdefghijklmnopqrstuvwxyz" , 
-     "serviceType":["소형이사", "사무실이사"],
-     "serviceArea": ["경기"]
+     "serviceType": ["SMALL", "HOME"],
+     "livingArea": ["서울", "경기"]
 }

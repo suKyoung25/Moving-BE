@@ -5,20 +5,41 @@ POST http://localhost:4000/auth/signup/mover
 Content-Type: application/json
 
 {
-    "name": "t8",
-     "email": "test8@test.com", 
-     "phone": "01088888888", 
-     "password": "a88888888",
-       "passwordConfirmation":"a88888888"
+    "name": "t6",
+     "email": "test6@test.com", 
+     "phone": "06066666666", 
+     "password": "a66666666",
+     "passwordConfirmation":"a66666666"
 }
 
-###기사님 로그인(local)
+### 기사님 로그인(local)
 POST http://localhost:4000/auth/signin/mover
 Content-Type: application/json
 
 {
-        "email": "test6@test.com", 
-     "password": "a66666666"
+     "email": "MLocal4@test.com", 
+     "password": "a4444444"
+}
+
+### 기사님 회원가입(배포주소)
+POST https://sixth-moving-4team-be.onrender.com/auth/signup/mover
+Content-Type: application/json
+
+{
+    "name": "t6",
+     "email": "test66@test.com", 
+     "phone": "01012121212", 
+     "password": "a66666666",
+     "passwordConfirmation":"a66666666"
+}
+
+### 기사님 로그인(배포주소)
+POST https://sixth-moving-4team-be.onrender.com/auth/signin/mover
+Content-Type: application/json
+
+{
+     "email": "MLocal2@test.com", 
+     "password": "a2222222"
 }
 
 ### 일반 회원 회원가입(local)
@@ -45,9 +66,11 @@ Content-Type: application/json
 ### RefreshToken
 POST http://localhost:4000/auth/refresh-token
 Content-Type: application/json
-Cookie: refreshToken=값
+Cookie: refreshToken={{token}}
 
 ### 사용자 불러오기
 GET http://localhost:4000/auth
 Content-Type: application/json
-Authorization: Bearer 값
+Authorization: Bearer {{token}}
+
+### 일반 회원 정보 전체 반환
