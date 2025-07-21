@@ -7,6 +7,8 @@
  */
 
 import authRepository from "../repositories/authMover.repository";
+import { ConflictError, NotFoundError, UnauthorizedError } from "../types/errors";
+import { ErrorMessage } from "../constants/ErrorMessage";
 import { hashPassword } from "../utils/auth.util";
 import { generateAccessToken, generateRefreshToken } from "../utils/token.util";
 import { createMoverInput, getMoverInput } from "../types";
@@ -39,6 +41,7 @@ async function createMover(user: createMoverInput) {
       userId: createdMover.id,
       email: createdMover.email,
       name: createdMover.name,
+      phone: createdMover.phone,
       userType: createdMover.userType,
     },
   };
@@ -64,10 +67,18 @@ async function setMoverByEmail(user: getMoverInput) {
 
   return {
     user: {
+<<<<<<< HEAD
       userId: mover?.id,
       email: mover?.email,
       name: mover?.name,
       userType: mover?.userType,
+=======
+      userId: mover.id,
+      email: mover.email,
+      name: mover.name,
+      userType: mover.userType,
+      phone: mover.phone,
+>>>>>>> feat/mover-myPage-basicInfo-fetch
     },
     accessToken,
     refreshToken,

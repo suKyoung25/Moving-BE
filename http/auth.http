@@ -1,4 +1,4 @@
-@token=
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjMjVhMzk0Mi01MzYzLTRkMDYtOGYzYS01MjY1NzY3NDE4YzQiLCJlbWFpbCI6IjBza3lAZXhhbXBsZS5jb20iLCJuYW1lIjoi7JaR7ISx6rK9IiwidXNlclR5cGUiOiJjbGllbnQiLCJpYXQiOjE3NTI2NDIwNDMsImV4cCI6MTc1MjY0NTY0M30.cGy4KKNqYQa4qC71SxayxFUYSSjc7XhnAyZDBGx0OVs
 
 ### 기사님 회원가입(local)
 POST http://localhost:4000/auth/signup/mover
@@ -12,17 +12,13 @@ Content-Type: application/json
      "passwordConfirmation":"a66666666"
 }
 
-###기사님 로그인(local)
+### 기사님 로그인(local)
 POST http://localhost:4000/auth/signin/mover
 Content-Type: application/json
 
-# {
-#      "email": "local1@test.com", 
-#      "password": "a9999999"
-# }
 {
-     "email": "test6@test.com", 
-     "password": "a66666666"
+     "email": "MLocal4@test.com", 
+     "password": "a4444444"
 }
 
 ### 기사님 회원가입(배포주소)
@@ -70,11 +66,11 @@ Content-Type: application/json
 ### RefreshToken
 POST http://localhost:4000/auth/refresh-token
 Content-Type: application/json
-Cookie: refreshToken=값
+Cookie: refreshToken={{token}}
 
-### 사용자 불러오기 (토큰만 간단하게)
+### 사용자 불러오기
 GET http://localhost:4000/auth
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjMjVhMzk0Mi01MzYzLTRkMDYtOGYzYS01MjY1NzY3NDE4YzQiLCJlbWFpbCI6IjBza3lAZXhhbXBsZS5jb20iLCJuYW1lIjoi7JaR7ISx6rK9IiwidXNlclR5cGUiOiJjbGllbnQiLCJpYXQiOjE3NTI1NjY2ODUsImV4cCI6MTc1MjU3MDI4NX0.pFHqp1C-Gv2JPMBN-7r2bag73jilOQB_MpiE-yMx15c
+Authorization: Bearer {{token}}
 
 ### 일반 회원 정보 전체 반환
