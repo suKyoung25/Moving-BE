@@ -47,7 +47,11 @@ async function patchMoverAccount(newData: EditMoverAccount) {
   }
 
   //프론트에서 받은 비밀번호 해시
-  const hashedNewPassword = await hashPassword(newData.newPassword);
+  let hashedNewPassword: string | undefined = undefined;
+
+  if (newData.newPassword) {
+    hashedNewPassword = await hashPassword(newData.newPassword);
+  }
 
   const patchedMoverAccount = await accountMoverRepository.patchMoverAccount({
     ...newData,
