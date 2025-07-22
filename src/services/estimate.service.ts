@@ -207,6 +207,51 @@ async function getEstimatesByStatus(moverId: string) {
   });
 }
 
+// 받은 견적 조회
+async function getReceivedEstimates(clientId: Client["id"]) {
+  const requests = await estimateRepository.findReceivedEstimatesByClientId(clientId);
+
+  return Promise.all(
+    requests.map(async (req) => {
+      const designatedMoverIds = req.designatedRequest.map((d) => d.moverId);
+
+      const estimates = await Promise.all(
+        req.estimate.map(async (e) => {
+          const isDesignated = designatedMoverIds.includes(e.moverId);
+          const isFavorited = await estimateRepository.isFavoritMover(clientId, e.moverId);
+
+          return {
+            estimateId: e.id,
+            moverId: e.mover.id,
+            moverName: e.mover.name,
+            moverNickName: e.mover.nickName,
+            profileImage: e.mover.profileImage,
+            comment: e.comment,
+            price: e.price,
+            created: e.createdAt,
+            reviewRating: e.mover.averageReviewRating,
+            reviewCount: e.mover.reviewCount,
+            career: e.mover.career,
+            estimateCount: e.mover.estimateCount,
+            favoriteCount: e.mover.favoriteCount,
+            isDesignated,
+            isFavorited,
+          };
+        }),
+      );
+
+      return {
+        requestId: req.id,
+        moveDate: req.moveDate,
+        fromAddress: req.fromAddress,
+        toAddress: req.toAddress,
+        moveType: req.moveType,
+        estimates,
+      };
+    }),
+  );
+}
+
 export default {
   getWritableEstimates,
   getPendingEstimates,
@@ -215,4 +260,5 @@ export default {
   rejectEstimate,
   findEstimatesByMoverId,
   getEstimatesByStatus,
+  getReceivedEstimates,
 };

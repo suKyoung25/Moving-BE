@@ -183,6 +183,20 @@ async function getRejectedEstimates(
   }
 }
 
+// 대기중연 견적 조회
+async function getReceivedEstimates(req: Request, res: Response, next: NextFunction) {
+  try {
+    const clientId = req.auth!.userId;
+    const data = await estimateService.getReceivedEstimates(clientId);
+    return res.status(200).json({
+      message: "받은(확정된) 견적 조회 성공",
+      data: data,
+    });
+  } catch (e) {
+    next(e);
+  }
+}
+
 export default {
   getWritableEstimates,
   getPendingEstimates,
@@ -191,4 +205,5 @@ export default {
   rejectEstimate,
   getSentEstimates,
   getRejectedEstimates,
+  getReceivedEstimates,
 };
