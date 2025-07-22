@@ -1,10 +1,7 @@
 import express from "express";
-<<<<<<< HEAD
-import profileMoverController from "../controllers/profileMover.controller";
-=======
 import profileClientController from "../controllers/profileClient.controller";
 import { verifyAccessToken } from "../middlewares/auth.middleware";
->>>>>>> fix/mover-myPage-basicInfo-react-hook-form
+import profileMoverController from "../controllers/profileMover.controller";
 
 const profileRouter = express.Router();
 

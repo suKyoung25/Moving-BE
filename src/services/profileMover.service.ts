@@ -6,7 +6,6 @@
  *
  */
 
-<<<<<<< HEAD
 import profileMoverRespository from "../repositories/profileMover.respository";
 import { MoverProfile } from "../types";
 import { serviceTypeMap } from "../utils/dataMapper.util";
@@ -15,35 +14,23 @@ import { serviceTypeMap } from "../utils/dataMapper.util";
 async function createMoverProfile(user: MoverProfile) {
   //serviceType 데이터 맞추기
   const mappedServiceType = user.serviceType.map((label) => serviceTypeMap[label]);
-  return await profileMoverRespository.saveMoverProfile({
-    ...user,
-    serviceType: mappedServiceType,
-  });
+  // return await profileMoverRespository.saveMoverProfile({
+  //   ...user,
+  //   serviceType: mappedServiceType,
+  // });
 }
 
 //기사님 프로필 수정
 async function patchMoverProfile(user: MoverProfile) {
   //serviceType 데이터 맞추기
   const mappedServiceType = user.serviceType.map((label) => serviceTypeMap[label]);
-  return await profileMoverRespository.patchMoverProfile({
-    ...user,
-    serviceType: mappedServiceType,
-  });
+  // return await profileMoverRespository.patchMoverProfile({
+  //   ...user,
+  //   serviceType: mappedServiceType,
+  // });
 }
 
 export default {
   createMoverProfile,
   patchMoverProfile,
-=======
-import { createMoverProfile } from "../types/authMover.type";
-import profileRespository from "../repositories/profileMover.respository";
-
-//기사님 프로필 생성
-// async function createMoverProfile(user: createMoverProfile) {
-//     return await profileRespository.saveMoverProfile(user);
-// }
-
-export default {
-  // createMoverProfile,
->>>>>>> fix/mover-myPage-basicInfo-react-hook-form
 };
