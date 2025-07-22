@@ -4,6 +4,8 @@ import requestRepository from "../repositories/request.repository";
 import { GetReceivedRequestsQuery } from "../types";
 import { BadRequestError } from "../types/errors";
 import { ErrorMessage } from "../constants/ErrorMessage";
+import authClientRepository from "../repositories/authClient.repository";
+import notificationService from "./notification.service";
 
 // 견적 요청 (일반 유저)
 async function createRequest({
@@ -22,6 +24,18 @@ async function createRequest({
     const errorMessage = parseResult.error.errors[0]?.message ?? ErrorMessage.INVALID_INPUT;
     throw new BadRequestError(errorMessage);
   }
+
+  // 견적 요청한 유저 이름 조회
+  const client = await authClientRepository.findById(clientId);
+
+  // 새로운 견적 요청 알림 생성 (to 기사)
+  await notificationService.notifyEstimateRequest({
+    clientName: client!.name,
+    fromAddress: request.fromAddress,
+    toAddress: request.toAddress,
+    moveType: request.moveType,
+    type: "NEW_ESTIMATE",
+  });
 
   return await requestRepository.createEstimateRequest(parseResult.data, clientId);
 }
