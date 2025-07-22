@@ -27,13 +27,16 @@ async function createReview(data: CreateReviewDto, clientId: Client["id"]) {
   const estimate = await estimateRepository.getEstimateMoverId(estimateId);
   if (!estimate) throw new BadRequestError("존재하지 않는 견적입니다.");
 
-  return reviewRepository.createReview({
-    estimate: { connect: { id: estimateId } },
-    client: { connect: { id: clientId } },
-    mover: { connect: { id: estimate.moverId } },
-    rating,
-    content,
-  });
+  return reviewRepository.createReview(
+    {
+      estimate: { connect: { id: estimateId } },
+      client: { connect: { id: clientId } },
+      mover: { connect: { id: estimate.moverId } },
+      rating,
+      content,
+    },
+    estimate.moverId,
+  );
 }
 
 // 리뷰 수정

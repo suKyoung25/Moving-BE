@@ -1,4 +1,4 @@
-import { Client, MoveType, Prisma, Review } from "@prisma/client";
+import { Client, Prisma, Review, Mover } from "@prisma/client";
 import prisma from "../configs/prisma.config";
 import { ServerError, ValidationError } from "../types/errors";
 
@@ -69,8 +69,25 @@ async function findReviewsByClientId(
   }
 }
 
+// 리뷰 평점 및 카운팅
+async function _updateMoverReviewStatsTx(moverId: Mover["id"], tx: Prisma.TransactionClient) {
+  const stats = await tx.review.aggregate({
+    where: { moverId },
+    _avg: { rating: true },
+    _count: { rating: true },
+  });
+
+  await tx.mover.update({
+    where: { id: moverId },
+    data: {
+      averageReviewRating: stats._avg.rating ?? 0,
+      reviewCount: stats._count.rating,
+    },
+  });
+}
+
 // 리뷰 작성
-async function createReview(data: Prisma.ReviewCreateInput) {
+async function createReview(data: Prisma.ReviewCreateInput, moverId: Mover["id"]) {
   try {
     const estimateId = data.estimate.connect?.id;
     if (!estimateId) {
@@ -84,7 +101,11 @@ async function createReview(data: Prisma.ReviewCreateInput) {
       throw new ValidationError("이미 리뷰가 등록된 견적입니다.");
     }
 
-    return await prisma.review.create({ data });
+    return await prisma.$transaction(async (tx) => {
+      const review = await tx.review.create({ data });
+      await _updateMoverReviewStatsTx(moverId, tx);
+      return review;
+    });
   } catch (error) {
     if (error instanceof ValidationError) throw error;
     throw new ServerError("리뷰 등록 중 서버 오류가 발생했습니다.", error);
@@ -106,9 +127,15 @@ async function updateReview(
   data: Partial<Pick<Review, "rating" | "content">>,
 ) {
   try {
-    return await prisma.review.update({
-      where: { id: reviewId },
-      data,
+    const review = await findReviewById(reviewId);
+    if (!review) throw new ValidationError("리뷰를 찾을 수 없습니다.");
+    return await prisma.$transaction(async (tx) => {
+      const updated = await tx.review.update({
+        where: { id: reviewId },
+        data,
+      });
+      await _updateMoverReviewStatsTx(review.moverId, tx);
+      return updated;
     });
   } catch (error) {
     throw new ServerError("리뷰 수정 중 서버 오류가 발생했습니다.", error);
@@ -118,7 +145,12 @@ async function updateReview(
 // 리뷰 삭제
 async function deleteReview(reviewId: Review["id"]) {
   try {
-    await prisma.review.delete({ where: { id: reviewId } });
+    const review = await findReviewById(reviewId);
+    if (!review) throw new ValidationError("리뷰를 찾을 수 없습니다.");
+    return await prisma.$transaction(async (tx) => {
+      await tx.review.delete({ where: { id: reviewId } });
+      await _updateMoverReviewStatsTx(review.moverId, tx);
+    });
   } catch (error) {
     throw new ServerError("리뷰 삭제 중 서버 오류가 발생했습니다.", error);
   }
