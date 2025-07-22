@@ -36,6 +36,7 @@ async function findFavoriteMoverByClientId(
     ]);
 
     return {
+      id: favorites.map((f) => f.id),
       movers: favorites.map((f) => f.mover),
       total,
       pagination: {
