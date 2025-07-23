@@ -11,25 +11,10 @@ import { MoverProfile } from "../types";
 
 //기사님 프로필 생성과 수정
 async function modifyMoverProfile(user: MoverProfile) {
-  // //serviceType 데이터 맞추기
-  // const mappedServiceType = user.serviceType.map((label) => serviceTypeMap[label]);
-
   return await profileMoverRespository.modifyMoverProfile({
     ...user,
-    // serviceType: mappedServiceType,
   });
 }
-
-// //기사님 프로필 수정
-// async function patchMoverProfile(user: MoverProfile) {
-//   //serviceType 데이터 맞추기
-//   const mappedServiceType = user.serviceType.map((label) => serviceTypeMap[label]);
-
-//   return await profileMoverRespository.saveMoverProfile({
-//     ...user,
-//     serviceType: mappedServiceType,
-//   });
-//
 
 export default {
   modifyMoverProfile,
