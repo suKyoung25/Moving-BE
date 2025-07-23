@@ -187,9 +187,10 @@ async function getRejectedEstimates(
 async function getReceivedEstimates(req: Request, res: Response, next: NextFunction) {
   try {
     const clientId = req.auth!.userId;
-    const data = await estimateService.getReceivedEstimates(clientId);
+    const category = (req.query.category as "all" | "confirmed") || "all";
+    const data = await estimateService.getReceivedEstimates(clientId, category);
     return res.status(200).json({
-      message: "받은(확정된) 견적 조회 성공",
+      message: "받은 견적 조회 성공",
       data: data,
     });
   } catch (e) {

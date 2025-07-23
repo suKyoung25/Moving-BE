@@ -30,6 +30,10 @@ estimateRouter.get("/sent", estimateController.getSentEstimates);
 estimateRouter.get("/rejected", estimateController.getRejectedEstimates);
 
 // 받은 견적 조회
-estimateRouter.get("/received", estimateController.getReceivedEstimates as RequestHandler);
+estimateRouter.get(
+  "/received",
+  verifyAccessToken,
+  estimateController.getReceivedEstimates as RequestHandler,
+);
 
 export default estimateRouter;
