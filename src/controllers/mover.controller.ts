@@ -38,10 +38,38 @@ async function getMoverDetail(req: Request, res: Response, next: NextFunction) {
   }
 }
 
+// 새로운 토글 엔드포인트
+async function toggleFavoriteMover(req: Request, res: Response, next: NextFunction) {
+  try {
+    console.log("찜 토글 요청:", {
+      userId: req.auth?.userId,
+      moverId: req.params.moverId
+    });
+
+    const result = await moverService.toggleFavoriteMover(req.auth!.userId, req.params.moverId);
+    
+    const message = result.action === 'added' ? '찜 추가 성공' : '찜 해제 성공';
+    
+    res.status(200).json({
+      message,
+      action: result.action,
+      isFavorite: result.isFavorite,
+      favoriteCount: result.favoriteCount
+    });
+  } catch (error) {
+    console.error("찜 토글 오류:", error);
+    next(error);
+  }
+}
+
+// 레거시 엔드포인트들 (기존 호환성 유지)
 async function favoriteMover(req: Request, res: Response, next: NextFunction) {
   try {
-    console.log("req.auth:", req.auth); // userId 포함 확인
-    console.log("moverId:", req.params.moverId);
+    console.log("레거시 찜하기 요청:", {
+      userId: req.auth?.userId,
+      moverId: req.params.moverId
+    });
+
     await moverService.favoriteMover(req.auth!.userId, req.params.moverId);
     res.status(200).json({ message: "찜 성공" });
   } catch (error) {
@@ -51,6 +79,11 @@ async function favoriteMover(req: Request, res: Response, next: NextFunction) {
 
 async function unfavoriteMover(req: Request, res: Response, next: NextFunction) {
   try {
+    console.log("레거시 찜 해제 요청:", {
+      userId: req.auth?.userId,
+      moverId: req.params.moverId
+    });
+
     await moverService.unfavoriteMover(req.auth!.userId, req.params.moverId);
     res.status(200).json({ message: "찜 취소 성공" });
   } catch (error) {
@@ -70,6 +103,7 @@ async function designateMover(req: Request, res: Response, next: NextFunction) {
 export default {
   getMovers,
   getMoverDetail,
+  toggleFavoriteMover,
   favoriteMover,
   unfavoriteMover,
   designateMover,

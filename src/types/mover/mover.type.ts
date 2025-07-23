@@ -2,7 +2,12 @@ export type SimplifiedMover = {
   id: string;
   nickName: string | null;
   serviceType: string[]; // 혹은 MoveType[]
+  career: number | null;
+  averageReviewRating: number;
+  reviewCount: number;
+  estimateCount: number;
   profileImage: string | null;
+  favoriteCount: number;
   isFavorite: boolean;
 };
 
@@ -19,5 +24,6 @@ export type MoverDetail = {
   averageReviewRating: number;
   reviewCount: number;
   estimateCount: number;
+  favoriteCount: number;
   isFavorite: boolean;
 };
