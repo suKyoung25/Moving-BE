@@ -1,4 +1,4 @@
-@token=
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzYjRiNGUxZS02ZmRlLTRjZjktYWZlMS1hMzIwODZiMzc3MjciLCJlbWFpbCI6Ik1NTG9jYWw4QHRlc3QuY29tIiwibmFtZSI6IuuCmOyXkOuUlCIsInVzZXJUeXBlIjoibW92ZXIiLCJpYXQiOjE3NTMyNDQxOTgsImV4cCI6MTc1MzI0Nzc5OH0.BqNNNPy1_Ab_ddJodfx4NB-UzEXBsPEsJv_IqWG_ZVI
 
 ### 기사님 프로필 등록
 POST http://localhost:4000/profile/mover
@@ -6,12 +6,12 @@ Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-     "nickName": "tester6", 
+     "nickName": "ㅂㅂㅁ2", 
      "career": 3, 
-     "introduction":"abcdefghijklmnopqrstuvwxyz",  
-     "description":"abcdefghijklmnopqrstuvwxyz" , 
-     "serviceType":["소형이사", "사무실이사"],
-     "region": ["경기"]
+     "introduction":"안녕하세요 ㅂㅁ3입니다",  
+     "description":"안녕하세요 ㅂㅁ3입니다" , 
+     "serviceType":["소형이사"],
+     "serviceArea": ["경기", "인천"]
 }
 
 ### 일반 프로필 등록

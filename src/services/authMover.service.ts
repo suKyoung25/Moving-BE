@@ -6,8 +6,10 @@
  *
  */
 
+import { ErrorMessage } from "../constants/ErrorMessage";
 import authRepository from "../repositories/authMover.repository";
 import { CreateMoverInput, GetMoverInput } from "../types";
+import { NotFoundError } from "../types/errors";
 import { hashPassword } from "../utils/auth.util";
 import { generateAccessToken, generateRefreshToken } from "../utils/token.util";
 

@@ -4,7 +4,7 @@ import { MoveType } from "@prisma/client";
 export type MoverProfile = {
   userId: string;
   email: string;
-  image: string;
+  image?: string;
   nickName: string;
   career: number;
   introduction: string;

@@ -19,6 +19,7 @@ async function moverCreateProfile(
   const { userId } = req.auth!;
   const { email, image, nickName, career, introduction, description, serviceType, serviceArea } =
     req.body;
+
   try {
     const createdMoverProfile = await profileMoverService.createMoverProfile({
       userId,
