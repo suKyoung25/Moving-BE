@@ -5,7 +5,7 @@ export type EditMoverAccount = {
   email: string;
   phone: string;
   existedPassword: string;
-  newPassword: string;
+  newPassword?: string;
 };
 
 //기사님 기본정보 수정 시 필요한 타입 (레포지토리 단)
@@ -14,5 +14,5 @@ export type EditMoverAccountWithHash = {
   name: string;
   email: string;
   phone: string;
-  hashedNewPassword: string;
+  hashedNewPassword?: string;
 };

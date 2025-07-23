@@ -23,11 +23,29 @@ export const editAccountMoverSchema = z
       .string()
       .min(8, ErrorMessage.PASSWORD_LENGTH_LIMIT)
       .regex(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/, ErrorMessage.PASSWORD_REGEX)
-      .nonempty(ErrorMessage.NO_PASSWORD),
+      .optional()
+      .or(z.literal("")),
 
-    newPasswordConfirmation: z.string(),
+    newPasswordConfirmation: z.string().optional().or(z.literal("")),
   })
-  .refine((data) => data.newPassword === data.newPasswordConfirmation, {
-    message: ErrorMessage.PASSWORD_CONFIRMATION_NOT_MATCH,
-    path: ["passwordConfirmation"],
+  .superRefine((data, ctx) => {
+    const hasNewPassword = !!data.newPassword && data.newPassword !== "";
+    const hasConfirmation = !!data.newPasswordConfirmation && data.newPasswordConfirmation !== "";
+
+    if (hasNewPassword || hasConfirmation) {
+      // 하나라도 있으면 둘 다 필요
+      if (!hasNewPassword || !hasConfirmation) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["newPasswordConfirmation"],
+          message: ErrorMessage.CHECK_BOTH_PASSWORD,
+        });
+      } else if (data.newPassword !== data.newPasswordConfirmation) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["newPasswordConfirmation"],
+          message: ErrorMessage.PASSWORD_CONFIRMATION_NOT_MATCH,
+        });
+      }
+    }
   });
