@@ -38,11 +38,6 @@ async function moverPatchProfile(
   try {
     const { userId } = req.auth!;
 
-    //디버깅
-    console.log("ㅏㅑㅡㅏㅏ프론트에서 넘겨준 커리어 career:", req.body.career);
-    console.log("ㅏㅑㅡㅏㅏ프론트에서 넘겨준 커리어 career의 타입:", typeof req.body.career);
-    console.log("ㅑㅏㅓㅓ프론트에서 넘겨준 서비스타입 serviceType", req.body.serviceType);
-
     const updatedMoverProfile = await profileMoverService.modifyMoverProfile({
       ...req.body,
       userId,
