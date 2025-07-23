@@ -15,6 +15,9 @@ import reviewRouter from "./routers/review.router";
 import estimateRouter from "./routers/estimate.router";
 import requestRouter from "./routers/request.router";
 import { verifyAccessToken } from "./middlewares/auth.middleware";
+import favoriteRouter from "./routers/favorite.router";
+import accountRouter from "./routers/account.router";
+import NotificationRouter from "./routers/notification.router";
 
 const app = express();
 const PORT = process.env.PORT;
@@ -24,7 +27,7 @@ app.set("trust proxy", 1);
 // 미들웨어
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: process.env.FRONTEND_URL || "http://localhost:3000",
     credentials: true,
   }),
 );
@@ -37,10 +40,13 @@ app.use(passport.initialize());
 app.use("/", infoRouter);
 app.use("/auth", authRouter);
 app.use("/profile", verifyAccessToken, profileRouter);
+app.use("/dashboard", verifyAccessToken, accountRouter);
 app.use("/movers", moverRouter);
 app.use("/reviews", verifyAccessToken, reviewRouter);
 app.use("/estimates", verifyAccessToken, estimateRouter);
+app.use("/favorites", verifyAccessToken, favoriteRouter);
 app.use("/requests", requestRouter);
+app.use("/notifications", verifyAccessToken, NotificationRouter);
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 // 에러 핸들러

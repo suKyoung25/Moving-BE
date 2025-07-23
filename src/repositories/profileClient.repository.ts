@@ -1,15 +1,22 @@
 import prisma from "../configs/prisma.config";
 import { ClientProfileRegister } from "../types";
 import { Client, MoveType } from "@prisma/client";
+import { filterSensitiveUserData } from "../utils/auth.util";
 
 // ✅ 사용자 반환 (id로)
 async function findById(id: Client["id"]) {
-  return prisma.client.findUnique({
+  const client = await prisma.client.findUnique({
     where: { id },
     include: {
-      livingArea: true,
+      livingArea: { select: { regionName: true } },
     },
   });
+
+  const livingArea = client?.livingArea.map((area) => area.regionName);
+
+  const safeClient = filterSensitiveUserData(client!);
+
+  return { ...safeClient, userType: "client", livingArea };
 }
 
 // ✅ 프로필 생성
@@ -38,7 +45,7 @@ async function create(userId: Client["id"], profile: ClientProfileRegister) {
     },
   });
 
-  return { newProfile, userType: "client", profileCompleted: true };
+  return { newProfile, userType: "client", isProfileCompleted: true };
 }
 
 const profileClientRepository = {

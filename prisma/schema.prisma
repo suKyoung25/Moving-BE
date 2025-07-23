@@ -8,24 +8,24 @@ datasource db {
 }
 
 model Client {
-  id             String     @id @default(uuid())
-  email          String     @unique
-  name           String
-  phone          String     @unique
-  hashedPassword String?
-  profileImage   String?
-  provider       Provider   @default(LOCAL)
-  providerId     String?
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
-  serviceType    MoveType[]
+  id                 String     @id @default(uuid())
+  email              String     @unique
+  name               String
+  phone              String     @unique
+  hashedPassword     String?
+  profileImage       String?
+  provider           Provider   @default(LOCAL)
+  providerId         String?
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+  serviceType        MoveType[]
+  isProfileCompleted Boolean    @default(false)
 
-  livingArea    Region[]
-  requests      Request[]
-  estimates     Estimate[]
-  reviews       Review[]
-  favorites     Favorite[]
-  notifications Notification[]
+  livingArea Region[]
+  requests   Request[]
+  estimates  Estimate[]
+  reviews    Review[]
+  favorites  Favorite[]
 }
 
 model Mover {
@@ -48,12 +48,12 @@ model Mover {
   estimateCount       Int        @default(0)
   averageReviewRating Float      @default(0)
   reviewCount         Int        @default(0)
+  isProfileCompleted  Boolean    @default(false)
 
   serviceArea        Region[]
   estimates          Estimate[]
   reviews            Review[]
   favorites          Favorite[]
-  notifications      Notification[]
   designatedRequests DesignatedRequest[]
 }
 
@@ -119,15 +119,13 @@ model Review {
 
 model Notification {
   id        String           @id @default(uuid())
-  clientId  String
-  moverId   String
+  userId    String
   content   String
+  type      NotificationType
+  targetId  String?
+  targetUrl String?
   isRead    Boolean          @default(false)
   createdAt DateTime         @default(now())
-  type      NotificationType
-
-  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  mover  Mover? @relation(fields: [moverId], references: [id], onDelete: Cascade)
 }
 
 model Favorite {

@@ -17,10 +17,15 @@ async function findByEmailRaw(email: Client["email"]) {
 async function findByEmail(email: Client["email"]) {
   const client = await prisma.client.findUnique({
     where: { email },
+    include: {
+      livingArea: { select: { regionName: true } },
+    },
   });
 
+  const livingArea = client?.livingArea.map((area) => area.regionName);
+
   if (!client) return null;
-  return { ...client, userType: "client", profileCompleted: false };
+  return { ...client, userType: "client", livingArea };
 }
 
 async function findByPhone(phone: Client["phone"]) {
@@ -38,9 +43,15 @@ async function create(user: SignUpDataLocal) {
       phone: user.phone,
       hashedPassword: user.hashedPassword!,
     },
+
+    include: {
+      livingArea: { select: { regionName: true } },
+    },
   });
 
-  return { ...newClient, userType: "client", profileCompleted: false }; // userType: 헤더에서 씀
+  const livingArea = newClient?.livingArea.map((area) => area.regionName);
+
+  return { ...newClient, userType: "client", livingArea }; // userType: 헤더에서 씀
 }
 
 const authClientRepository = {

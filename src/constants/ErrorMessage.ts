@@ -24,6 +24,7 @@ export const ErrorMessage = {
 
   UNAUTHORIZED: "인증되지 않은 사용자입니다.",
   FORBIDDEN: "요청한 작업을 수행하기 위한 권한이 없습니다.",
+  BAD_REQUEST: "잘못된 요청입니다.",
 
   // 회원가입 추가
   NO_EMAIL: "이메일을 입력해 주세요.",

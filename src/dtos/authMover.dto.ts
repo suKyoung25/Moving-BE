@@ -1,6 +1,6 @@
 import z from "zod";
-import { createMoverInput, getMoverInput } from "../../types";
-import { ErrorMessage } from "../../constants/ErrorMessage";
+import { createMoverInput, getMoverInput } from "../types";
+import { ErrorMessage } from "../constants/ErrorMessage";
 
 //기사님 회원가입 DTO
 export interface MoverSignupDto extends createMoverInput {}
