@@ -1,7 +1,8 @@
 import express from "express";
 import profileClientController from "../controllers/profileClient.controller";
-import { verifyAccessToken } from "../middlewares/auth.middleware";
+import { validateReq, verifyAccessToken } from "../middlewares/auth.middleware";
 import profileMoverController from "../controllers/profileMover.controller";
+import { MoverProfileSchema } from "../dtos/profileClient.dto";
 
 const profileRouter = express.Router();
 
@@ -11,10 +12,20 @@ const profileRouter = express.Router();
  */
 
 //기사님 프로필 등록
-profileRouter.post("/mover", verifyAccessToken, profileMoverController.moverCreateProfile);
+profileRouter.post(
+  "/mover",
+  verifyAccessToken,
+  validateReq(MoverProfileSchema),
+  profileMoverController.moverCreateProfile,
+);
 
 //기사님 프로필 수정
-profileRouter.patch("/mover", verifyAccessToken, profileMoverController.moverPatchProfile);
+profileRouter.patch(
+  "/mover",
+  verifyAccessToken,
+  validateReq(MoverProfileSchema),
+  profileMoverController.moverPatchProfile,
+);
 
 // 일반 유저 프로필 등록
 profileRouter.patch("/clients", verifyAccessToken, profileClientController.post);

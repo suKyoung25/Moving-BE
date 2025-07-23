@@ -8,7 +8,6 @@
 
 import profileMoverRespository from "../repositories/profileMover.respository";
 import { MoverProfile } from "../types";
-import { serviceTypeMap } from "../utils/dataMapper.util";
 
 //기사님 프로필 생성과 수정
 async function modifyMoverProfile(user: MoverProfile) {
