@@ -6,8 +6,6 @@ GET http://localhost:4000/reviews/me
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
-###
-
 ### 리뷰 작성
 POST http://localhost:4000/reviews
 Authorization: Bearer {{token}}
@@ -20,8 +18,6 @@ Content-Type: application/json
   "moverId": "6873fa25-7522-4f58-8213-5e55977ca0d0"
 }
 
-###
-
 ### 리뷰 수정
 PATCH http://localhost:4000/reviews/{{reviewId}}
 Authorization: Bearer {{token}}
@@ -31,8 +27,6 @@ Content-Type: application/json
   "rating": 5,
   "content": "수정된 리뷰 내용입니다."
 }
-
-###
 
 ### 리뷰 삭제
 DELETE http://localhost:4000/reviews/{{reviewId}}

@@ -11,8 +11,8 @@ export function hashPassword(password: string) {
 // ✅ 사용자 데이터에서 민감한 정보 뺌
 export function filterSensitiveUserData<T extends Client | Mover>(
   user: T,
-): Omit<T, "hashedPassword" | "phone" | "providerId"> {
-  const { hashedPassword, phone, providerId, ...rest } = user;
+): Omit<T, "hashedPassword" | "providerId"> {
+  const { hashedPassword, providerId, ...rest } = user;
   return rest;
 }
 

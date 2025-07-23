@@ -59,7 +59,11 @@ POST http://localhost:4000/auth/signin/client
 Content-Type: application/json
 
 {
+<<<<<<< HEAD
      "email": "test4@test.com", 
+=======
+     "email": "sky@example.com", 
+>>>>>>> dev
      "password": "asdf1234"
 }
 
@@ -73,4 +77,3 @@ GET http://localhost:4000/auth
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
-### 일반 회원 정보 전체 반환

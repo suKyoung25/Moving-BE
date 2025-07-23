@@ -146,9 +146,45 @@ async function isFavoritMover(clientId: Client["id"], moverId: Mover["id"]) {
   }
 }
 
+// 받은 견적 조회
+async function findReceivedEstimatesByClientId(clientId: Client["id"]) {
+  try {
+    const estimates = prisma.request.findMany({
+      where: {
+        clientId,
+        isPending: false,
+        estimate: {
+          some: {
+            moverStatus: "CONFIRMED",
+            isClientConfirmed: true,
+          },
+        },
+      },
+      include: {
+        estimate: {
+          where: {
+            moverStatus: "CONFIRMED",
+            isClientConfirmed: true,
+          },
+          include: {
+            mover: true,
+          },
+        },
+        designatedRequest: true,
+      },
+    });
+
+    const result = await estimates;
+    return result;
+  } catch (e) {
+    throw new ServerError("받은 견적서 조회 중 서버 오류가 발생했습니다.", e);
+  }
+}
+
 export default {
   findWritableEstimatesByClientId,
   findPendingEstimatesByClientId,
   isFavoritMover,
   getEstimateMoverId,
+  findReceivedEstimatesByClientId,
 };
