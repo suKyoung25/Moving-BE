@@ -174,10 +174,30 @@ async function findReceivedEstimatesByClientId(clientId: Client["id"]) {
   }
 }
 
+// 이사날에 해당하는 견적 찾기 (알림)
+async function findEstimateByMoveDate(date: Date) {
+  return await prisma.estimate.findMany({
+    where: {
+      request: {
+        moveDate: date,
+      },
+    },
+    include: {
+      request: {
+        select: {
+          fromAddress: true,
+          toAddress: true,
+        },
+      },
+    },
+  });
+}
+
 export default {
   findWritableEstimatesByClientId,
   findPendingEstimatesByClientId,
   isFavoriteMover,
   getEstimateMoverId,
   findReceivedEstimatesByClientId,
+  findEstimateByMoveDate,
 };

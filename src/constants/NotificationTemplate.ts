@@ -3,11 +3,11 @@ import { moveTypeMap, parseRegion } from "../utils/sse.util";
 export const NotificationTemplate = {
   NEW_ESTIMATE: {
     client: (moverName: string, type: string) =>
-      `<span style="color: #1B92FF;">${moverName}</span> 기사님의 <span style="color: #1B92FF;">${moveTypeMap(
+      `${moverName} 기사님의 <span style="color: #1B92FF;">${moveTypeMap(
         type,
       )} 견적</span>이 도착했어요.`,
     mover: (clientName: string, type: string) =>
-      `<span style="color: #1B92FF;">${clientName}</span> 님의 <span style="color: #1B92FF;">${moveTypeMap(
+      `${clientName} 님의 <span style="color: #1B92FF;">${moveTypeMap(
         type,
       )} 견적 요청</span>이 도착했어요.`,
   },
