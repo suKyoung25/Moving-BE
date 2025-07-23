@@ -25,9 +25,6 @@ async function findById(id: Mover["id"]) {
 //기사님 프로필 생성/수정
 async function modifyMoverProfile(user: MoverProfile) {
   try {
-    //디버깅
-    console.log("ㅏㅣㅣ유저 프로필 생성/수정 시작");
-
     //업데이트할 데이터 목록
     const updateData: Prisma.MoverUpdateInput = {
       profileImage: user.image,
@@ -45,9 +42,6 @@ async function modifyMoverProfile(user: MoverProfile) {
       };
     }
 
-    ///디버깅
-    console.log("프론트가 보내준 유저의 서비스 종류", user.serviceType);
-
     //서비스 지역
     if (user.serviceArea && user.serviceArea.length > 0) {
       const matchedRegions = await prisma.region.findMany({
@@ -59,9 +53,6 @@ async function modifyMoverProfile(user: MoverProfile) {
         },
       });
 
-      ///디버깅
-      console.log("프론트가 보내준 유저의 서비스 지역", user.serviceArea);
-
       if (matchedRegions.length !== user.serviceArea.length) {
         throw new BadRequestError(ErrorMessage.REGION_NOT_FOUND); // 없는 지역이 경우 에러
       }
@@ -71,9 +62,6 @@ async function modifyMoverProfile(user: MoverProfile) {
       };
     }
 
-    //디버깅
-    console.log("ㅏㅣㅣ업데이트할 정보 확인", updateData);
-
     const modifiedMoverProfile = await prisma.mover.update({
       where: { id: user.userId },
       data: updateData,
@@ -82,35 +70,11 @@ async function modifyMoverProfile(user: MoverProfile) {
       },
     });
 
-    //디버깅
-    console.log("ㅑㅑㅑㅑㅑ최종 프로필 createdMoverProfile", modifiedMoverProfile);
-
     return { ...modifiedMoverProfile, userType: "mover" }; //userType은 FE의 header에서 필요
   } catch (error) {
-    //디버깅
-    console.log("ㅏㅜㅜㅜㅑ에러 확인", error);
-
     throw new BadRequestError(ErrorMessage.BAD_REQUEST, error);
   }
 }
-
-//TODO: //기사님 프로필 수정
-
-//     const createdMoverProfile = await prisma.mover.update({
-//       where: { id: user.userId },
-//       data: {
-//         profileImage: user.image,
-//         nickName: user.nickName,
-//         career: user.career,
-//         introduction: user.introduction,
-//         description: user.description,
-//         serviceType: user.serviceType,
-//         serviceArea: {
-//           set: user.serviceArea.map((regionId) => ({ id: regionId })),
-//         },
-//         isProfileCompleted: false, //TODO: 제대로 되는지 확인할 것, 페이지 분기처리
-//       },
-//     });
 
 export default {
   findById,
