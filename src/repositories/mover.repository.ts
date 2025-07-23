@@ -180,6 +180,20 @@ async function designateMover(requestId: string, moverId: string) {
   });
 }
 
+// 지역 기반 기사 조회
+async function findMoversByServiceArea(regions: string[]) {
+  return await prisma.mover.findMany({
+    where: {
+      serviceArea: {
+        some: { regionName: { in: regions } },
+      },
+    },
+    select: {
+      id: true,
+    },
+  });
+}
+
 export default {
   fetchMovers,
   fetchMoverDetail,
@@ -187,4 +201,5 @@ export default {
   addFavoriteMover,
   removeFavoriteMover,
   designateMover,
+  findMoversByServiceArea,
 };

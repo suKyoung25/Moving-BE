@@ -4,6 +4,8 @@ import notificationRepository from "../repositories/notification.repository";
 import { parseRegionKeywords, sendNotificationTo } from "../utils/sse.util";
 import cron from "node-cron";
 import { addDays, startOfDay } from "date-fns";
+import moverRepository from "../repositories/mover.repository";
+import estimateRepository from "../repositories/estimate.repository";
 
 interface NotifyMoveDay {
   userId: string;
@@ -17,6 +19,8 @@ interface NotifyNewEstimate {
   toAddress: string;
   moveType: MoveType;
   type: NotificationType;
+  targetId: string;
+  targetUrl: string;
 }
 
 // 알림 목록 조회
@@ -31,6 +35,8 @@ async function notifyEstimateRequest({
   toAddress,
   moveType,
   type,
+  targetId,
+  targetUrl,
 }: NotifyNewEstimate) {
   // 주소에서 "서울", "성남", "영등포" 등 지역명 추출
   const fromRegions = parseRegionKeywords(fromAddress);
@@ -38,11 +44,11 @@ async function notifyEstimateRequest({
   const targetRegions = Array.from(new Set([...fromRegions, ...toRegions]));
 
   // 해당 지역에 포함된 기사들 조회
-  const movers = await notificationRepository.findMoversByServiceArea(targetRegions);
+  const movers = await moverRepository.findMoversByServiceArea(targetRegions);
 
   const notifications = movers.map((mover) => {
     const content = NotificationTemplate.NEW_ESTIMATE.mover(clientName, moveType);
-    const payload = { content, type, role: "mover" };
+    const payload = { content, type, role: "mover", targetId, targetUrl };
 
     sendNotificationTo(mover.id, payload);
 
@@ -71,8 +77,8 @@ cron.schedule("0 7 * * *", async () => {
   const tomorrow = addDays(today, 1);
 
   const [todayMoves, tomorrowMoves] = await Promise.all([
-    notificationRepository.findEstimateByMoveDate(today),
-    notificationRepository.findEstimateByMoveDate(tomorrow),
+    estimateRepository.findEstimateByMoveDate(today),
+    estimateRepository.findEstimateByMoveDate(tomorrow),
   ]);
 
   // 당일 이사 알림

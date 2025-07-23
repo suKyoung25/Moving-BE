@@ -3,8 +3,8 @@ import notificationController from "../controllers/notification.controller";
 
 const NotificationRouter = Router();
 
-// 알림 생성
-NotificationRouter.post("/stream", notificationController.sendNotification);
+// SSE 연결
+NotificationRouter.get("/stream", notificationController.sendNotification);
 
 // 알림 조회
 NotificationRouter.get("/", notificationController.getNotifications);

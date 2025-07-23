@@ -1,7 +1,7 @@
 import { MoveType } from "@prisma/client";
 import z from "zod";
 
-export const CreateRequestSchema = z.object({
+export const createRequestSchema = z.object({
   moveType: z.nativeEnum(MoveType, {
     errorMap: () => ({ message: "올바른 이사 종류를 선택해주세요." }),
   }),
@@ -12,4 +12,4 @@ export const CreateRequestSchema = z.object({
   toAddress: z.string().min(1, "도착지 주소를 입력해주세요."),
 });
 
-export type CreateRequestDto = z.infer<typeof CreateRequestSchema>;
+export type CreateRequestDto = z.infer<typeof createRequestSchema>;
