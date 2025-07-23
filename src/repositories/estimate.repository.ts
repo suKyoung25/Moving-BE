@@ -177,7 +177,7 @@ async function findReceivedEstimatesByClientId(clientId: Client["id"]) {
 export default {
   findWritableEstimatesByClientId,
   findPendingEstimatesByClientId,
-  isFavoritMover: isFavoriteMover,
+  isFavoriteMover,
   getEstimateMoverId,
   findReceivedEstimatesByClientId,
 };

@@ -8,11 +8,7 @@ const estimateRouter = Router();
 estimateRouter.get("/writable/me", estimateController.getWritableEstimates);
 
 // 대기 중인 견적 조회
-estimateRouter.get(
-  "/pending",
-  verifyAccessToken,
-  estimateController.getPendingEstimates as RequestHandler,
-);
+estimateRouter.get("/pending", estimateController.getPendingEstimates as RequestHandler);
 
 // 견적 요청
 estimateRouter.post("/create", estimateController.sendEstimateToRequest);
@@ -30,10 +26,6 @@ estimateRouter.get("/sent", estimateController.getSentEstimates);
 estimateRouter.get("/rejected", estimateController.getRejectedEstimates);
 
 // 받은 견적 조회
-estimateRouter.get(
-  "/received",
-  verifyAccessToken,
-  estimateController.getReceivedEstimates as RequestHandler,
-);
+estimateRouter.get("/received", estimateController.getReceivedEstimates as RequestHandler);
 
 export default estimateRouter;

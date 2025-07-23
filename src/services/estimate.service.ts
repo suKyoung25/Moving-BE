@@ -32,7 +32,7 @@ async function getPendingEstimates(clientId: Client["id"]) {
       const estimates = await Promise.all(
         req.estimate.map(async (e) => {
           const isDesignated = designatedMoverIds.includes(e.moverId);
-          const isFavorited = await estimateRepository.isFavoritMover(clientId, e.moverId);
+          const isFavorited = await estimateRepository.isFavoriteMover(clientId, e.moverId);
 
           return {
             estimateId: e.id,
