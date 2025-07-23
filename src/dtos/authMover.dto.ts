@@ -9,7 +9,7 @@ export interface MoverSignupDto extends createMoverInput {}
 export interface MoverSigninDto extends getMoverInput {}
 
 //기사님 회원가입 유효성 검사 //TODO: 일반-회원가입 부분이랑 스키마 통일 시키기
-export const SignUpMoverSchema = z
+export const signUpMoverSchema = z
   .object({
     email: z.string().email().nonempty(ErrorMessage.NO_EMAIL),
 
@@ -34,7 +34,7 @@ export const SignUpMoverSchema = z
   });
 
 //기사님 로그인 유효성 검사 //TODO: 일반-로그인 부분이랑 스키마 통일 시키기
-export const SignInMoverSchema = z.object({
+export const signInMoverSchema = z.object({
   email: z.string().email().nonempty(ErrorMessage.NO_EMAIL),
 
   password: z
