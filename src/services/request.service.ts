@@ -1,5 +1,5 @@
 import { MoveType } from "@prisma/client";
-import { CreateRequestDto, CreateRequestSchema } from "../dtos/request.dto";
+import { CreateRequestDto, createRequestSchema } from "../dtos/request.dto";
 import requestRepository from "../repositories/request.repository";
 import { GetReceivedRequestsQuery } from "../types";
 import { BadRequestError } from "../types/errors";
@@ -19,11 +19,14 @@ async function createRequest({
     throw new BadRequestError(ErrorMessage.BAD_REQUEST);
   }
 
-  const parseResult = CreateRequestSchema.safeParse(request);
+  const parseResult = createRequestSchema.safeParse(request);
+
   if (!parseResult.success) {
     const errorMessage = parseResult.error.errors[0]?.message ?? ErrorMessage.INVALID_INPUT;
     throw new BadRequestError(errorMessage);
   }
+
+  const newRequest = await requestRepository.createEstimateRequest(parseResult.data, clientId);
 
   // 견적 요청한 유저 이름 조회
   const client = await authClientRepository.findById(clientId);
@@ -35,9 +38,11 @@ async function createRequest({
     toAddress: request.toAddress,
     moveType: request.moveType,
     type: "NEW_ESTIMATE",
+    targetId: newRequest.id,
+    targetUrl: `/my-quotes/mover/${newRequest.id}`,
   });
 
-  return await requestRepository.createEstimateRequest(parseResult.data, clientId);
+  return newRequest;
 }
 
 // 받은 요청 조회 (기사님)
