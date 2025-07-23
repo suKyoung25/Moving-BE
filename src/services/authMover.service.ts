@@ -49,27 +49,31 @@ async function createMover(user: CreateMoverInput) {
 async function setMoverByEmail(user: GetMoverInput) {
   const mover = await authRepository.getMoverByEmail(user.email);
 
+  if (!mover) {
+    throw new NotFoundError(ErrorMessage.USER_NOT_FOUND);
+  }
+
   //토큰 생성
   const accessToken = generateAccessToken({
-    userId: mover?.id!,
-    email: mover?.email!,
-    name: mover?.name!,
-    userType: mover?.userType!,
+    userId: mover.id,
+    email: mover.email,
+    name: mover.name,
+    userType: mover.userType,
   });
   const refreshToken = generateRefreshToken({
-    userId: mover?.id!,
-    email: mover?.email!,
-    name: mover?.name!,
-    userType: mover?.userType!,
+    userId: mover.id,
+    email: mover.email,
+    name: mover.name,
+    userType: mover.userType,
   });
 
   return {
     user: {
-      userId: mover?.id,
-      email: mover?.email,
-      name: mover?.name,
-      userType: mover?.userType,
-      phone: mover?.phone,
+      userId: mover.id,
+      email: mover.email,
+      name: mover.name,
+      userType: mover.userType,
+      phone: mover.phone,
     },
     accessToken,
     refreshToken,

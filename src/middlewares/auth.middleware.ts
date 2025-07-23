@@ -73,13 +73,13 @@ export async function checkDuplicateMoverSignin(req: Request, res: Response, nex
     const mover = await authMoverRepository.getMoverByEmail(email);
     if (!mover) {
       fieldErrors.email = ErrorMessage.USER_NOT_FOUND;
-      throw new ConflictError("기사님 로그인 실패", fieldErrors);
+      throw new ConflictError("사용자를 찾을 수 없습니다.", fieldErrors);
     }
 
     const isPasswordValid = await bcrypt.compare(password, mover.hashedPassword!);
     if (!isPasswordValid) {
       fieldErrors.password = ErrorMessage.PASSWORD_NOT_MATCH;
-      throw new ConflictError("기사님 로그인 실패", fieldErrors);
+      throw new ConflictError("비밀번호가 일치하지 않습니다.", fieldErrors);
     }
 
     next();
