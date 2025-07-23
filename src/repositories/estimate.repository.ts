@@ -129,7 +129,7 @@ async function findPendingEstimatesByClientId(clientId: Client["id"]) {
 }
 
 // 찜한 기사님 조회
-async function isFavoritMover(clientId: Client["id"], moverId: Mover["id"]) {
+async function isFavoriteMover(clientId: Client["id"], moverId: Mover["id"]) {
   try {
     const favoirte = await prisma.favorite.findUnique({
       where: {
@@ -152,7 +152,6 @@ async function findReceivedEstimatesByClientId(clientId: Client["id"]) {
     const estimates = prisma.request.findMany({
       where: {
         clientId,
-        isPending: false,
         estimate: {
           some: {
             moverStatus: "CONFIRMED",
@@ -162,13 +161,7 @@ async function findReceivedEstimatesByClientId(clientId: Client["id"]) {
       },
       include: {
         estimate: {
-          where: {
-            moverStatus: "CONFIRMED",
-            isClientConfirmed: true,
-          },
-          include: {
-            mover: true,
-          },
+          include: { mover: true },
         },
         designatedRequest: true,
       },
@@ -203,7 +196,7 @@ async function findEstimateByMoveDate(date: Date) {
 export default {
   findWritableEstimatesByClientId,
   findPendingEstimatesByClientId,
-  isFavoritMover,
+  isFavoriteMover,
   getEstimateMoverId,
   findReceivedEstimatesByClientId,
   findEstimateByMoveDate,
