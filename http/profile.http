@@ -1,4 +1,4 @@
-@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzYjRiNGUxZS02ZmRlLTRjZjktYWZlMS1hMzIwODZiMzc3MjciLCJlbWFpbCI6Ik1NTG9jYWw4QHRlc3QuY29tIiwibmFtZSI6IuuCmOyXkOuUlCIsInVzZXJUeXBlIjoibW92ZXIiLCJpYXQiOjE3NTMyNTEzOTUsImV4cCI6MTc1MzI1NDk5NX0.5Fq80QySTkiGiuAQ5QAivToJSVLEIUYtkP1zKYlAmpg
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0NWMzYTZjMy00ZDIwLTRjYjUtYjM2ZC04MTUyYWM1ZDAyMDkiLCJlbWFpbCI6Ik1NTG9jYWw3QHRlc3QuY29tIiwibmFtZSI6Ik1NNyIsInVzZXJUeXBlIjoibW92ZXIiLCJpYXQiOjE3NTMyNjQ1MzcsImV4cCI6MTc1MzI2ODEzN30.SAxFmBaeaOz_g9iMruhOEL5CuAJLU5Ys0CANwUC7wCA
 
 ### 기사님 프로필 등록
 POST http://localhost:4000/profile/mover
@@ -6,12 +6,12 @@ Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-     "nickName": "ㅂㅂㅁ2", 
-     "career": 3, 
-     "introduction":"안녕하세요 ㅂㅁ3입니다",  
-     "description":"안녕하세요 ㅂㅁ3입니다" , 
+     "nickName": "무빙7", 
+     "career": 7, 
+     "introduction":"안녕하세요 ㅂㅁ7입니다",  
+     "description":"안녕하세요 ㅂㅁ7입니다" , 
      "serviceType":["소형이사"],
-     "serviceArea": ["경기", "인천"]
+     "serviceArea": ["서울", "경기"]
 }
 
 ### 기사님 프로필 수정
@@ -20,12 +20,12 @@ Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-     "nickName": "ㅂㅂㅁ3", 
-     "career": 3, 
-     "introduction":"안녕하세요 ㅂㅁ3입니다",  
-     "description":"안녕하세요 ㅂㅁ3입니다" , 
-     "serviceType":["소형이사"],
-     "serviceArea": ["경기", "인천"]
+     "nickName": "무빙7-1", 
+     "career": 6, 
+     "introduction":"안녕하세요 ㅂㅁ7입니다",  
+     "description":"안녕하세요 ㅂㅁ7입니다" , 
+     "serviceType":["사무실이사"],
+     "serviceArea": ["충남", "인천"]
 }
 
 ### 일반 프로필 등록

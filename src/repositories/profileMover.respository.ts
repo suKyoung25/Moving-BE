@@ -45,6 +45,9 @@ async function modifyMoverProfile(user: MoverProfile) {
       };
     }
 
+    ///디버깅
+    console.log("프론트가 보내준 유저의 서비스 종류", user.serviceType);
+
     //서비스 지역
     if (user.serviceArea && user.serviceArea.length > 0) {
       const matchedRegions = await prisma.region.findMany({
@@ -55,6 +58,9 @@ async function modifyMoverProfile(user: MoverProfile) {
           },
         },
       });
+
+      ///디버깅
+      console.log("프론트가 보내준 유저의 서비스 지역", user.serviceArea);
 
       if (matchedRegions.length !== user.serviceArea.length) {
         throw new BadRequestError(ErrorMessage.REGION_NOT_FOUND); // 없는 지역이 경우 에러

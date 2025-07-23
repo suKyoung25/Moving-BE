@@ -12,12 +12,12 @@ import { serviceTypeMap } from "../utils/dataMapper.util";
 
 //기사님 프로필 생성과 수정
 async function modifyMoverProfile(user: MoverProfile) {
-  //serviceType 데이터 맞추기
-  const mappedServiceType = user.serviceType.map((label) => serviceTypeMap[label]);
+  // //serviceType 데이터 맞추기
+  // const mappedServiceType = user.serviceType.map((label) => serviceTypeMap[label]);
 
   return await profileMoverRespository.modifyMoverProfile({
     ...user,
-    serviceType: mappedServiceType,
+    // serviceType: mappedServiceType,
   });
 }
 
@@ -30,7 +30,7 @@ async function modifyMoverProfile(user: MoverProfile) {
 //     ...user,
 //     serviceType: mappedServiceType,
 //   });
-// }
+//
 
 export default {
   modifyMoverProfile,

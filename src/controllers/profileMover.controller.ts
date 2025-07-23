@@ -19,6 +19,8 @@ async function moverCreateProfile(
   const { email, image, nickName, career, introduction, description, serviceType, serviceArea } =
     req.body;
 
+  //디버깅
+  console.log("프론트가 보내준 서비스 타입", serviceType);
   try {
     const createdMoverProfile = await profileMoverService.modifyMoverProfile({
       userId,
