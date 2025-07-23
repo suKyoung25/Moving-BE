@@ -14,16 +14,19 @@ import { ErrorMessage } from "../constants/ErrorMessage";
 async function findById(id: Mover["id"]) {
   const mover = await prisma.mover.findUnique({
     where: { id },
+    include: {
+      serviceArea: true,
+    },
   });
 
   return { ...mover, userType: "mover" };
 }
 
 //기사님 프로필 생성/수정
-async function saveMoverProfile(user: MoverProfile) {
+async function modifyMoverProfile(user: MoverProfile) {
   try {
     //디버깅
-    console.log("ㅏㅣㅣ유저 생성 시작");
+    console.log("ㅏㅣㅣ유저 프로필 생성/수정 시작");
 
     //업데이트할 데이터 목록
     const updateData: Prisma.MoverUpdateInput = {
@@ -35,16 +38,17 @@ async function saveMoverProfile(user: MoverProfile) {
       isProfileCompleted: true,
     };
 
-    //서비스 종류 (enum 타입)
+    //서비스 종류
     if (user.serviceType && user.serviceType.length > 0) {
       updateData.serviceType = {
-        set: user.serviceType as MoveType[],
+        set: user.serviceType as MoveType[], // (enum 타입)
       };
     }
 
-    //서비스 지역 (관계형이라서 stirng > id로 변환해줘야함)
+    //서비스 지역
     if (user.serviceArea && user.serviceArea.length > 0) {
       const matchedRegions = await prisma.region.findMany({
+        // (관계형이라서 stirng > id로 변환해줘야함)
         where: {
           regionName: {
             in: user.serviceArea,
@@ -53,7 +57,7 @@ async function saveMoverProfile(user: MoverProfile) {
       });
 
       if (matchedRegions.length !== user.serviceArea.length) {
-        throw new BadRequestError(ErrorMessage.REGION_NOT_FOUND);
+        throw new BadRequestError(ErrorMessage.REGION_NOT_FOUND); // 없는 지역이 경우 에러
       }
 
       updateData.serviceArea = {
@@ -64,7 +68,7 @@ async function saveMoverProfile(user: MoverProfile) {
     //디버깅
     console.log("ㅏㅣㅣ업데이트할 정보 확인", updateData);
 
-    const createdMoverProfile = await prisma.mover.update({
+    const modifiedMoverProfile = await prisma.mover.update({
       where: { id: user.userId },
       data: updateData,
       include: {
@@ -73,9 +77,9 @@ async function saveMoverProfile(user: MoverProfile) {
     });
 
     //디버깅
-    console.log("ㅑㅑㅑㅑㅑ생성된 프로필 createdMoverProfile", createdMoverProfile);
+    console.log("ㅑㅑㅑㅑㅑ최종 프로필 createdMoverProfile", modifiedMoverProfile);
 
-    return { ...createdMoverProfile, userType: "mover" }; //userType은 FE의 header에서 필요
+    return { ...modifiedMoverProfile, userType: "mover" }; //userType은 FE의 header에서 필요
   } catch (error) {
     //디버깅
     console.log("ㅏㅜㅜㅜㅑ에러 확인", error);
@@ -103,6 +107,6 @@ async function saveMoverProfile(user: MoverProfile) {
 //     });
 
 export default {
-  saveMoverProfile,
   findById,
+  modifyMoverProfile,
 };

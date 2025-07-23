@@ -59,11 +59,7 @@ POST http://localhost:4000/auth/signin/client
 Content-Type: application/json
 
 {
-<<<<<<< HEAD
-     "email": "test4@test.com", 
-=======
      "email": "sky@example.com", 
->>>>>>> dev
      "password": "asdf1234"
 }
 

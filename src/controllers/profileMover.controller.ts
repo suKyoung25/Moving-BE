@@ -8,9 +8,8 @@ import { NextFunction, Request, Response } from "express";
 import profileMoverService from "../services/profileMover.service";
 import { MoverProfileDto } from "../dtos/profile.dto";
 import { filterSensitiveUserData } from "../utils/auth.util";
-import { create } from "domain";
 
-//기사님 프로필 생성 (=기사님 모델 정보 추가)
+//기사님 프로필 생성
 async function moverCreateProfile(
   req: Request<{}, {}, MoverProfileDto>,
   res: Response,
@@ -21,7 +20,7 @@ async function moverCreateProfile(
     req.body;
 
   try {
-    const createdMoverProfile = await profileMoverService.createMoverProfile({
+    const createdMoverProfile = await profileMoverService.modifyMoverProfile({
       userId,
       email,
       image,
@@ -40,7 +39,7 @@ async function moverCreateProfile(
   }
 }
 
-//기사님 프로필 수정(=기사님 모델 정보 수정)
+//기사님 프로필 수정
 async function moverPatchProfile(
   req: Request<{}, {}, MoverProfileDto>,
   res: Response,
@@ -50,7 +49,7 @@ async function moverPatchProfile(
   const { email, image, nickName, career, introduction, description, serviceType, serviceArea } =
     req.body;
   try {
-    const updatedMoverProfile = await profileMoverService.patchMoverProfile({
+    const updatedMoverProfile = await profileMoverService.modifyMoverProfile({
       userId,
       email,
       image,
