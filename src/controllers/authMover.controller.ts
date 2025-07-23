@@ -9,6 +9,7 @@
 import { NextFunction, Request, Response } from "express";
 import authService from "../services/authMover.service";
 import { MoverSigninDto, MoverSignupDto } from "../dtos/authMover.dto";
+
 //기사님 회원가입
 async function moverSingup(
   req: Request<{}, {}, MoverSignupDto>,

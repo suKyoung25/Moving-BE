@@ -7,6 +7,8 @@
  */
 
 import authRepository from "../repositories/authMover.repository";
+import { ConflictError, NotFoundError, UnauthorizedError } from "../types/errors";
+import { ErrorMessage } from "../constants/ErrorMessage";
 import { hashPassword } from "../utils/auth.util";
 import { generateAccessToken, generateRefreshToken } from "../utils/token.util";
 import { createMoverInput, getMoverInput } from "../types";
@@ -49,18 +51,22 @@ async function createMover(user: createMoverInput) {
 async function setMoverByEmail(user: getMoverInput) {
   const mover = await authRepository.getMoverByEmail(user.email);
 
+  if (!mover) {
+    throw new NotFoundError(ErrorMessage.USER_NOT_FOUND);
+  }
+
   //토큰 생성
   const accessToken = generateAccessToken({
-    userId: mover?.id!,
-    email: mover?.email!,
-    name: mover?.name!,
-    userType: mover?.userType!,
+    userId: mover.id,
+    email: mover.email,
+    name: mover.name,
+    userType: mover.userType,
   });
   const refreshToken = generateRefreshToken({
-    userId: mover?.id!,
-    email: mover?.email!,
-    name: mover?.name!,
-    userType: mover?.userType!,
+    userId: mover.id,
+    email: mover.email,
+    name: mover.name,
+    userType: mover.userType,
   });
 
   return {
