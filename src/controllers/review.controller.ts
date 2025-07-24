@@ -1,11 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import reviewService from "../services/review.service";
-import {
-  CreateReviewDto,
-  CreateReviewSchema,
-  UpdateReviewDto,
-  UpdateReviewschema,
-} from "../dtos/review.dto";
+import { CreateReviewDto, UpdateReviewDto } from "../dtos/review.dto";
 import { Review } from "@prisma/client";
 
 // 내가 작성한 리뷰 목록

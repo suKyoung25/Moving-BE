@@ -53,13 +53,9 @@ async function updateMoverReviewStatsTx(moverId: Mover["id"], tx: Prisma.Transac
   });
 }
 
-// 리뷰 생성 (트랜잭션 내부에서 moverStats 업데이트 포함)
-async function createReview(data: Prisma.ReviewCreateInput, moverId: Mover["id"]) {
-  return await prisma.$transaction(async (tx) => {
-    const review = await tx.review.create({ data });
-    await updateMoverReviewStatsTx(moverId, tx);
-    return review;
-  });
+// 리뷰 생성
+async function createReviewTx(tx: Prisma.TransactionClient, data: Prisma.ReviewCreateInput) {
+  return tx.review.create({ data });
 }
 
 // estimateId로 리뷰 조회
@@ -72,7 +68,7 @@ async function findReviewById(reviewId: Review["id"]) {
   return prisma.review.findUnique({ where: { id: reviewId } });
 }
 
-// 리뷰 업데이트 (transaction client 받아서 처리)
+// 리뷰 업데이트
 async function updateReviewTx(
   tx: Prisma.TransactionClient,
   reviewId: Review["id"],
@@ -84,7 +80,7 @@ async function updateReviewTx(
   });
 }
 
-// 리뷰 삭제 (transaction client 받아서 처리)
+// 리뷰 삭제
 async function deleteReviewTx(tx: Prisma.TransactionClient, reviewId: Review["id"]) {
   return tx.review.delete({ where: { id: reviewId } });
 }
@@ -92,7 +88,7 @@ async function deleteReviewTx(tx: Prisma.TransactionClient, reviewId: Review["id
 export default {
   findReviewsByClientId,
   updateMoverReviewStatsTx,
-  createReview,
+  createReviewTx,
   findReviewByEstimateId,
   findReviewById,
   updateReviewTx,

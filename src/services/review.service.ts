@@ -44,7 +44,7 @@ async function getMyReviews(clientId: Client["id"], page = 1, limit = 6) {
 async function createReview(data: CreateReviewDto, clientId: Client["id"]) {
   const { estimateId, rating, content } = data;
 
-  // 견적에서 moverId 조회 (존재 확인)
+  // 견적에서 moverId 조회 및 존재 확인
   const estimate = await estimateRepository.getEstimateMoverId(estimateId);
   if (!estimate) throw new BadRequestError("존재하지 않는 견적입니다.");
 
@@ -52,17 +52,18 @@ async function createReview(data: CreateReviewDto, clientId: Client["id"]) {
   const existing = await reviewRepository.findReviewByEstimateId(estimateId);
   if (existing) throw new ValidationError("이미 리뷰가 등록된 견적입니다.");
 
-  // 리뷰 생성 (트랜잭션 내 mover stats 업데이트 포함)
-  return reviewRepository.createReview(
-    {
+  // 트랜잭션 내에 리뷰 생성
+  return await prisma.$transaction(async (tx) => {
+    const review = await reviewRepository.createReviewTx(tx, {
       estimate: { connect: { id: estimateId } },
       client: { connect: { id: clientId } },
       mover: { connect: { id: estimate.moverId } },
       rating,
       content,
-    },
-    estimate.moverId,
-  );
+    });
+    await reviewRepository.updateMoverReviewStatsTx(estimate.moverId, tx);
+    return review;
+  });
 }
 
 // 리뷰 수정
@@ -78,7 +79,7 @@ async function updateReview(
   if (!review) throw new NotFoundError("리뷰를 찾을 수 없습니다.");
   if (review.clientId !== clientId) throw new ForbiddenError("수정 권한이 없습니다.");
 
-  // 트랜잭션으로 리뷰 수정 + mover stats 업데이트 묶기
+  // 트랜잭션으로 리뷰 수정
   return prisma.$transaction(async (tx) => {
     const updated = await reviewRepository.updateReviewTx(tx, reviewId, data);
     await reviewRepository.updateMoverReviewStatsTx(review.moverId, tx);
@@ -95,7 +96,7 @@ async function deleteReview(reviewId: Review["id"], clientId: Client["id"]) {
   if (!review) throw new NotFoundError("리뷰를 찾을 수 없습니다.");
   if (review.clientId !== clientId) throw new ForbiddenError("삭제 권한이 없습니다.");
 
-  // 트랜잭션으로 삭제 + mover stats 업데이트 묶음
+  // 트랜잭션으로 삭제
   return prisma.$transaction(async (tx) => {
     await reviewRepository.deleteReviewTx(tx, reviewId);
     await reviewRepository.updateMoverReviewStatsTx(review.moverId, tx);
@@ -115,6 +116,7 @@ async function getWritableReviews(clientId: Client["id"], page = 1, limit = 6) {
     limit,
   );
 
+  // 결과 매핑
   const mappedEstimates = estimates.map((e) => ({
     estimateId: e.id,
     price: e.price,
