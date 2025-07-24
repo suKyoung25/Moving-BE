@@ -145,6 +145,7 @@ async function findSentEstimateById(moverId: string, estimateId: string) {
       id: true,
       price: true,
       moverId: true,
+      createdAt: true,
       request: {
         select: {
           moveType: true,
