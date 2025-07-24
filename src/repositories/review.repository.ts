@@ -45,7 +45,7 @@ async function findReviewsByClientId(
       rating: e.rating,
       content: e.content,
       createdAt: e.createdAt,
-      moverNickname: e.mover.nickName,
+      moverNickName: e.mover.nickName,
       moverProfileImage: e.mover.profileImage,
       price: e.estimate.price,
       moveType: e.estimate.request.moveType,
