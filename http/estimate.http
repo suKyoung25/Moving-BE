@@ -47,3 +47,12 @@ Authorization: Bearer {{token}}
   "clientId": "클라이언트_ID",
   "requestId": "요청_ID"
 }
+
+### 견적 확정 테스트
+POST http://localhost:4000/estimates/confirmed
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "estimateId": "ddc7beb4-f645-4e12-8749-14aac1a688ab"
+}
