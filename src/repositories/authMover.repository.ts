@@ -12,10 +12,10 @@
 
 import { Mover } from "@prisma/client";
 import prisma from "../configs/prisma.config";
-import { createMoverInputwithHash } from "../types/authMover.type";
+import { CreateMoverInputwithHash } from "../types";
 
 //기사님 생성
-async function saveMover(user: createMoverInputwithHash) {
+async function saveMover(user: CreateMoverInputwithHash) {
   const createdMover = await prisma.mover.create({
     data: {
       name: user.name,

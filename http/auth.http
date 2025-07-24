@@ -1,4 +1,4 @@
-@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjMjVhMzk0Mi01MzYzLTRkMDYtOGYzYS01MjY1NzY3NDE4YzQiLCJlbWFpbCI6IjBza3lAZXhhbXBsZS5jb20iLCJuYW1lIjoi7JaR7ISx6rK9IiwidXNlclR5cGUiOiJjbGllbnQiLCJpYXQiOjE3NTI3MTgwOTEsImV4cCI6MTc1MjcyMTY5MX0.zNnskJifDSjIvWA0aNBaa4Mfb95jj7luP1ije2QDeCs
+@token=
 
 ### 기사님 회원가입(local)
 POST http://localhost:4000/auth/signup/mover
@@ -17,8 +17,8 @@ POST http://localhost:4000/auth/signin/mover
 Content-Type: application/json
 
 {
-     "email": "MLocal4@test.com", 
-     "password": "a4444444"
+     "email": "MMLocal9@test.com", 
+     "password": "a1111111"
 }
 
 ### 기사님 회원가입(배포주소)
@@ -48,8 +48,8 @@ Content-Type: application/json
 
 {
      "name": "일반인",
-     "email": "test5@test.com", 
-     "phone": "03112345679", 
+     "email": "test4@test.com", 
+     "phoneNumber": "03112345678", 
      "password": "asdf1234",
      "passwordConfirmation": "asdf1234"
 }

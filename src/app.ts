@@ -27,7 +27,7 @@ app.set("trust proxy", 1);
 // 미들웨어
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: process.env.FRONTEND_URL || "http://localhost:3000",
     credentials: true,
   }),
 );
@@ -39,7 +39,7 @@ app.use(passport.initialize());
 // 라우터 등록
 app.use("/", infoRouter);
 app.use("/auth", authRouter);
-app.use("/profile", verifyAccessToken, profileRouter);
+app.use("/profile", profileRouter);
 app.use("/dashboard", verifyAccessToken, accountRouter);
 app.use("/movers", moverRouter);
 app.use("/reviews", verifyAccessToken, reviewRouter);
