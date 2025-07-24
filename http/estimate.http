@@ -24,3 +24,26 @@ Accept: application/json
 GET http://localhost:4000/estimates/received
 Content-Type: application/json
 Authorization: Bearer {{token}}
+
+### 견적 요청 (기사 → 고객에게)
+POST http://localhost:4000/estimates/create
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "price": 150000,
+  "comment": "안녕하세요, 빠르고 안전하게 도와드리겠습니다.",
+  "clientId": "클라이언트_ID",
+  "requestId": "요청_ID"
+}
+
+### 견적 거절 (기사 → 고객 견적 거절)
+POST http://localhost:4000/estimates/reject
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "comment": "죄송합니다. 일정이 맞지 않습니다.",
+  "clientId": "클라이언트_ID",
+  "requestId": "요청_ID"
+}
