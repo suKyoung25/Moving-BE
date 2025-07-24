@@ -64,7 +64,14 @@ async function getReceivedRequests(query: GetReceivedRequestsQuery) {
   });
 }
 
+// 받은 요청 조회 (일반)
+async function getClientActiveRequests(clientId: string) {
+  if (!clientId) throw new BadRequestError("clientId가 필요합니다.");
+  return requestRepository.fetchClientActiveRequests(clientId);
+}
+
 export default {
   createRequest,
   getReceivedRequests,
+  getClientActiveRequests,
 };
