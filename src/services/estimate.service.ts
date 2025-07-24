@@ -145,6 +145,8 @@ async function findSentEstimateById(moverId: string, estimateId: string) {
       id: true,
       price: true,
       moverId: true,
+      createdAt: true,
+      isClientConfirmed: true,
       request: {
         select: {
           moveType: true,
@@ -245,6 +247,25 @@ async function getReceivedEstimates(clientId: Client["id"], category: "all" | "c
   }));
 }
 
+// 견적 확정
+async function confirmEstimate(estimateId: string, clientId: string) {
+  return await prisma.$transaction(async (tx) => {
+    // 1. 견적 조회 및 검증
+    const estimate = await estimateRepository.findEstimateById(tx, estimateId);
+    if (!estimate) throw new BadRequestError("견적을 찾을 수 없습니다.");
+    if (estimate.clientId !== clientId) throw new BadRequestError("권한이 없습니다.");
+    if (estimate.isClientConfirmed) throw new BadRequestError("이미 확정된 견적입니다.");
+
+    // 2. 견적 확정
+    await estimateRepository.updateEstimateConfirmed(tx, estimateId);
+
+    // 3. 기사님 estimateCount +1
+    await estimateRepository.incrementMoverEstimateCount(tx, estimate.moverId);
+
+    return { estimateId, moverId: estimate.moverId };
+  });
+}
+
 export default {
   getWritableEstimates,
   getPendingEstimates,
@@ -254,4 +275,5 @@ export default {
   findEstimatesByMoverId,
   getEstimatesByStatus,
   getReceivedEstimates,
+  confirmEstimate,
 };

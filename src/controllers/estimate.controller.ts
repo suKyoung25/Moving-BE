@@ -201,6 +201,27 @@ async function getReceivedEstimates(req: Request, res: Response, next: NextFunct
   }
 }
 
+// 견적 확정하기
+async function confirmEstimate(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { estimateId } = req.body;
+    const clientId = req.auth!.userId;
+
+    if (!estimateId) {
+      return res.status(400).json({ message: "estimateId는 필수입니다." });
+    }
+
+    const result = await estimateService.confirmEstimate(estimateId, clientId);
+
+    res.status(200).json({
+      message: "견적 확정 성공",
+      data: result,
+    });
+  } catch (e) {
+    next(e);
+  }
+}
+
 export default {
   getWritableEstimates,
   getPendingEstimates,
@@ -210,4 +231,5 @@ export default {
   getSentEstimates,
   getRejectedEstimates,
   getReceivedEstimates,
+  confirmEstimate,
 };

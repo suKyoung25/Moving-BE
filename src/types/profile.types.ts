@@ -11,3 +11,10 @@ export type MoverProfile = {
   serviceType: MoveType[];
   serviceArea: string[];
 };
+
+// 프로필 등록
+export interface ClientProfileRegister {
+  profileImage?: string;
+  serviceType?: MoveType[];
+  livingArea?: string[];
+}
