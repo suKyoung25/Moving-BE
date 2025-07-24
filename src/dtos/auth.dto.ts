@@ -1,15 +1,8 @@
 import z from "zod";
-import { CreateMoverInput, GetMoverInput } from "../types";
 import { ErrorMessage } from "../constants/ErrorMessage";
 
-//기사님 회원가입 DTO
-export interface MoverSignupDto extends CreateMoverInput {}
-
-//기사님 로그인 DTO
-export interface MoverSigninDto extends GetMoverInput {}
-
-//기사님 회원가입 유효성 검사 //TODO: 일반-회원가입 부분이랑 스키마 통일 시키기
-export const signUpMoverSchema = z
+// ✅ 일반 회원가입 DTO 및 zod 유효성 검사
+export const signUpSchema = z
   .object({
     email: z.string().email().nonempty(ErrorMessage.NO_EMAIL),
 
@@ -33,8 +26,10 @@ export const signUpMoverSchema = z
     path: ["passwordConfirmation"],
   });
 
-//기사님 로그인 유효성 검사 //TODO: 일반-로그인 부분이랑 스키마 통일 시키기
-export const signInMoverSchema = z.object({
+export type SignUpRequestDTO = z.infer<typeof signUpSchema>;
+
+// ✅ 일반 로그인 DTO 및 zod 유효성 검사
+export const signinSchema = z.object({
   email: z.string().email().nonempty(ErrorMessage.NO_EMAIL),
 
   password: z
@@ -43,3 +38,5 @@ export const signInMoverSchema = z.object({
     .regex(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/, ErrorMessage.PASSWORD_REGEX)
     .nonempty(ErrorMessage.NO_PASSWORD),
 });
+
+export type SignInRequestDTO = z.infer<typeof signinSchema>;

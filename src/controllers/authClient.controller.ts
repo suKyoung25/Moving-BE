@@ -1,17 +1,12 @@
 import { Request, Response, NextFunction } from "express";
 import authClientService from "../services/authClient.service";
-import {
-  loginClientSchema,
-  signUpClientSchema,
-  LoginRequest,
-  SignUpRequest,
-} from "../dtos/authClient.dto";
+import { signinSchema, signUpSchema, SignInRequestDTO, SignUpRequestDTO } from "../dtos/auth.dto";
 
 // ✅ 일반 회원가입
-async function signUp(req: Request<{}, {}, SignUpRequest>, res: Response, next: NextFunction) {
+async function signUp(req: Request<{}, {}, SignUpRequestDTO>, res: Response, next: NextFunction) {
   try {
     // Zod 스키마로 데이터 검증 및 변환
-    const parsedData = signUpClientSchema.parse(req.body);
+    const parsedData = signUpSchema.parse(req.body);
 
     const signUpData = {
       name: parsedData.name,
@@ -29,9 +24,9 @@ async function signUp(req: Request<{}, {}, SignUpRequest>, res: Response, next: 
 }
 
 // ✅ 일반 로그인
-async function login(req: Request<{}, {}, LoginRequest>, res: Response, next: NextFunction) {
+async function login(req: Request<{}, {}, SignInRequestDTO>, res: Response, next: NextFunction) {
   try {
-    const parsedData = loginClientSchema.parse(req.body);
+    const parsedData = signinSchema.parse(req.body);
 
     const loginData = {
       email: parsedData.email,
