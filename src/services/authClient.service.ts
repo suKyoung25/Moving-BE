@@ -1,56 +1,37 @@
 import { ErrorMessage } from "../constants/ErrorMessage";
 import authClientRepository from "../repositories/authClient.repository";
 import { LoginDataLocal, SignUpDataLocal } from "../types";
-import { ConflictError, NotFoundError } from "../types/errors";
+import { NotFoundError } from "../types/errors";
 import { filterSensitiveUserData, hashPassword, verifyPassword } from "../utils/auth.util";
 import { generateAccessToken, generateRefreshToken } from "../utils/token.util";
 
 // ✅ 회원가입 - Local
-async function create(
-  user: SignUpDataLocal,
-): Promise<Omit<SignUpDataLocal, "hashedPassword" | "phone">> {
-  // 이미 사용한 정보 확인
-  const existingEmail = await authClientRepository.findByEmailRaw(user.email);
-  const existingPhone = await authClientRepository.findByPhone(user.phone);
-
-  const fieldErrors: Record<string, string> = {};
-
-  if (existingEmail) {
-    fieldErrors.email = ErrorMessage.ALREADY_EXIST_EMAIL;
-  }
-  if (existingPhone) {
-    fieldErrors.phone = ErrorMessage.ALREADY_EXIST_PHONE;
-  }
-
-  if (Object.keys(fieldErrors).length > 0) {
-    throw new ConflictError("중복 정보로 인한 회원가입 실패: ", fieldErrors);
-  }
-
+async function create(client: SignUpDataLocal) {
   // 비밀번호 해시
-  const hashedPassword = await hashPassword(user.hashedPassword);
+  const hashedPassword = await hashPassword(client.password);
 
   const newClient = await authClientRepository.create({
-    ...user,
-    hashedPassword,
+    ...client,
+    password: hashedPassword,
+  });
+
+  // 토큰 넣음
+  const accessToken = generateAccessToken({
+    userId: newClient.id,
+    email: newClient.email,
+    name: newClient.name,
+    userType: newClient.userType,
+  });
+  const refreshToken = generateRefreshToken({
+    userId: newClient.id,
+    email: newClient.email,
+    name: newClient.name,
+    userType: newClient.userType,
   });
 
   // 비밀번호와 전화번호 빼고 반환
-  const clientInfo = filterSensitiveUserData(newClient);
-
-  const accessToken = generateAccessToken({
-    userId: clientInfo.id,
-    email: clientInfo.email,
-    name: clientInfo.name,
-    userType: clientInfo.userType,
-  });
-  const refreshToken = generateRefreshToken({
-    userId: clientInfo.id,
-    email: clientInfo.email,
-    name: clientInfo.name,
-    userType: clientInfo.userType,
-  });
-
-  return { accessToken, refreshToken, clientInfo };
+  const user = filterSensitiveUserData(newClient);
+  return { accessToken, refreshToken, user: client };
 }
 
 // ✅ 로그인 - Local
@@ -80,8 +61,8 @@ async function loginWithLocal({ email, hashedPassword }: LoginDataLocal) {
   });
 
   // 비밀번호와 전화번호 빼고 반환
-  const clientInfo = filterSensitiveUserData(client);
-  return { accessToken, refreshToken, clientInfo };
+  const user = filterSensitiveUserData(client);
+  return { accessToken, refreshToken, user };
 }
 
 const authClientService = { create, loginWithLocal };

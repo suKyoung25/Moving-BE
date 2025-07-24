@@ -29,7 +29,7 @@ export const signUpSchema = z
 export type SignUpRequestDTO = z.infer<typeof signUpSchema>;
 
 // ✅ 일반 로그인 DTO 및 zod 유효성 검사
-export const signinSchema = z.object({
+export const signInSchema = z.object({
   email: z.string().email().nonempty(ErrorMessage.NO_EMAIL),
 
   password: z
@@ -39,4 +39,4 @@ export const signinSchema = z.object({
     .nonempty(ErrorMessage.NO_PASSWORD),
 });
 
-export type SignInRequestDTO = z.infer<typeof signinSchema>;
+export type SignInRequestDTO = z.infer<typeof signInSchema>;

@@ -48,8 +48,8 @@ Content-Type: application/json
 
 {
      "name": "일반인",
-     "email": "test4@test.com", 
-     "phoneNumber": "03112345678", 
+     "email": "sky18@test.com", 
+     "phone": "07412345679", 
      "password": "asdf1234",
      "passwordConfirmation": "asdf1234"
 }
@@ -59,7 +59,7 @@ POST http://localhost:4000/auth/signin/client
 Content-Type: application/json
 
 {
-     "email": "sky17@example.com", 
+     "email": "sky18@example.com", 
      "password": "asdf1234"
 }
 
