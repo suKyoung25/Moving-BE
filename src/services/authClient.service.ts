@@ -36,7 +36,21 @@ async function create(
 
   // 비밀번호와 전화번호 빼고 반환
   const clientInfo = filterSensitiveUserData(newClient);
-  return clientInfo;
+
+  const accessToken = generateAccessToken({
+    userId: clientInfo.id,
+    email: clientInfo.email,
+    name: clientInfo.name,
+    userType: clientInfo.userType,
+  });
+  const refreshToken = generateRefreshToken({
+    userId: clientInfo.id,
+    email: clientInfo.email,
+    name: clientInfo.name,
+    userType: clientInfo.userType,
+  });
+
+  return { accessToken, refreshToken, clientInfo };
 }
 
 // ✅ 로그인 - Local

@@ -42,10 +42,11 @@ async function create(userId: Client["id"], profile: ClientProfileRegister) {
       profileImage: profile.profileImage,
       serviceType: serviceTypes,
       livingArea: livingAreaName,
+      isProfileCompleted: true,
     },
   });
 
-  return { newProfile, userType: "client", isProfileCompleted: true };
+  return { ...newProfile, userType: "client" };
 }
 
 const profileClientRepository = {
