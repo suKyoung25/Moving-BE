@@ -6,7 +6,6 @@ import { Request, Response, NextFunction } from "express";
 import authMoverRepository from "../repositories/authMover.repository";
 import bcrypt from "bcrypt";
 import authClientRepository from "../repositories/authClient.repository";
-import { verifyPassword } from "../utils/auth.util";
 
 const secretKey = process.env.JWT_SECRET;
 

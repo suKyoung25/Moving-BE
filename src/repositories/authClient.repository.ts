@@ -39,6 +39,7 @@ async function create(user: SignUpDataLocal) {
       hashedPassword: user.password!,
     },
   });
+
   return { ...newClient, userType: "client" }; // userType: 헤더에서 씀
 }
 

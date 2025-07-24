@@ -40,5 +40,8 @@ export const ErrorMessage = {
   PHONE_REGEX: "전화번호는 9~11자 사이의 숫자여야 합니다.",
 
   // 프로필 추가
-  NO_CLIENT_PROFILE: "프로필 사진, 이용 서비스, 내가 사는 지역 중 하나 이상 선택하셔야 합니다.",
+  NO_CLIENT_PROFILE: "이용 서비스와 내가 사는 지역을 선택해야 합니다.",
+  NO_SERVICE_TYPE: "서비스 유형을 1개 이상 선택해야 합니다.",
+  NO_REGION: "지역을 1개 이상 선택해야 합니다.",
+  MAX_REGION: "지역은 3개까지 선택할 수 있습니다.",
 };

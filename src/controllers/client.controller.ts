@@ -1,18 +1,17 @@
 import { Request, Response, NextFunction } from "express";
-import { clientProfileSchema, ProfilePostDto } from "../dtos/profileClient.dto";
-import profileClientService from "../services/profileClient.service";
+import { clientProfileSchema, ProfilePostDto } from "../dtos/client.dto";
+import profileClientService from "../services/client.service";
 import { MoveType } from "@prisma/client";
 
 async function post(req: Request<{}, {}, ProfilePostDto>, res: Response, next: NextFunction) {
   try {
     const { userId } = req.auth!;
 
-    // living area 빈 배열 undefined 타입 오류 방지
     const parsedData = clientProfileSchema.parse(req.body);
 
     const profile = {
       profileImage: parsedData.profileImage,
-      serviceType: parsedData.serviceType as MoveType[], // 타입 캐스팅
+      serviceType: parsedData.serviceType as MoveType[],
       livingArea: parsedData.livingArea,
     };
 
