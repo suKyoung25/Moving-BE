@@ -1,6 +1,8 @@
 @client_token=
 @mover_token=
 
+@client_token=
+
 ### 견적 요청 (일반 유저)
 POST http://localhost:4000/requests
 Content-Type: application/json
@@ -32,3 +34,7 @@ Authorization: Bearer {{mover_token}}
 ### 받은 요청 조회 (기사님) - 검색 & 정렬
 GET http://localhost:4000/requests?sort=requestedAt&keyword=고객1
 Authorization: Bearer {{mover_token}}
+
+### 활성 견적 요청 목록 조회 (클라이언트)
+GET http://localhost:4000/requests/client/active
+Authorization: Bearer {{client_token}}

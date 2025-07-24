@@ -99,7 +99,27 @@ async function getFilteredRequests({
   };
 }
 
+//받은 요청 조회(일반)
+async function fetchClientActiveRequests(clientId: string) {
+  return prisma.request.findMany({
+    where: { 
+      clientId,
+      isPending: true 
+    },
+    orderBy: { requestedAt: 'desc' },
+    select: {
+      id: true,
+      moveType: true,
+      moveDate: true,
+      fromAddress: true,
+      toAddress: true,
+      requestedAt: true,
+    }
+  });
+}
+
 export default {
   createEstimateRequest,
   getFilteredRequests,
+  fetchClientActiveRequests,
 };
