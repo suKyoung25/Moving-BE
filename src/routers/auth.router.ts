@@ -8,7 +8,7 @@ import {
   validateReq,
   verifyAccessToken,
 } from "../middlewares/auth.middleware";
-import { signInMoverSchema, signUpMoverSchema } from "../dtos/authMover.dto";
+import { signinSchema, signUpSchema } from "../dtos/auth.dto";
 
 const authRouter = express.Router();
 
@@ -19,20 +19,10 @@ authRouter.post("/refresh-token", authController.setRefreshToken);
 authRouter.get("/", verifyAccessToken, authController.getMe);
 
 //기사님 회원가입 - Local
-authRouter.post(
-  "/signup/mover",
-  validateReq(signUpMoverSchema),
-  checkDuplicateMoverSignup,
-  moverSingup,
-);
+authRouter.post("/signup/mover", validateReq(signUpSchema), checkDuplicateMoverSignup, moverSingup);
 
 //기사님 로그인 - Local
-authRouter.post(
-  "/signin/mover",
-  validateReq(signInMoverSchema),
-  checkDuplicateMoverSignin,
-  moverSignin,
-);
+authRouter.post("/signin/mover", validateReq(signinSchema), checkDuplicateMoverSignin, moverSignin);
 
 // 일반 회원가입 - Local
 authRouter.post("/signup/client", authClientController.signUp);

@@ -7,27 +7,27 @@
 import { NextFunction, Request, Response } from "express";
 import profileMoverService from "../services/profileMover.service";
 import { filterSensitiveUserData } from "../utils/auth.util";
-import { MoverProfileDto } from "../dtos/profileClient.dto";
+import { MoverProfileDto } from "../dtos/mover.dto";
 
-//기사님 프로필 생성
-async function moverCreateProfile(
-  req: Request<{}, {}, MoverProfileDto>,
-  res: Response,
-  next: NextFunction,
-) {
-  try {
-    const { userId } = req.auth!;
+// TODO 삭제 예정//기사님 프로필 생성
+// async function moverCreateProfile(
+//   req: Request<{}, {}, MoverProfileDto>,
+//   res: Response,
+//   next: NextFunction,
+// ) {
+//   try {
+//     const { userId } = req.auth!;
 
-    const createdMoverProfile = await profileMoverService.modifyMoverProfile({
-      ...req.body,
-      userId,
-    });
-    const filteredMoverProfile = filterSensitiveUserData(createdMoverProfile);
-    res.status(201).json(filteredMoverProfile);
-  } catch (error) {
-    next(error);
-  }
-}
+//     const createdMoverProfile = await profileMoverService.modifyMoverProfile({
+//       ...req.body,
+//       userId,
+//     });
+//     const filteredMoverProfile = filterSensitiveUserData(createdMoverProfile);
+//     res.status(201).json(filteredMoverProfile);
+//   } catch (error) {
+//     next(error);
+//   }
+// }
 
 //기사님 프로필 수정
 async function moverPatchProfile(
@@ -51,6 +51,5 @@ async function moverPatchProfile(
 }
 
 export default {
-  moverCreateProfile,
   moverPatchProfile,
 };

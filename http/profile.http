@@ -1,20 +1,20 @@
-@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0NWMzYTZjMy00ZDIwLTRjYjUtYjM2ZC04MTUyYWM1ZDAyMDkiLCJlbWFpbCI6Ik1NTG9jYWw3QHRlc3QuY29tIiwibmFtZSI6Ik1NNyIsInVzZXJUeXBlIjoibW92ZXIiLCJpYXQiOjE3NTMyNjQ1MzcsImV4cCI6MTc1MzI2ODEzN30.SAxFmBaeaOz_g9iMruhOEL5CuAJLU5Ys0CANwUC7wCA
+@token=
 
-### 기사님 프로필 등록
-POST http://localhost:4000/profile/mover
-Content-Type: application/json
-Authorization: Bearer {{token}}
+# ### 기사님 프로필 등록
+# POST http://localhost:4000/profile/mover
+# Content-Type: application/json
+# Authorization: Bearer {{token}}
 
-{
-     "nickName": "무빙7", 
-     "career": 7, 
-     "introduction":"안녕하세요 ㅂㅁ7입니다",  
-     "description":"안녕하세요 ㅂㅁ7입니다" , 
-     "serviceType":["소형이사"],
-     "serviceArea": ["서울", "경기"]
-}
+# {
+#      "nickName": "무빙7", 
+#      "career": 7, 
+#      "introduction":"안녕하세요 ㅂㅁ7입니다",  
+#      "description":"안녕하세요 ㅂㅁ7입니다" , 
+#      "serviceType":["소형이사"],
+#      "serviceArea": ["서울", "경기"]
+# }
 
-### 기사님 프로필 수정
+### 기사님 프로필 생성 & 수정
 PATCH  http://localhost:4000/profile/mover
 Content-Type: application/json
 Authorization: Bearer {{token}}
