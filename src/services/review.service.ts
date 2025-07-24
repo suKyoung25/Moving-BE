@@ -1,38 +1,68 @@
 import { Client, Review } from "@prisma/client";
 import reviewRepository from "../repositories/review.repository";
-import { BadRequestError, ForbiddenError, NotFoundError } from "../types/errors";
-import { CreateReviewDto } from "../dtos/review.dto";
 import estimateRepository from "../repositories/estimate.repository";
+import prisma from "../configs/prisma.config";
+import { BadRequestError, ForbiddenError, NotFoundError, ValidationError } from "../types/errors";
+import { CreateReviewDto } from "../dtos/review.dto";
 
-// 내가 작성한 리뷰 목록
-async function getMyReviews(clientId: Client["id"], page: number = 1, limit: number = 6) {
-  if (!clientId) {
-    throw new BadRequestError("clientId가 필요합니다.");
-  }
+// 내가 작성한 리뷰 목록 (페이징 포함)
+async function getMyReviews(clientId: Client["id"], page = 1, limit = 6) {
+  if (page < 1) page = 1;
+  if (limit < 1) limit = 6;
+
   const offset = (page - 1) * limit;
-  return reviewRepository.findReviewsByClientId(clientId, offset, limit, page);
+  const { reviews, total } = await reviewRepository.findReviewsByClientId(clientId, offset, limit);
+
+  // 결과 매핑
+  const mappedReviews = reviews.map((e) => ({
+    id: e.id,
+    rating: e.rating,
+    content: e.content,
+    createdAt: e.createdAt,
+    moverNickName: e.mover.nickName,
+    moverProfileImage: e.mover.profileImage,
+    price: e.estimate.price,
+    moveType: e.estimate.request.moveType,
+    moveDate: e.estimate.request.moveDate,
+    isDesignatedEstimate:
+      Array.isArray(e.estimate.request.designatedRequest) &&
+      e.estimate.request.designatedRequest.some((dr) => dr.moverId === e.moverId),
+  }));
+
+  return {
+    reviews: mappedReviews,
+    total,
+    pagination: {
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
 }
 
 // 리뷰 작성
 async function createReview(data: CreateReviewDto, clientId: Client["id"]) {
   const { estimateId, rating, content } = data;
-  if (!estimateId || !content || !clientId) {
-    throw new BadRequestError("필수 입력값이 누락되었습니다.");
-  }
-  if (rating < 1 || rating > 5) {
-    throw new BadRequestError("평점은 1~5 사이여야 합니다.");
-  }
 
-  // 견적에서 moverId 조회
+  // 견적에서 moverId 조회 및 존재 확인
   const estimate = await estimateRepository.getEstimateMoverId(estimateId);
   if (!estimate) throw new BadRequestError("존재하지 않는 견적입니다.");
 
-  return reviewRepository.createReview({
-    estimate: { connect: { id: estimateId } },
-    client: { connect: { id: clientId } },
-    mover: { connect: { id: estimate.moverId } },
-    rating,
-    content,
+  // 이미 리뷰 존재 여부 확인
+  const existing = await reviewRepository.findReviewByEstimateId(estimateId);
+  if (existing) throw new ValidationError("이미 리뷰가 등록된 견적입니다.");
+
+  // 트랜잭션 내에 리뷰 생성
+  return await prisma.$transaction(async (tx) => {
+    const review = await reviewRepository.createReviewTx(tx, {
+      estimate: { connect: { id: estimateId } },
+      client: { connect: { id: clientId } },
+      mover: { connect: { id: estimate.moverId } },
+      rating,
+      content,
+    });
+    await reviewRepository.updateMoverReviewStatsTx(estimate.moverId, tx);
+    return review;
   });
 }
 
@@ -43,24 +73,71 @@ async function updateReview(
   data: Partial<{ rating: Review["rating"]; content: Review["content"] }>,
 ) {
   if (!reviewId) throw new BadRequestError("reviewId가 필요합니다.");
-  if (!data.rating && !data.content) throw new BadRequestError("수정할 내용이 없습니다.");
 
+  // 리뷰 존재 여부 및 권한 체크
   const review = await reviewRepository.findReviewById(reviewId);
   if (!review) throw new NotFoundError("리뷰를 찾을 수 없습니다.");
   if (review.clientId !== clientId) throw new ForbiddenError("수정 권한이 없습니다.");
 
-  return reviewRepository.updateReview(reviewId, data);
+  // 트랜잭션으로 리뷰 수정
+  return prisma.$transaction(async (tx) => {
+    const updated = await reviewRepository.updateReviewTx(tx, reviewId, data);
+    await reviewRepository.updateMoverReviewStatsTx(review.moverId, tx);
+    return updated;
+  });
 }
 
 // 리뷰 삭제
 async function deleteReview(reviewId: Review["id"], clientId: Client["id"]) {
   if (!reviewId) throw new BadRequestError("reviewId가 필요합니다.");
 
+  // 리뷰 존재 및 권한 확인
   const review = await reviewRepository.findReviewById(reviewId);
   if (!review) throw new NotFoundError("리뷰를 찾을 수 없습니다.");
   if (review.clientId !== clientId) throw new ForbiddenError("삭제 권한이 없습니다.");
 
-  await reviewRepository.deleteReview(reviewId);
+  // 트랜잭션으로 삭제
+  return prisma.$transaction(async (tx) => {
+    await reviewRepository.deleteReviewTx(tx, reviewId);
+    await reviewRepository.updateMoverReviewStatsTx(review.moverId, tx);
+  });
+}
+
+// 작성 가능한 리뷰 목록 조회
+async function getWritableReviews(clientId: Client["id"], page = 1, limit = 6) {
+  if (page < 1) page = 1;
+  if (limit < 1) limit = 6;
+
+  const offset = (page - 1) * limit;
+
+  const { estimates, total } = await estimateRepository.findWritableEstimatesByClientId(
+    clientId,
+    offset,
+    limit,
+  );
+
+  // 결과 매핑
+  const mappedEstimates = estimates.map((e) => ({
+    estimateId: e.id,
+    price: e.price,
+    moveType: e.request.moveType,
+    moveDate: e.request.moveDate,
+    isDesignatedEstimate:
+      Array.isArray(e.request.designatedRequest) &&
+      e.request.designatedRequest.some((dr) => dr.moverId === e.moverId),
+    moverProfileImage: e.mover.profileImage,
+    moverNickName: e.mover.nickName,
+  }));
+
+  return {
+    estimates: mappedEstimates,
+    total,
+    pagination: {
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
 }
 
 export default {
@@ -68,4 +145,5 @@ export default {
   createReview,
   updateReview,
   deleteReview,
+  getWritableReviews,
 };
