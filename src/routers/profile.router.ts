@@ -28,6 +28,6 @@ profileRouter.patch(
 );
 
 // 일반 회원 프로필 등록 & 수정
-profileRouter.patch("/clients", verifyAccessToken, clientController.post);
+profileRouter.patch("/clients", verifyAccessToken, clientController.update);
 
 export default profileRouter;

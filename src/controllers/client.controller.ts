@@ -37,7 +37,7 @@ async function update(req: Request, res: Response, next: NextFunction) {
 }
 
 const profileClientController = {
-  post: update,
+  update,
 };
 
 export default profileClientController;

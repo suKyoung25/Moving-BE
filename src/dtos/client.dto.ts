@@ -29,7 +29,7 @@ export function profileClientSchema(mode: "create" | "update") {
       name: nameSchema.optional(),
       email: emailSchema.optional(),
       phone: phoneSchema.optional(),
-      password: passwordSchema.optional(),
+      password: passwordSchema,
       newPassword: passwordSchema.optional(),
       newPasswordConfirmation: z.string().optional().or(z.literal("")),
       profileImage: profileImageSchema,
