@@ -16,10 +16,3 @@ export const UpdateReviewschema = z.object({
 });
 
 export type UpdateReviewDto = z.infer<typeof UpdateReviewschema>;
-
-// 리뷰 ID 파라미터 DTO 및 zod 스키마
-export const ReviewIdParamsSchema = z.object({
-  reviewId: z.string().uuid(),
-});
-
-export type ReviewIdParamsDto = z.infer<typeof ReviewIdParamsSchema>;

@@ -12,15 +12,6 @@ interface EstimateInput {
 
 const prisma = new PrismaClient();
 
-// 작성 가능한 리뷰 목록
-async function getWritableEstimates(clientId: Client["id"], page: number, limit: number) {
-  if (!clientId) {
-    throw new BadRequestError("clientId가 필요합니다.");
-  }
-  const offset = (page - 1) * limit;
-  return estimateRepository.findWritableEstimatesByClientId(clientId, offset, limit, page);
-}
-
 // client 데기 중인 견적서 조회
 async function getPendingEstimates(clientId: Client["id"]) {
   const requests = await estimateRepository.findPendingEstimatesByClientId(clientId);
@@ -248,7 +239,6 @@ async function getReceivedEstimates(clientId: Client["id"], category: "all" | "c
 }
 
 export default {
-  getWritableEstimates,
   getPendingEstimates,
   createEstimate,
   findSentEstimateById,
