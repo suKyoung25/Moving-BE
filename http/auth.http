@@ -1,4 +1,4 @@
-@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3YzdjMjcxZC1mNmM0LTQwNzAtYjRiMi00NmM3MzY0NjA4ZWUiLCJlbWFpbCI6InNreTE3QGV4YW1wbGUuY29tIiwibmFtZSI6IuyWkeyEseqyvSIsInVzZXJUeXBlIjoiY2xpZW50IiwiaWF0IjoxNzUzMzMzNzY5LCJleHAiOjE3NTMzMzczNjl9.nsrAyMTHK6z_06bM0mCFyQ3N27n0MZPrE-MsyAxn7OY
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ZDExNzRjZi0xMDViLTRhNTctYWE3NC03YTk1NTViMmFkZDgiLCJlbWFpbCI6InNreTNAZXhhbXBsZS5jb20iLCJuYW1lIjoic2t5IiwidXNlclR5cGUiOiJjbGllbnQiLCJpYXQiOjE3NTMzNTExOTcsImV4cCI6MTc1MzM1NDc5N30.ze6qY6xdy9xn74mSCwmnK2Cj7Zht4DdwVmHbP2H4WDo
 
 ### 기사님 회원가입(local)
 POST http://localhost:4000/auth/signup/mover
@@ -59,7 +59,7 @@ POST http://localhost:4000/auth/signin/client
 Content-Type: application/json
 
 {
-     "email": "sky18@example.com", 
+     "email": "sky3@example.com", 
      "password": "asdf1234"
 }
 

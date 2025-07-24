@@ -31,7 +31,7 @@ async function create(client: SignUpDataLocal) {
 
   // 비밀번호와 전화번호 빼고 반환
   const user = filterSensitiveUserData(newClient);
-  return { accessToken, refreshToken, user: client };
+  return { accessToken, refreshToken, user };
 }
 
 // ✅ 로그인 - Local

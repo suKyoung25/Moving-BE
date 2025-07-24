@@ -27,7 +27,7 @@ profileRouter.patch(
   profileMoverController.moverPatchProfile,
 );
 
-// 일반 유저 프로필 등록
+// 일반 회원 프로필 등록 & 수정
 profileRouter.patch("/clients", verifyAccessToken, clientController.post);
 
 export default profileRouter;

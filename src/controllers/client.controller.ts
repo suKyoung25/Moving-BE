@@ -1,30 +1,43 @@
 import { Request, Response, NextFunction } from "express";
-import { clientProfileSchema, ProfilePostDto } from "../dtos/client.dto";
+import {
+  ClientProfileRegisterDto,
+  ClientProfileUpdateDto,
+  profileClientSchema,
+} from "../dtos/client.dto";
 import profileClientService from "../services/client.service";
-import { MoveType } from "@prisma/client";
+import profileClientRepository from "../repositories/client.repository";
 
-async function post(req: Request<{}, {}, ProfilePostDto>, res: Response, next: NextFunction) {
+async function update(req: Request, res: Response, next: NextFunction) {
   try {
     const { userId } = req.auth!;
 
-    const parsedData = clientProfileSchema.parse(req.body);
+    // ✅ 프로필 등록 vs 수정 판단
+    const existingProfile = await profileClientRepository.findById(userId);
+    const mode = existingProfile?.isProfileCompleted === true ? "update" : "create";
 
-    const profile = {
-      profileImage: parsedData.profileImage,
-      serviceType: parsedData.serviceType as MoveType[],
-      livingArea: parsedData.livingArea,
-    };
+    // ✅ 유형별 parse
+    let parsedData;
 
-    await profileClientService.create(userId, profile);
+    if (mode === "create") {
+      parsedData = profileClientSchema("create").parse(req.body) as ClientProfileRegisterDto;
+    } else {
+      parsedData = profileClientSchema("create").parse(req.body) as ClientProfileUpdateDto;
+    }
 
-    res.status(201).json({ message: "일반 프로필 등록 성공", data: parsedData });
+    const newProfile = await profileClientService.update(userId, parsedData);
+
+    // ✅ 반환
+    res.status(201).json({
+      message: `일반 프로필 ${mode === "create" ? "등록" : "수정"} 성공`,
+      data: newProfile,
+    });
   } catch (error) {
     next(error);
   }
 }
 
 const profileClientController = {
-  post,
+  post: update,
 };
 
 export default profileClientController;

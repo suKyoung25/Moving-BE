@@ -44,4 +44,5 @@ export const ErrorMessage = {
   NO_SERVICE_TYPE: "서비스 유형을 1개 이상 선택해야 합니다.",
   NO_REGION: "지역을 1개 이상 선택해야 합니다.",
   MAX_REGION: "지역은 3개까지 선택할 수 있습니다.",
+  NEW_PASSWORD_CONFIRMATION_NOT_MATCH: "새 비밀번호 확인 결과가 일치하지 않습니다.",
 };
