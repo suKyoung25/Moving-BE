@@ -1,13 +1,5 @@
-import { NotificationType } from "@prisma/client";
 import prisma from "../configs/prisma.config";
-
-interface NotificationInput {
-  userId: string;
-  content: string;
-  type: NotificationType;
-  targetId?: string;
-  targetUrl?: string;
-}
+import { NotificationPayload } from "../types";
 
 // 알림 상세 조회
 async function getNotification(notificationId: string) {
@@ -47,12 +39,12 @@ async function updateNotification(notificationId: string) {
 }
 
 // 알림 DB 저장 (1개)
-async function createNotification(data: NotificationInput) {
+async function createNotification(data: NotificationPayload) {
   return await prisma.notification.create({ data });
 }
 
 // 알림 DB 저장 (다수)
-async function createMany(data: NotificationInput[]) {
+async function createMany(data: NotificationPayload[]) {
   return await prisma.notification.createMany({ data });
 }
 

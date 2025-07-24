@@ -1,33 +1,22 @@
-import { MoveType, NotificationType } from "@prisma/client";
 import { NotificationTemplate } from "../constants/NotificationTemplate";
 import notificationRepository from "../repositories/notification.repository";
 import { parseRegionKeywords, sendNotificationTo } from "../utils/sse.util";
 import moverRepository from "../repositories/mover.repository";
 import { ForbiddenError, NotFoundError } from "../types/errors";
 import { ErrorMessage } from "../constants/ErrorMessage";
+import { NotificationPayload, NotifyConfirmEstimate, NotifyNewEstimate } from "../types";
 
-interface NotifyInput {
-  clientName?: string;
-  moverName?: string;
-  type: NotificationType;
-  targetId: string;
-  targetUrl: string;
-}
-interface NotifyMoveDay {
-  userId: string;
-  content: string;
-  targetId: string;
-  targetUrl: string;
-}
-
-interface NotifyNewEstimate extends NotifyInput {
-  fromAddress: string;
-  toAddress: string;
-  moveType: MoveType;
-}
-
-interface NotifyConfirmEstimate extends NotifyInput {
-  userId: string;
+// 알림 전송 + 저장 함수
+async function sendAndSaveNotification({
+  userId,
+  content,
+  type,
+  targetId,
+  targetUrl,
+}: NotificationPayload) {
+  const payload = { content, type, targetId, targetUrl };
+  sendNotificationTo(userId, payload);
+  await notificationRepository.createNotification({ userId, content, type, targetId, targetUrl });
 }
 
 // 알림 목록 조회
@@ -101,50 +90,21 @@ async function notifyEstimateConfirmed({
   targetId,
   targetUrl,
 }: NotifyConfirmEstimate) {
-  let content = "";
+  const content = clientName
+    ? NotificationTemplate.ESTIMATE_CONFIRMED.mover(clientName)
+    : moverName
+    ? NotificationTemplate.ESTIMATE_CONFIRMED.client(moverName)
+    : "";
 
-  if (clientName) {
-    content = NotificationTemplate.ESTIMATE_CONFIRMED.mover(clientName);
-  } else if (moverName) {
-    content = NotificationTemplate.ESTIMATE_CONFIRMED.client(moverName);
-  }
-  const payload = { content, type, targetId, targetUrl };
+  if (!content) return;
 
-  sendNotificationTo(userId, payload);
-
-  const notification = {
-    userId,
-    content,
-    type,
-    targetId,
-    targetUrl,
-  };
-
-  await notificationRepository.createNotification(notification);
-}
-
-// 이사 알림
-async function notifyMovingDay({ userId, content, targetId, targetUrl }: NotifyMoveDay) {
-  const type = NotificationType["MOVING_DAY"];
-  const payload = { content, type, targetId, targetUrl };
-
-  sendNotificationTo(userId, payload);
-
-  const notification = {
-    userId,
-    content,
-    type,
-    targetId,
-    targetUrl,
-  };
-
-  await notificationRepository.createNotification(notification);
+  await sendAndSaveNotification({ userId, content, type, targetId, targetUrl });
 }
 
 export default {
+  sendAndSaveNotification,
   getNotifications,
   readNotification,
   notifyEstimateRequest,
   notifyEstimateConfirmed,
-  notifyMovingDay,
 };
