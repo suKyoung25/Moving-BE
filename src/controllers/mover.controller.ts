@@ -38,25 +38,30 @@ async function getMoverDetail(req: Request, res: Response, next: NextFunction) {
   }
 }
 
-async function favoriteMover(req: Request, res: Response, next: NextFunction) {
+// 새로운 토글 엔드포인트
+async function toggleFavoriteMover(req: Request, res: Response, next: NextFunction) {
   try {
-    console.log("req.auth:", req.auth); // userId 포함 확인
-    console.log("moverId:", req.params.moverId);
-    await moverService.favoriteMover(req.auth!.userId, req.params.moverId);
-    res.status(200).json({ message: "찜 성공" });
+    console.log("찜 토글 요청:", {
+      userId: req.auth?.userId,
+      moverId: req.params.moverId
+    });
+
+    const result = await moverService.toggleFavoriteMover(req.auth!.userId, req.params.moverId);
+    
+    const message = result.action === 'added' ? '찜 추가 성공' : '찜 해제 성공';
+    
+    res.status(200).json({
+      message,
+      action: result.action,
+      isFavorite: result.isFavorite,
+      favoriteCount: result.favoriteCount
+    });
   } catch (error) {
+    console.error("찜 토글 오류:", error);
     next(error);
   }
 }
 
-async function unfavoriteMover(req: Request, res: Response, next: NextFunction) {
-  try {
-    await moverService.unfavoriteMover(req.auth!.userId, req.params.moverId);
-    res.status(200).json({ message: "찜 취소 성공" });
-  } catch (error) {
-    next(error);
-  }
-}
 
 async function designateMover(req: Request, res: Response, next: NextFunction) {
   try {
@@ -70,7 +75,6 @@ async function designateMover(req: Request, res: Response, next: NextFunction) {
 export default {
   getMovers,
   getMoverDetail,
-  favoriteMover,
-  unfavoriteMover,
+  toggleFavoriteMover,
   designateMover,
 };

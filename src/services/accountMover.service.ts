@@ -9,7 +9,7 @@ import bcrypt from "bcrypt";
 //기사님 기본 정보 수정
 async function patchMoverAccount(newData: EditMoverAccount) {
   //DB에 존재하는 본인 확인 (authRepository쪽 로직 사용)
-  const existedMoverData = await authMoverRepository.findMoverByEmail(newData.email);
+  const existedMoverData = await authMoverRepository.getMoverByEmail(newData.email);
 
   // "현재 비밀번호"가 DB에 있는 비밀번호와 일치하는지 검사 (본인 확인)
   const isPasswordCorrect = await bcrypt.compare(
@@ -47,7 +47,11 @@ async function patchMoverAccount(newData: EditMoverAccount) {
   }
 
   //프론트에서 받은 비밀번호 해시
-  const hashedNewPassword = await hashPassword(newData.newPassword);
+  let hashedNewPassword: string | undefined = undefined;
+
+  if (newData.newPassword) {
+    hashedNewPassword = await hashPassword(newData.newPassword);
+  }
 
   const patchedMoverAccount = await accountMoverRepository.patchMoverAccount({
     ...newData,

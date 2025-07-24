@@ -17,6 +17,7 @@ import requestRouter from "./routers/request.router";
 import { verifyAccessToken } from "./middlewares/auth.middleware";
 import favoriteRouter from "./routers/favorite.router";
 import accountRouter from "./routers/account.router";
+import NotificationRouter from "./routers/notification.router";
 
 const app = express();
 const PORT = process.env.PORT;
@@ -38,13 +39,14 @@ app.use(passport.initialize());
 // 라우터 등록
 app.use("/", infoRouter);
 app.use("/auth", authRouter);
-app.use("/profile", verifyAccessToken, profileRouter);
+app.use("/profile", profileRouter);
 app.use("/dashboard", verifyAccessToken, accountRouter);
 app.use("/movers", moverRouter);
 app.use("/reviews", verifyAccessToken, reviewRouter);
 app.use("/estimates", verifyAccessToken, estimateRouter);
 app.use("/favorites", verifyAccessToken, favoriteRouter);
 app.use("/requests", requestRouter);
+app.use("/notifications", verifyAccessToken, NotificationRouter);
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 // 에러 핸들러

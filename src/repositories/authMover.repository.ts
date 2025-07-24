@@ -12,10 +12,10 @@
 
 import { Mover } from "@prisma/client";
 import prisma from "../configs/prisma.config";
-import { createMoverInputwithHash } from "../types/mover/auth/authMover.type";
+import { CreateMoverInputwithHash } from "../types";
 
 //기사님 생성
-async function saveMover(user: createMoverInputwithHash) {
+async function saveMover(user: CreateMoverInputwithHash) {
   const createdMover = await prisma.mover.create({
     data: {
       name: user.name,
@@ -29,7 +29,7 @@ async function saveMover(user: createMoverInputwithHash) {
 }
 
 //이메일로 기사님 조회
-async function findMoverByEmail(email: Mover["email"]) {
+async function getMoverByEmail(email: Mover["email"]) {
   const mover = await prisma.mover.findUnique({
     where: {
       email,
@@ -42,7 +42,7 @@ async function findMoverByEmail(email: Mover["email"]) {
 }
 
 //전화번호로 기사님 조회
-async function findMoverByPhone(phone: Mover["phone"]) {
+async function getMoverByPhone(phone: Mover["phone"]) {
   return await prisma.mover.findUnique({
     where: {
       phone,
@@ -52,6 +52,6 @@ async function findMoverByPhone(phone: Mover["phone"]) {
 
 export default {
   saveMover,
-  findMoverByEmail,
-  findMoverByPhone,
+  getMoverByEmail,
+  getMoverByPhone,
 };

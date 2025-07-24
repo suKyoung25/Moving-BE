@@ -6,31 +6,15 @@
  *
  */
 
-import authRepository from "../repositories/authMover.repository";
-import { ConflictError, NotFoundError, UnauthorizedError } from "../types/errors";
 import { ErrorMessage } from "../constants/ErrorMessage";
-import { createMoverInput, getMoverInput } from "../types/mover/auth/authMover.type";
+import authRepository from "../repositories/authMover.repository";
+import { CreateMoverInput, GetMoverInput } from "../types";
+import { NotFoundError } from "../types/errors";
 import { hashPassword } from "../utils/auth.util";
 import { generateAccessToken, generateRefreshToken } from "../utils/token.util";
-import bcrypt from "bcrypt";
 
 //기사님 생성
-async function createMover(user: createMoverInput) {
-  const existedEmail = await authRepository.findMoverByEmail(user.email);
-  const existedPhone = await authRepository.findMoverByPhone(user.phone);
-
-  const fieldErrors: Record<string, string> = {};
-
-  if (existedEmail) {
-    fieldErrors.email = ErrorMessage.ALREADY_EXIST_EMAIL;
-  }
-  if (existedPhone) {
-    fieldErrors.phone = ErrorMessage.ALREADY_EXIST_PHONE;
-  }
-
-  if (Object.keys(fieldErrors).length > 0) {
-    throw new ConflictError("중복 정보로 인한 회원가입 실패: ", fieldErrors);
-  }
+async function createMover(user: CreateMoverInput) {
   const hashedPassword = await hashPassword(user.password);
   const createdMover = await authRepository.saveMover({
     ...user,
@@ -64,17 +48,11 @@ async function createMover(user: createMoverInput) {
 }
 
 //기사님 조회(로그인)
-async function getMoverByEmail(user: getMoverInput) {
-  //사용자 조회
-  const mover = await authRepository.findMoverByEmail(user.email);
+async function setMoverByEmail(user: GetMoverInput) {
+  const mover = await authRepository.getMoverByEmail(user.email);
+
   if (!mover) {
     throw new NotFoundError(ErrorMessage.USER_NOT_FOUND);
-  }
-
-  //비밀번호 대조
-  const isPasswordValid = await bcrypt.compare(user.password, mover.hashedPassword!);
-  if (!isPasswordValid) {
-    throw new UnauthorizedError(ErrorMessage.PASSWORD_NOT_MATCH);
   }
 
   //토큰 생성
@@ -101,10 +79,15 @@ async function getMoverByEmail(user: getMoverInput) {
     },
     accessToken,
     refreshToken,
+    userId: mover?.id,
+    email: mover?.email,
+    nickName: mover?.nickName,
+    userType: mover?.userType,
+    // profileCompleted: mover?.profileCompleted,
   };
 }
 
 export default {
   createMover,
-  getMoverByEmail,
+  setMoverByEmail,
 };

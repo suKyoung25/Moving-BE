@@ -1,5 +1,5 @@
 import prisma from "../configs/prisma.config";
-import { NotFoundError, ServerError } from "../types/errors";
+import { NotFoundError, ServerError, ConflictError, BadRequestError } from "../types/errors";
 import { SimplifiedMover, MoverDetail } from "../types/mover/mover.type";
 
 interface GetMoversParams {
@@ -18,6 +18,7 @@ interface GetMoversResponse {
   limit: number;
   hasMore: boolean;
 }
+
 // 전체 기사님 리스트 조회 (페이지네이션 지원)
 async function fetchMovers(
   clientId?: string,
@@ -64,13 +65,14 @@ async function fetchMovers(
         orderBy = { averageReviewRating: "desc" };
         break;
       case "highExperience":
-        orderBy = { career: "desc" };
+        // NULL 값을 마지막으로 보내고, 숫자값만 내림차순 정렬
+        orderBy = [{ career: { sort: "desc", nulls: "last" } }];
         break;
       case "mostBooked":
         orderBy = { estimateCount: "desc" };
         break;
       default:
-        orderBy = { createdAt: "desc" };
+        orderBy = { reviewCount: "desc" };
     }
 
     // 전체 개수 조회
@@ -87,12 +89,9 @@ async function fetchMovers(
       take: limit,
     });
 
-    const simplifiedMovers: SimplifiedMover[] = movers.map((mover) => ({
-      id: mover.id,
-      nickName: mover.nickName,
-      serviceType: mover.serviceType,
-      profileImage: mover.profileImage,
-      isFavorite: mover.favorites?.length > 0,
+    const simplifiedMovers: SimplifiedMover[] = movers.map(({ favorites, ...mover }) => ({
+      ...mover,
+      isFavorite: Boolean(favorites?.length),
     }));
 
     const hasMore = skip + limit < total;
@@ -135,6 +134,7 @@ async function fetchMoverDetail(moverId: string, clientId?: string): Promise<Mov
       averageReviewRating: mover.averageReviewRating,
       reviewCount: mover.reviewCount,
       estimateCount: mover.estimateCount,
+      favoriteCount: mover.favoriteCount || 0,
       isFavorite: mover.favorites?.length > 0,
     };
   } catch (error) {
@@ -154,29 +154,196 @@ async function findFavorite(clientId: string, moverId: string) {
   });
 }
 
-// 찜 추가
-async function addFavoriteMover(clientId: string, moverId: string) {
-  return prisma.favorite.create({
-    data: { clientId, moverId },
-  });
+// 찜 토글 (추가/삭제를 한 번에 처리)
+async function toggleFavoriteMover(clientId: string, moverId: string) {
+  console.log(`찜 토글 요청: clientId=${clientId}, moverId=${moverId}`);
+
+  try {
+    // 1. 기사 존재 여부 확인
+    const mover = await prisma.mover.findUnique({
+      where: { id: moverId },
+      select: { id: true, favoriteCount: true },
+    });
+
+    if (!mover) {
+      throw new NotFoundError("기사님을 찾을 수 없습니다.");
+    }
+
+    // 2. 현재 찜 상태 확인
+    const existingFavorite = await findFavorite(clientId, moverId);
+
+    if (existingFavorite) {
+      // 3-a. 이미 찜한 상태 -> 찜 해제
+      console.log(`찜 해제 처리 중...`);
+
+      const result = await prisma.$transaction([
+        prisma.favorite.delete({
+          where: {
+            clientId_moverId: {
+              clientId,
+              moverId,
+            },
+          },
+        }),
+        prisma.mover.update({
+          where: { id: moverId },
+          data: {
+            favoriteCount: {
+              decrement: 1,
+            },
+          },
+        }),
+      ]);
+
+      console.log(`찜 해제 완료`);
+      return {
+        action: "removed" as const,
+        isFavorite: false,
+        favoriteCount: Math.max(0, (mover.favoriteCount || 0) - 1),
+      };
+    } else {
+      // 3-b. 찜하지 않은 상태 -> 찜 추가
+      console.log(`찜 추가 처리 중...`);
+
+      const result = await prisma.$transaction([
+        prisma.favorite.create({
+          data: { clientId, moverId },
+        }),
+        prisma.mover.update({
+          where: { id: moverId },
+          data: {
+            favoriteCount: {
+              increment: 1,
+            },
+          },
+        }),
+      ]);
+
+      console.log(`찜 추가 완료`);
+      return {
+        action: "added" as const,
+        isFavorite: true,
+        favoriteCount: (mover.favoriteCount || 0) + 1,
+      };
+    }
+  } catch (error: unknown) {
+    console.error(`찜 토글 오류:`, error);
+
+    // Prisma 중복 키 오류 처리
+    if (error && typeof error === "object" && "code" in error && error.code === "P2002") {
+      throw new ConflictError("이미 처리된 요청입니다.");
+    }
+
+    // 찾을 수 없음 오류 다시 던지기
+    if (error instanceof NotFoundError) {
+      throw error;
+    }
+
+    throw new ServerError("찜 처리 중 오류가 발생했습니다.", error);
+  }
 }
 
-// 찜 삭제
-async function removeFavoriteMover(clientId: string, moverId: string) {
-  return prisma.favorite.delete({
-    where: {
-      clientId_moverId: {
-        clientId,
-        moverId,
-      },
-    },
-  });
-}
 
 // 지정 견적 요청
-async function designateMover(requestId: string, moverId: string) {
-  return await prisma.designatedRequest.create({
-    data: { requestId, moverId },
+async function designateMover(requestId: string, moverId: string, clientId?: string) {
+  try {
+    console.log(`지정 견적 요청: requestId=${requestId}, moverId=${moverId}, clientId=${clientId}`);
+    
+    // 1. 요청 존재 여부 및 권한 확인
+    let request;
+    if (clientId) {
+      // clientId가 있으면 권한 체크
+      request = await prisma.request.findFirst({
+        where: { 
+          id: requestId,
+          clientId: clientId,
+          isPending: true 
+        },
+        select: { id: true, isPending: true, clientId: true }
+      });
+
+      if (!request) {
+        throw new NotFoundError("본인의 진행 중인 요청만 지정 견적을 요청할 수 있습니다.");
+      }
+    } else {
+      // clientId가 없으면 기본 확인만
+      request = await prisma.request.findUnique({
+        where: { id: requestId },
+        select: { id: true, isPending: true }
+      });
+
+      if (!request) {
+        throw new NotFoundError("요청을 찾을 수 없습니다.");
+      }
+
+      if (!request.isPending) {
+        throw new BadRequestError("이미 완료된 요청입니다.");
+      }
+    }
+
+    // 2. 기사 존재 여부 확인
+    const mover = await prisma.mover.findUnique({
+      where: { id: moverId },
+      select: { id: true, nickName: true }
+    });
+
+    if (!mover) {
+      throw new NotFoundError("기사님을 찾을 수 없습니다.");
+    }
+
+    // 3. 이미 지정 요청한 기사인지 확인
+    const existingDesignation = await prisma.designatedRequest.findUnique({
+      where: {
+        requestId_moverId: {
+          requestId,
+          moverId,
+        },
+      },
+    });
+
+    if (existingDesignation) {
+      throw new ConflictError("이미 지정 견적을 요청한 기사님입니다.");
+    }
+
+    // 4. 지정 견적 요청 생성
+    const designatedRequest = await prisma.designatedRequest.create({
+      data: { 
+        requestId, 
+        moverId 
+      },
+    });
+
+    console.log(`지정 견적 요청 생성 완료: ${designatedRequest.id}`);
+    return designatedRequest;
+    
+  } catch (error: unknown) {
+    console.error(`지정 견적 요청 오류:`, error);
+    
+    // Prisma 중복 키 오류 처리
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') {
+      throw new ConflictError("이미 지정 견적을 요청한 기사님입니다.");
+    }
+    
+    // 커스텀 에러 다시 던지기
+    if (error instanceof NotFoundError || error instanceof ConflictError || error instanceof BadRequestError) {
+      throw error;
+    }
+    
+    throw new ServerError("지정 견적 요청 중 오류가 발생했습니다.", error);
+  }
+}
+
+// 지역 기반 기사 조회
+async function findMoversByServiceArea(regions: string[]) {
+  return await prisma.mover.findMany({
+    where: {
+      serviceArea: {
+        some: { regionName: { in: regions } },
+      },
+    },
+    select: {
+      id: true,
+    },
   });
 }
 
@@ -184,7 +351,7 @@ export default {
   fetchMovers,
   fetchMoverDetail,
   findFavorite,
-  addFavoriteMover,
-  removeFavoriteMover,
+  toggleFavoriteMover,
   designateMover,
+  findMoversByServiceArea,
 };

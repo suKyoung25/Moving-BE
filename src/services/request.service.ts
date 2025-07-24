@@ -1,10 +1,11 @@
 import { MoveType } from "@prisma/client";
-import { CreateRequestDto } from "../dtos/request.dto";
+import { CreateRequestDto, createRequestSchema } from "../dtos/request.dto";
 import requestRepository from "../repositories/request.repository";
 import { GetReceivedRequestsQuery } from "../types";
 import { BadRequestError } from "../types/errors";
 import { ErrorMessage } from "../constants/ErrorMessage";
-import { CreateRequestSchema } from "../schemas/request.schema";
+import authClientRepository from "../repositories/authClient.repository";
+import notificationService from "./notification.service";
 
 // 견적 요청 (일반 유저)
 async function createRequest({
@@ -18,13 +19,30 @@ async function createRequest({
     throw new BadRequestError(ErrorMessage.BAD_REQUEST);
   }
 
-  const parseResult = CreateRequestSchema.safeParse(request);
+  const parseResult = createRequestSchema.safeParse(request);
+
   if (!parseResult.success) {
     const errorMessage = parseResult.error.errors[0]?.message ?? ErrorMessage.INVALID_INPUT;
     throw new BadRequestError(errorMessage);
   }
 
-  return await requestRepository.createEstimateRequest(parseResult.data, clientId);
+  const newRequest = await requestRepository.createEstimateRequest(parseResult.data, clientId);
+
+  // 견적 요청한 유저 이름 조회
+  const client = await authClientRepository.findById(clientId);
+
+  // 새로운 견적 요청 알림 생성 (to 기사)
+  await notificationService.notifyEstimateRequest({
+    clientName: client!.name,
+    fromAddress: request.fromAddress,
+    toAddress: request.toAddress,
+    moveType: request.moveType,
+    type: "NEW_ESTIMATE",
+    targetId: newRequest.id,
+    targetUrl: `/my-quotes/mover/${newRequest.id}`,
+  });
+
+  return newRequest;
 }
 
 // 받은 요청 조회 (기사님)
@@ -51,7 +69,14 @@ async function getReceivedRequests(query: GetReceivedRequestsQuery) {
   });
 }
 
+// 받은 요청 조회 (일반)
+async function getClientActiveRequests(clientId: string) {
+  if (!clientId) throw new BadRequestError("clientId가 필요합니다.");
+  return requestRepository.fetchClientActiveRequests(clientId);
+}
+
 export default {
   createRequest,
   getReceivedRequests,
+  getClientActiveRequests,
 };

@@ -1,28 +1,27 @@
-@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjMGU4YWRmOS05MWY0LTRhOTctYTkwMy0yNDFhZWVhNDE4YjMiLCJlbWFpbCI6ImtrMTIzQGdtYWlsLmNvbSIsIm5hbWUiOiLquLjrs7XsiJwiLCJ1c2VyVHlwZSI6ImNsaWVudCIsImlhdCI6MTc1MjczNDE0NywiZXhwIjoxNzUyNzM3NzQ3fQ.lipdWeZ0Gn9GTbiGq_e5W3BvD2Q35zX640tvNbNIWnU
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhN2JmMjk3Ny05ZDE2LTQwOTctODRiZC03MzkzNDQxNWRlNWUiLCJlbWFpbCI6InNreUBleGFtcGxlLmNvbSIsIm5hbWUiOiJza3kiLCJ1c2VyVHlwZSI6ImNsaWVudCIsImlhdCI6MTc1MzI4NDI4MiwiZXhwIjoxNzUzMjg3ODgyfQ.-YnU541pV_xYP8F3oa3Rth8iQb1qoFnYR8jx1KiJ2Tg
 
 ### 전체 기사님 리스트 조회 (비회원도 가능)
 GET http://localhost:4000/movers
 
 ### 기사님 상세 조회 (비회원도 가능)
-GET http://localhost:4000/movers/931abb9b-60f5-4021-aa77-5f7cda82ff51
+GET http://localhost:4000/movers/384b1af2-128d-41a7-a432-68332eb44164
 
-### 기사님 찜하기
-POST http://localhost:4000/movers/931abb9b-60f5-4021-aa77-5f7cda82ff51/favorite
+### ✨ 기사님 찜 토글 (추천: 새로운 방식)
+# 현재 찜 상태에 따라 자동으로 추가/해제
+POST http://localhost:4000/movers/384b1af2-128d-41a7-a432-68332eb44164/toggle-favorite
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
-### 기사님 찜 취소
-DELETE http://localhost:4000/movers/931abb9b-60f5-4021-aa77-5f7cda82ff51/favorite
-Authorization: Bearer {{token}}
-Content-Type: application/json
+{}
+
 
 ### 기사님 지정 요청 (견적서와 매칭)
-PATCH http://localhost:4000/movers/931abb9b-60f5-4021-aa77-5f7cda82ff51
+PATCH http://localhost:4000/movers/d9da38fd-0b93-4fd9-9449-f4d29d1c864a
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "requestId": "015eeb96-f861-45f4-bfd8-a3145eace170",
-  "moverId": "152d83aa-060b-446a-bd59-e8a886866a69"
+  "requestId": "721a2ea4-56e2-4504-a0d6-5a7c0158e5c7",
+  "moverId": "d9da38fd-0b93-4fd9-9449-f4d29d1c864a"
 }
 

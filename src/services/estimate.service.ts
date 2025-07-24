@@ -21,7 +21,7 @@ async function getWritableEstimates(clientId: Client["id"], page: number, limit:
   return estimateRepository.findWritableEstimatesByClientId(clientId, offset, limit, page);
 }
 
-// 데기 중인 견적서 조회
+// client 데기 중인 견적서 조회
 async function getPendingEstimates(clientId: Client["id"]) {
   const requests = await estimateRepository.findPendingEstimatesByClientId(clientId);
 
@@ -32,7 +32,7 @@ async function getPendingEstimates(clientId: Client["id"]) {
       const estimates = await Promise.all(
         req.estimate.map(async (e) => {
           const isDesignated = designatedMoverIds.includes(e.moverId);
-          const isFavorited = await estimateRepository.isFavoritMover(clientId, e.moverId);
+          const isFavorited = await estimateRepository.isFavoriteMover(clientId, e.moverId);
 
           return {
             estimateId: e.id,
@@ -145,6 +145,8 @@ async function findSentEstimateById(moverId: string, estimateId: string) {
       id: true,
       price: true,
       moverId: true,
+      createdAt: true,
+      isClientConfirmed: true,
       request: {
         select: {
           moveType: true,
@@ -207,49 +209,42 @@ async function getEstimatesByStatus(moverId: string) {
   });
 }
 
-// 받은 견적 조회
-async function getReceivedEstimates(clientId: Client["id"]) {
+// client 받은 견적 조회
+async function getReceivedEstimates(clientId: Client["id"], category: "all" | "confirmed" = "all") {
   const requests = await estimateRepository.findReceivedEstimatesByClientId(clientId);
 
-  return Promise.all(
-    requests.map(async (req) => {
-      const designatedMoverIds = req.designatedRequest.map((d) => d.moverId);
-
-      const estimates = await Promise.all(
-        req.estimate.map(async (e) => {
-          const isDesignated = designatedMoverIds.includes(e.moverId);
-          const isFavorited = await estimateRepository.isFavoritMover(clientId, e.moverId);
-
-          return {
-            estimateId: e.id,
-            moverId: e.mover.id,
-            moverName: e.mover.name,
-            moverNickName: e.mover.nickName,
-            profileImage: e.mover.profileImage,
-            comment: e.comment,
-            price: e.price,
-            created: e.createdAt,
-            reviewRating: e.mover.averageReviewRating,
-            reviewCount: e.mover.reviewCount,
-            career: e.mover.career,
-            estimateCount: e.mover.estimateCount,
-            favoriteCount: e.mover.favoriteCount,
-            isDesignated,
-            isFavorited,
-          };
-        }),
-      );
-
-      return {
-        requestId: req.id,
-        moveDate: req.moveDate,
-        fromAddress: req.fromAddress,
-        toAddress: req.toAddress,
-        moveType: req.moveType,
-        estimates,
-      };
-    }),
-  );
+  return requests.map((req) => ({
+    requestId: req.id,
+    moveDate: req.moveDate,
+    fromAddress: req.fromAddress,
+    toAddress: req.toAddress,
+    moveType: req.moveType,
+    requestedAt: req.requestedAt,
+    designatedRequest: req.designatedRequest,
+    estimates: req.estimate
+      .filter((e) => {
+        if (category === "confirmed") {
+          return e.moverStatus === "CONFIRMED" && e.isClientConfirmed === true;
+        }
+        return true;
+      })
+      .map((e) => ({
+        estimateId: e.id,
+        moverId: e.mover.id,
+        moverName: e.mover.name,
+        moverNickName: e.mover.nickName,
+        profileImage: e.mover.profileImage,
+        comment: e.comment,
+        price: e.price,
+        created: e.createdAt,
+        reviewRating: e.mover.averageReviewRating,
+        reviewCount: e.mover.reviewCount,
+        career: e.mover.career,
+        estimateCount: e.mover.estimateCount,
+        favoriteCount: e.mover.favoriteCount,
+        isConfirmed: e.moverStatus === "CONFIRMED" && e.isClientConfirmed === true,
+      })),
+  }));
 }
 
 export default {

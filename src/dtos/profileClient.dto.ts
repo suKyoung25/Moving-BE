@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { ErrorMessage } from "../constants/ErrorMessage";
+//TODO: client 파일 만들어서 옮길 예정
 
 // 프로필 생성
 export const clientProfileSchema = z

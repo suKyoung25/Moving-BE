@@ -1,16 +1,31 @@
 @token=
 
-### 기사님 프로필 등록
-POST http://localhost:3000/profile/movers
+# ### 기사님 프로필 등록
+# POST http://localhost:4000/profile/mover
+# Content-Type: application/json
+# Authorization: Bearer {{token}}
+
+# {
+#      "nickName": "무빙7", 
+#      "career": 7, 
+#      "introduction":"안녕하세요 ㅂㅁ7입니다",  
+#      "description":"안녕하세요 ㅂㅁ7입니다" , 
+#      "serviceType":["소형이사"],
+#      "serviceArea": ["서울", "경기"]
+# }
+
+### 기사님 프로필 생성 & 수정
+PATCH  http://localhost:4000/profile/mover
+Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
-     "image": , 
-     "nickName": "tester1", 
-     "career": "3", 
-     "introduction":"abcdefghijklmnopqrstuvwxyz",  
-     "description":"abcdefghijklmnopqrstuvwxyz" , 
-     "serviceType":["소형이사", "사무실이사"],
-     "region": ["경기"]
+     "nickName": "무빙7-1", 
+     "career": 6, 
+     "introduction":"안녕하세요 ㅂㅁ7입니다",  
+     "description":"안녕하세요 ㅂㅁ7입니다" , 
+     "serviceType":["사무실이사"],
+     "serviceArea": ["충남", "인천"]
 }
 
 ### 일반 프로필 등록

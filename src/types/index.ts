@@ -8,7 +8,8 @@
  * export * from "./service";
  */
 
-export * from "./mover/auth/authMover.type";
+export * from "./auth.types";
 export * from "./token.type";
-export * from "./authClient.types";
+export * from "./auth.types";
+export * from "./profile.types";
 export * from "./request.type";
