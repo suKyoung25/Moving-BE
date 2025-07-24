@@ -2,22 +2,55 @@
  * @file profile.controller.ts
  * @description
  * - 프로필 관련 HTTP 요청을 처리하는 컨트롤러
- * - named export 사용
- *
  */
 
 import { NextFunction, Request, Response } from "express";
+import profileMoverService from "../services/profileMover.service";
+import { filterSensitiveUserData } from "../utils/auth.util";
+import { MoverProfileDto } from "../dtos/profileClient.dto";
 
-// export async function moverPatchProfile(
-//     req: Request<{}, {}, { email: string; password: string }>,
-//     res: Response,
-//     next: NextFunction,
-// ) {
-    // const { image, name, career, introduction, description, serviceType } = req.body;
-    // try {
-    //     const user = await profileService.createUser(email, password);
-    //     res.status(201).json({ user });
-    // } catch (error) {
-    //     next(error);
-    // }
-// }
+//기사님 프로필 생성
+async function moverCreateProfile(
+  req: Request<{}, {}, MoverProfileDto>,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const { userId } = req.auth!;
+
+    const createdMoverProfile = await profileMoverService.modifyMoverProfile({
+      ...req.body,
+      userId,
+    });
+    const filteredMoverProfile = filterSensitiveUserData(createdMoverProfile);
+    res.status(201).json(filteredMoverProfile);
+  } catch (error) {
+    next(error);
+  }
+}
+
+//기사님 프로필 수정
+async function moverPatchProfile(
+  req: Request<{}, {}, MoverProfileDto>,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const { userId } = req.auth!;
+
+    const updatedMoverProfile = await profileMoverService.modifyMoverProfile({
+      ...req.body,
+      userId,
+    });
+
+    const filteredMoverProfile = filterSensitiveUserData(updatedMoverProfile);
+    res.status(200).json(filteredMoverProfile);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export default {
+  moverCreateProfile,
+  moverPatchProfile,
+};
