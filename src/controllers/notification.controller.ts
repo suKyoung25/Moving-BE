@@ -29,9 +29,15 @@ function sendNotification(req: Request, res: Response, next: NextFunction) {
     });
     res.flushHeaders(); // 헤더 강제 전송
 
+    // 주기적으로 ping 전송 (30초 간격)
+    const keepAliveInterval = setInterval(() => {
+      res.write(":\n\n"); // SSE 주석 형식의 빈 메시지 (무시됨)
+    }, 30000);
+
     addUser(userId, res); // 유저 Map에 등록
 
     req.on("close", () => {
+      clearInterval(keepAliveInterval);
       removeUser(userId); // 연결 종료 시 정리
       res.end();
     });
