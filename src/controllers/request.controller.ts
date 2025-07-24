@@ -38,7 +38,25 @@ async function getReceivedRequests(req: Request, res: Response, next: NextFuncti
   }
 }
 
+// 받은 요청 조회(일반)
+async function getClientActiveRequests(req: Request, res: Response, next: NextFunction) {
+  try {
+    console.log("고객 활성 요청 조회:", req.auth?.userId);
+    
+    const requests = await requestService.getClientActiveRequests(req.auth!.userId);
+    
+    res.status(200).json({
+      message: "활성 요청 목록 조회 성공",
+      requests
+    });
+  } catch (error) {
+    console.error("활성 요청 조회 오류:", error);
+    next(error);
+  }
+}
+
 export default {
   createRequest,
   getReceivedRequests,
+  getClientActiveRequests,
 };

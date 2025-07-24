@@ -6,15 +6,15 @@
  *
  */
 
-import authRepository from "../repositories/authMover.repository";
-import { ConflictError, NotFoundError, UnauthorizedError } from "../types/errors";
 import { ErrorMessage } from "../constants/ErrorMessage";
+import authRepository from "../repositories/authMover.repository";
+import { CreateMoverInput, GetMoverInput } from "../types";
+import { NotFoundError } from "../types/errors";
 import { hashPassword } from "../utils/auth.util";
 import { generateAccessToken, generateRefreshToken } from "../utils/token.util";
-import { createMoverInput, getMoverInput } from "../types";
 
 //기사님 생성
-async function createMover(user: createMoverInput) {
+async function createMover(user: CreateMoverInput) {
   const hashedPassword = await hashPassword(user.password);
   const createdMover = await authRepository.saveMover({
     ...user,
@@ -48,7 +48,7 @@ async function createMover(user: createMoverInput) {
 }
 
 //기사님 조회(로그인)
-async function setMoverByEmail(user: getMoverInput) {
+async function setMoverByEmail(user: GetMoverInput) {
   const mover = await authRepository.getMoverByEmail(user.email);
 
   if (!mover) {
@@ -79,6 +79,11 @@ async function setMoverByEmail(user: getMoverInput) {
     },
     accessToken,
     refreshToken,
+    userId: mover?.id,
+    email: mover?.email,
+    nickName: mover?.nickName,
+    userType: mover?.userType,
+    // profileCompleted: mover?.profileCompleted,
   };
 }
 

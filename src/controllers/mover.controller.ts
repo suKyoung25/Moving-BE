@@ -62,34 +62,6 @@ async function toggleFavoriteMover(req: Request, res: Response, next: NextFuncti
   }
 }
 
-// 레거시 엔드포인트들 (기존 호환성 유지)
-async function favoriteMover(req: Request, res: Response, next: NextFunction) {
-  try {
-    console.log("레거시 찜하기 요청:", {
-      userId: req.auth?.userId,
-      moverId: req.params.moverId
-    });
-
-    await moverService.favoriteMover(req.auth!.userId, req.params.moverId);
-    res.status(200).json({ message: "찜 성공" });
-  } catch (error) {
-    next(error);
-  }
-}
-
-async function unfavoriteMover(req: Request, res: Response, next: NextFunction) {
-  try {
-    console.log("레거시 찜 해제 요청:", {
-      userId: req.auth?.userId,
-      moverId: req.params.moverId
-    });
-
-    await moverService.unfavoriteMover(req.auth!.userId, req.params.moverId);
-    res.status(200).json({ message: "찜 취소 성공" });
-  } catch (error) {
-    next(error);
-  }
-}
 
 async function designateMover(req: Request, res: Response, next: NextFunction) {
   try {
@@ -104,7 +76,5 @@ export default {
   getMovers,
   getMoverDetail,
   toggleFavoriteMover,
-  favoriteMover,
-  unfavoriteMover,
   designateMover,
 };
