@@ -1,5 +1,7 @@
 import { Router } from "express";
 import reviewController from "../controllers/review.controller";
+import { validateReq } from "../middlewares/auth.middleware";
+import { CreateReviewSchema, UpdateReviewschema } from "../dtos/review.dto";
 
 const reviewRouter = Router();
 
@@ -7,10 +9,10 @@ const reviewRouter = Router();
 reviewRouter.get("/me", reviewController.getMyReviews);
 
 // 리뷰 작성
-reviewRouter.post("/", reviewController.createReview);
+reviewRouter.post("/", validateReq(CreateReviewSchema), reviewController.createReview);
 
 // 리뷰 수정
-reviewRouter.patch("/:reviewId", reviewController.updateReview);
+reviewRouter.patch("/:reviewId", validateReq(UpdateReviewschema), reviewController.updateReview);
 
 // 리뷰 삭제
 reviewRouter.delete("/:reviewId", reviewController.deleteReview);
