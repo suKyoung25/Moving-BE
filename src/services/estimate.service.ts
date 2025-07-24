@@ -1,6 +1,9 @@
 import { Client, PrismaClient, EstimateStatus } from "@prisma/client";
 import estimateRepository from "../repositories/estimate.repository";
 import { BadRequestError } from "../types/errors";
+import authClientRepository from "../repositories/authClient.repository";
+import notificationService from "./notification.service";
+import moverRepository from "../repositories/mover.repository";
 
 interface EstimateInput {
   price?: number;
@@ -66,9 +69,9 @@ async function getPendingEstimates(clientId: Client["id"]) {
   );
 }
 
-// 견적 요청하기
+// 견적 보내기 (기사)
 async function createEstimate({ price, comment, moverId, clientId, requestId }: EstimateInput) {
-  return prisma.estimate.create({
+  const result = await prisma.estimate.create({
     data: {
       price,
       comment,
@@ -78,9 +81,23 @@ async function createEstimate({ price, comment, moverId, clientId, requestId }: 
       request: { connect: { id: requestId } },
     },
   });
+
+  // 견적 보낸 기사 조회
+  const mover = await moverRepository.fetchMoverDetail(moverId);
+
+  // 견적 확정 알림 (to 유저)
+  await notificationService.notifyEstimateConfirmed({
+    userId: result.clientId,
+    moverName: mover.nickName!,
+    type: "ESTIMATE_CONFIRMED",
+    targetId: requestId,
+    targetUrl: `/my-quotes/client/${requestId}`,
+  });
+
+  return result;
 }
 
-// 견적 거절하기
+// 견적 거절하기 (기사)
 async function rejectEstimate({ comment, moverId, clientId, requestId }: EstimateInput) {
   const newEstimate = await prisma.estimate.create({
     data: {
@@ -247,23 +264,37 @@ async function getReceivedEstimates(clientId: Client["id"], category: "all" | "c
   }));
 }
 
-// 견적 확정
+// client 견적 확정
 async function confirmEstimate(estimateId: string, clientId: string) {
-  return await prisma.$transaction(async (tx) => {
-    // 1. 견적 조회 및 검증
+  const result = await prisma.$transaction(async (tx) => {
+    // 견적 조회 및 검증
     const estimate = await estimateRepository.findEstimateById(tx, estimateId);
     if (!estimate) throw new BadRequestError("견적을 찾을 수 없습니다.");
     if (estimate.clientId !== clientId) throw new BadRequestError("권한이 없습니다.");
     if (estimate.isClientConfirmed) throw new BadRequestError("이미 확정된 견적입니다.");
 
-    // 2. 견적 확정
+    // 견적 확정
     await estimateRepository.updateEstimateConfirmed(tx, estimateId);
 
-    // 3. 기사님 estimateCount +1
+    // 기사님 estimateCount +1
     await estimateRepository.incrementMoverEstimateCount(tx, estimate.moverId);
 
     return { estimateId, moverId: estimate.moverId };
   });
+
+  // 견적 요청한 유저 조회
+  const client = await authClientRepository.findById(clientId);
+
+  // 견적 확정 알림 (to 기사)
+  await notificationService.notifyEstimateConfirmed({
+    userId: result.moverId,
+    clientName: client!.name,
+    type: "ESTIMATE_CONFIRMED",
+    targetId: estimateId,
+    targetUrl: `/my-quotes/mover/${estimateId}`,
+  });
+
+  return result;
 }
 
 export default {
