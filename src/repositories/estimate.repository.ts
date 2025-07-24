@@ -1,4 +1,4 @@
-import { Client, Estimate, Mover } from "@prisma/client";
+import { Client, Estimate, Mover, Prisma } from "@prisma/client";
 
 import prisma from "../configs/prisma.config";
 import { ServerError } from "../types/errors";
@@ -193,6 +193,30 @@ async function findEstimateByMoveDate(date: Date) {
   });
 }
 
+// 견적 확정
+async function updateEstimateConfirmed(tx: Prisma.TransactionClient, estimateId: string) {
+  return tx.estimate.update({
+    where: { id: estimateId },
+    data: { isClientConfirmed: true },
+  });
+}
+
+// 기사님 estimateCount +1
+async function incrementMoverEstimateCount(tx: Prisma.TransactionClient, moverId: string) {
+  return tx.mover.update({
+    where: { id: moverId },
+    data: { estimateCount: { increment: 1 } },
+  });
+}
+
+// 견적 단건 조회
+async function findEstimateById(tx: Prisma.TransactionClient, estimateId: string) {
+  return tx.estimate.findUnique({
+    where: { id: estimateId },
+    select: { isClientConfirmed: true, moverId: true, clientId: true },
+  });
+}
+
 export default {
   findWritableEstimatesByClientId,
   findPendingEstimatesByClientId,
@@ -200,4 +224,7 @@ export default {
   getEstimateMoverId,
   findReceivedEstimatesByClientId,
   findEstimateByMoveDate,
+  updateEstimateConfirmed,
+  incrementMoverEstimateCount,
+  findEstimateById,
 };
