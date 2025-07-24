@@ -42,11 +42,12 @@ async function sendEstimateToRequest(
   next: NextFunction,
 ): Promise<void> {
   try {
-    const { price, comment, moverId, clientId, requestId } = req.body;
+    const moverId = req.auth!.userId;
+    const { price, comment, clientId, requestId } = req.body;
 
-    if (!price || !comment || !moverId || !clientId || !requestId) {
+    if (!price || !comment || !clientId || !requestId) {
       res.status(400).json({
-        message: "price, comment, moverId, clientId, requestId는 모두 필수입니다.",
+        message: "price, comment, clientId, requestId는 모두 필수입니다.",
       });
       return;
     }
@@ -108,11 +109,13 @@ export async function getSentEstimateDetail(
 // 견적 거절하기
 async function rejectEstimate(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const { comment, moverId, clientId, requestId } = req.body;
+    const moverId = req.auth!.userId;
 
-    if (!comment || !moverId || !clientId || !requestId) {
+    const { comment, clientId, requestId } = req.body;
+
+    if (!comment || !clientId || !requestId) {
       res.status(400).json({
-        message: "comment, moverId, clientId, requestId는 모두 필수입니다.",
+        message: "comment,  clientId, requestId는 모두 필수입니다.",
       });
       return;
     }

@@ -36,23 +36,6 @@ async function toggleFavoriteMover(clientId: string, moverId: string) {
   return moverRepository.toggleFavoriteMover(clientId, moverId);
 }
 
-// 찜하기 (레거시 호환성)
-async function favoriteMover(clientId: string, moverId: string) {
-  if (!clientId || !moverId) {
-    throw new BadRequestError("clientId 또는 moverId가 필요합니다.");
-  }
-
-  return moverRepository.addFavoriteMover(clientId, moverId);
-}
-
-// 찜 취소 (레거시 호환성)
-async function unfavoriteMover(clientId: string, moverId: string) {
-  if (!clientId || !moverId) {
-    throw new BadRequestError("clientId 또는 moverId가 필요합니다.");
-  }
-
-  return moverRepository.removeFavoriteMover(clientId, moverId);
-}
 
 // 기사 지정
 async function designateMover(clientId: string, requestId: string, moverId: string) {
@@ -67,7 +50,5 @@ export default {
   getMovers,
   getMoverDetail,
   toggleFavoriteMover,
-  favoriteMover,
-  unfavoriteMover,
   designateMover,
 };

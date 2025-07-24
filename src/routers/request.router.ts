@@ -10,4 +10,7 @@ requestRouter.post("/", verifyAccessToken, requestController.createRequest);
 // 받은 요청 조회 (기사님)
 requestRouter.get("/", verifyAccessToken, requestController.getReceivedRequests);
 
+// 받은 요청 조회 (일반 유저)
+requestRouter.get("/client/active", verifyAccessToken, requestController.getClientActiveRequests);
+
 export default requestRouter;
