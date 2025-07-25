@@ -8,11 +8,12 @@ const options = {
     info: {
       title: "Moving API",
       version: "1.0.0",
-      description: "swagger docs for codeit team4 moving project",
+      description:
+        "Swagger Docs for Codeit Team4 Moving Project<br/>Website URL: [https://www.moving-web.site/](https://www.moving-web.site/)",
     },
     components: {
       securitySchemes: {
-        jwt: {
+        bearerAuth: {
           type: "http",
           scheme: "bearer",
           bearerFormat: "JWT",
@@ -26,7 +27,7 @@ const options = {
       },
     ],
   },
-  apis: [path.resolve(__dirname, "swagger/*.yaml")],
+  apis: [path.resolve(__dirname, "*.yaml")],
 };
 
 const specs = swaggerJsdoc(options);
