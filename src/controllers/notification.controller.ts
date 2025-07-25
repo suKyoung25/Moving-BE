@@ -6,9 +6,20 @@ import notificationService from "../services/notification.service";
 async function getNotifications(req: Request, res: Response, next: NextFunction) {
   try {
     const userId = req.auth!.userId;
-    const notifications = await notificationService.getNotifications(userId);
+    const { list, hasUnread } = await notificationService.getNotifications(userId);
 
-    res.json({ message: "알림 조회 성공", notifications });
+    res.json({ message: "알림 조회 성공", hasUnread, notifications: list });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function readNotification(req: Request, res: Response, next: NextFunction) {
+  try {
+    const userId = req.auth!.userId;
+
+    const notification = await notificationService.readNotification(req.params.id, userId);
+    res.json({ message: "알림 읽기 성공", notification });
   } catch (error) {
     next(error);
   }
@@ -48,5 +59,6 @@ function sendNotification(req: Request, res: Response, next: NextFunction) {
 
 export default {
   getNotifications,
+  readNotification,
   sendNotification,
 };

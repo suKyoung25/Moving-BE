@@ -1,4 +1,15 @@
-@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhN2JmMjk3Ny05ZDE2LTQwOTctODRiZC03MzkzNDQxNWRlNWUiLCJlbWFpbCI6InNreUBleGFtcGxlLmNvbSIsIm5hbWUiOiJza3kiLCJ1c2VyVHlwZSI6ImNsaWVudCIsImlhdCI6MTc1MzA4NTI3MCwiZXhwIjoxNzUzMDg4ODcwfQ.71YsCRvgiC2giYxrK6y27xTHLZGg26MwlHphZNFqWf8
+@client_token=
+@mover_token=
+@token=
 
+### 일반 유저 알림 조회  
 GET http://localhost:4000/notifications
+Authorization: Bearer {{client_token}}
+
+### 기사 알림 조회  
+GET http://localhost:4000/notifications
+Authorization: Bearer {{mover_token}}
+
+### 알림 읽기
+PATCH http://localhost:4000/notifications/62d772bf-9b34-4d86-9684-ee2f1a1cb6b1
 Authorization: Bearer {{token}}

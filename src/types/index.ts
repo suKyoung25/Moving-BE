@@ -13,4 +13,5 @@ export * from "./token.type";
 export * from "./auth.types";
 export * from "./profile.types";
 export * from "./request.type";
+export * from "./notification.type";
 export * from "./client.type";
