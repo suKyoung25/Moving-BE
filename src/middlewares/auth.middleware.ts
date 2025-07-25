@@ -38,7 +38,7 @@ export const validateReq =
   };
 
 //(회원가입) 컨트롤러단 진입 전 DB와 대조하여 에러 띄움
-export async function checkMoverDuplicateSignup(req: Request, res: Response, next: NextFunction) {
+export async function checkMoverSignUpInfo(req: Request, res: Response, next: NextFunction) {
   try {
     const { email, phone } = req.body; //주석: zod 통과한 req.body
 
@@ -65,7 +65,7 @@ export async function checkMoverDuplicateSignup(req: Request, res: Response, nex
 }
 
 //(로그인) 컨트롤러단 진입 전 DB와 대조하여 에러 띄움
-export async function checkMoverDuplicateSignin(req: Request, res: Response, next: NextFunction) {
+export async function checkMoverSignInInfo(req: Request, res: Response, next: NextFunction) {
   try {
     const { email, password } = req.body; //주석: zod 통과한 req.body
 
@@ -117,6 +117,7 @@ export async function checkClientSignUpInfo(req: Request, res: Response, next: N
   }
 }
 
+// ✅ 로그인 유효성 검사 미들웨어 - 쓸지 모르겠음
 // export async function checkClientSignInInfo(req: Request, res: Response, next: NextFunction) {
 //   try {
 //     const { email, password } = req.body;

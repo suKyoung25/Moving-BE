@@ -27,7 +27,7 @@ async function update(req: Request, res: Response, next: NextFunction) {
     const newProfile = await profileClientService.update(userId, parsedData);
 
     // ✅ 반환
-    res.status(201).json({
+    res.status(200).json({
       message: `일반 프로필 ${mode === "create" ? "등록" : "수정"} 성공`,
       data: newProfile,
     });

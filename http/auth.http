@@ -22,24 +22,24 @@ Content-Type: application/json
 }
 
 ### 기사님 회원가입(배포주소)
-POST https://sixth-moving-4team-be.onrender.com/auth/signup/mover
+POST http://localhost:4000/auth/signup/mover
 Content-Type: application/json
 
 {
     "name": "t6",
-     "email": "test66@test.com", 
-     "phone": "01012121212", 
-     "password": "a66666666",
-     "passwordConfirmation":"a66666666"
+     "email": "test77@test.com", 
+     "phone": "0101212121", 
+     "password": "a66666667",
+     "passwordConfirmation":"a66666667"
 }
 
 ### 기사님 로그인(배포주소)
-POST https://sixth-moving-4team-be.onrender.com/auth/signin/mover
+POST http://localhost:4000/auth/signin/mover
 Content-Type: application/json
 
 {
-     "email": "MLocal2@test.com", 
-     "password": "a2222222"
+     "email": "test77@test.com", 
+     "password": "a66666667"
 }
 
 ### 일반 회원 회원가입(local)
@@ -48,8 +48,8 @@ Content-Type: application/json
 
 {
      "name": "일반인",
-     "email": "sky18@test.com", 
-     "phone": "07412345679", 
+     "email": "sky13@test.com", 
+     "phone": "07412345669", 
      "password": "asdf1234",
      "passwordConfirmation": "asdf1234"
 }
@@ -59,7 +59,7 @@ POST http://localhost:4000/auth/signin/client
 Content-Type: application/json
 
 {
-     "email": "sky31@test.com", 
+     "email": "sky13@test.com", 
      "password": "asdf1234"
 }
 
