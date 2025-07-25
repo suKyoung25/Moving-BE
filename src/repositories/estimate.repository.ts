@@ -7,75 +7,50 @@ async function findWritableEstimatesByClientId(
   clientId: Client["id"],
   offset: number,
   limit: number,
-  page: number,
 ) {
-  try {
-    const [estimates, total] = await Promise.all([
-      prisma.estimate.findMany({
-        where: {
-          clientId,
-          isClientConfirmed: true,
-          request: { moveDate: { lte: new Date() } },
-          review: null,
-        },
-        select: {
-          id: true,
-          price: true,
-          moverId: true,
-          request: {
-            select: {
-              moveType: true,
-              moveDate: true,
-              designatedRequest: {
-                select: { moverId: true },
-              },
-            },
-          },
-          mover: {
-            select: {
-              profileImage: true,
-              nickName: true,
-            },
-          },
-        },
-        orderBy: { createdAt: "desc" },
-        skip: offset,
-        take: limit,
-      }),
-      prisma.estimate.count({
-        where: {
-          clientId,
-          isClientConfirmed: true,
-          request: { moveDate: { lte: new Date() } },
-          review: null,
-        },
-      }),
-    ]);
-
-    const result = estimates.map((e) => ({
-      estimateId: e.id,
-      price: e.price,
-      moveType: e.request.moveType,
-      moveDate: e.request.moveDate,
-      isDesignatedEstimate:
-        Array.isArray(e.request.designatedRequest) &&
-        e.request.designatedRequest.some((dr) => dr.moverId === e.moverId),
-      moverProfileImage: e.mover.profileImage,
-      moverNickName: e.mover.nickName,
-    }));
-
-    return {
-      estimates: result,
-      total,
-      pagination: {
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
+  const [estimates, total] = await Promise.all([
+    prisma.estimate.findMany({
+      where: {
+        clientId,
+        isClientConfirmed: true,
+        request: { moveDate: { lte: new Date() } },
+        review: null,
       },
-    };
-  } catch (error) {
-    throw new ServerError("작성 가능한 리뷰 조회 중 서버 오류가 발생했습니다.", error);
-  }
+      select: {
+        id: true,
+        price: true,
+        moverId: true,
+        request: {
+          select: {
+            moveType: true,
+            moveDate: true,
+            designatedRequest: {
+              select: { moverId: true },
+            },
+          },
+        },
+        mover: {
+          select: {
+            profileImage: true,
+            nickName: true,
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+      skip: offset,
+      take: limit,
+    }),
+    prisma.estimate.count({
+      where: {
+        clientId,
+        isClientConfirmed: true,
+        request: { moveDate: { lte: new Date() } },
+        review: null,
+      },
+    }),
+  ]);
+
+  return { estimates, total };
 }
 
 async function getEstimateMoverId(estimateId: Estimate["id"]) {
