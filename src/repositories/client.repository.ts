@@ -1,5 +1,5 @@
 import prisma from "../configs/prisma.config";
-import { ClientProfileRegister } from "../types";
+import { ClientProfileRegister, ClientProfileUpdate } from "../types";
 import { Client, MoveType } from "@prisma/client";
 import { filterSensitiveUserData } from "../utils/auth.util";
 
@@ -21,11 +21,12 @@ async function findById(id: Client["id"]) {
 
 // ✅ 프로필 생성
 async function create(userId: Client["id"], profile: ClientProfileRegister) {
-  //serviceType에 [user.serviceType]가 안 먹혀서 돌려씀
+  // 배열1: serviceType. [user.serviceType]가 안 먹혀서 돌려씀
   const serviceTypes: MoveType[] | undefined = profile.serviceType
     ? profile.serviceType.map((type) => MoveType[type as keyof typeof MoveType])
     : undefined;
 
+  // 배열2: 지역
   const livingAreaName = profile.livingArea
     ? {
         connect: profile.livingArea.map((regionName) => ({
@@ -42,15 +43,50 @@ async function create(userId: Client["id"], profile: ClientProfileRegister) {
       profileImage: profile.profileImage,
       serviceType: serviceTypes,
       livingArea: livingAreaName,
+      isProfileCompleted: true,
     },
   });
 
-  return { newProfile, userType: "client", isProfileCompleted: true };
+  return { ...newProfile, userType: "client" };
+}
+
+// ✅ 프로필 수정
+async function update(userId: Client["id"], profile: ClientProfileUpdate) {
+  // 배열1: serviceType
+  const serviceTypes: MoveType[] | undefined = profile.serviceType
+    ? profile.serviceType.map((type) => MoveType[type as keyof typeof MoveType])
+    : undefined;
+
+  // 배열2: 지역
+  const livingAreaName = profile.livingArea
+    ? {
+        set: profile.livingArea.map((regionName) => ({
+          regionName,
+        })),
+      }
+    : undefined;
+
+  const newProfile = await prisma.client.update({
+    where: { id: userId }, // 조건: 로그인한 사용자22
+
+    data: {
+      email: profile.email,
+      name: profile.name,
+      phone: profile.phone,
+      hashedPassword: profile.password,
+      profileImage: profile.profileImage,
+      serviceType: serviceTypes,
+      livingArea: livingAreaName,
+    },
+  });
+
+  return { ...newProfile, userType: "client" };
 }
 
 const profileClientRepository = {
   findById,
   create,
+  update,
 };
 
 export default profileClientRepository;

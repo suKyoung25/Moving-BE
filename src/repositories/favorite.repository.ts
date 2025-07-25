@@ -14,9 +14,9 @@ async function findFavoriteMoverByClientId(
       prisma.favorite.findMany({
         where: { clientId },
         select: {
-          id: true,
           mover: {
             select: {
+              id: true,
               nickName: true,
               profileImage: true,
               averageReviewRating: true,

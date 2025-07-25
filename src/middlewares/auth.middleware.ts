@@ -1,10 +1,11 @@
 import { expressjwt } from "express-jwt";
-import { BadRequestError, ConflictError } from "../types/errors";
+import { BadRequestError, ConflictError, NotFoundError } from "../types/errors";
 import { ErrorMessage } from "../constants/ErrorMessage";
 import { ZodSchema } from "zod";
 import { Request, Response, NextFunction } from "express";
 import authMoverRepository from "../repositories/authMover.repository";
 import bcrypt from "bcrypt";
+import authClientRepository from "../repositories/authClient.repository";
 
 const secretKey = process.env.JWT_SECRET;
 
@@ -37,7 +38,7 @@ export const validateReq =
   };
 
 //(회원가입) 컨트롤러단 진입 전 DB와 대조하여 에러 띄움
-export async function checkDuplicateMoverSignup(req: Request, res: Response, next: NextFunction) {
+export async function checkMoverSignUpInfo(req: Request, res: Response, next: NextFunction) {
   try {
     const { email, phone } = req.body; //주석: zod 통과한 req.body
 
@@ -64,7 +65,7 @@ export async function checkDuplicateMoverSignup(req: Request, res: Response, nex
 }
 
 //(로그인) 컨트롤러단 진입 전 DB와 대조하여 에러 띄움
-export async function checkDuplicateMoverSignin(req: Request, res: Response, next: NextFunction) {
+export async function checkMoverSignInInfo(req: Request, res: Response, next: NextFunction) {
   try {
     const { email, password } = req.body; //주석: zod 통과한 req.body
 
@@ -87,3 +88,51 @@ export async function checkDuplicateMoverSignin(req: Request, res: Response, nex
     next(error);
   }
 }
+
+// ✅ [Client] 서비스 쪽에서 하던 중복 검사를 미들웨어에서 처리
+export async function checkClientSignUpInfo(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { email, phone } = req.body; //주석: zod 통과한 req.body
+
+    // 이미 사용한 정보 확인
+    const existingEmail = await authClientRepository.findByEmailRaw(email);
+    const existingPhone = await authClientRepository.findByPhone(phone);
+
+    const fieldErrors: Record<string, string> = {};
+
+    if (existingEmail) {
+      fieldErrors.email = ErrorMessage.ALREADY_EXIST_EMAIL;
+    }
+    if (existingPhone) {
+      fieldErrors.phone = ErrorMessage.ALREADY_EXIST_PHONE;
+    }
+
+    if (Object.keys(fieldErrors).length > 0) {
+      throw new ConflictError("중복 정보로 인한 회원가입 실패: ", fieldErrors);
+    }
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+}
+
+// ✅ 로그인 유효성 검사 미들웨어 - 쓸지 모르겠음
+// export async function checkClientSignInInfo(req: Request, res: Response, next: NextFunction) {
+//   try {
+//     const { email, password } = req.body;
+
+//     const client = await authClientRepository.findByEmail(email);
+
+//     if (!client) {
+//       throw new NotFoundError(ErrorMessage.USER_NOT_FOUND);
+//     }
+
+//     const isPasswordValid = await bcrypt.compare(password, client.hashedPassword!);
+//     if (!isPasswordValid) throw new ConflictError(ErrorMessage.PASSWORD_NOT_MATCH);
+
+//     next();
+//   } catch (error) {
+//     next(error);
+//   }
+// }
