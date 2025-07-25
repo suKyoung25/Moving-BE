@@ -1,6 +1,7 @@
+import prisma from "../configs/prisma.config";
 import { ErrorMessage } from "../constants/ErrorMessage";
 import authClientRepository from "../repositories/authClient.repository";
-import { LoginDataLocal, SignUpDataLocal } from "../types";
+import { LoginDataLocal, SignUpDataLocal, SocialLoginData } from "../types";
 import { NotFoundError } from "../types/errors";
 import { filterSensitiveUserData, hashPassword, verifyPassword } from "../utils/auth.util";
 import { generateAccessToken, generateRefreshToken } from "../utils/token.util";
@@ -65,12 +66,30 @@ async function loginWithLocal({ email, hashedPassword }: LoginDataLocal) {
   return { accessToken, refreshToken, user };
 }
 
-// ✅ 소셜 로그인 - 구글
-// oAuthCreateOrUpdate(provider, providerId, email, name) {
-//   // 1. 이메일로 사용자가 있는지 찾음
-//   const existingUser = await authClientRepository.findByEmailRaw(email)
-// }
+// ✅ 소셜 로그인
 
-const authClientService = { create, loginWithLocal };
+async function oAuthCreateOrUpdate({ provider, providerId, name, email, phone }: SocialLoginData) {
+  // 1. 이메일로 사용자가 있는지 찾음
+  const existingUser = await authClientRepository.findByEmailRaw(email);
+
+  // 2. 이미 존재하는 사용자면 없는 정보 추가
+  if (existingUser) {
+    return await authClientRepository.update(existingUser.id, {
+      provider,
+      providerId,
+    });
+  } else {
+    // 3. 없으면 자료 자체를 새로 생성
+    return await authClientRepository.create({
+      provider,
+      providerId,
+      name,
+      email,
+      phone,
+    });
+  }
+}
+
+const authClientService = { create, loginWithLocal, oAuthCreateOrUpdate };
 
 export default authClientService;
