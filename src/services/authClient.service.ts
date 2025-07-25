@@ -65,6 +65,12 @@ async function loginWithLocal({ email, hashedPassword }: LoginDataLocal) {
   return { accessToken, refreshToken, user };
 }
 
+// ✅ 소셜 로그인 - 구글
+// oAuthCreateOrUpdate(provider, providerId, email, name) {
+//   // 1. 이메일로 사용자가 있는지 찾음
+//   const existingUser = await authClientRepository.findByEmailRaw(email)
+// }
+
 const authClientService = { create, loginWithLocal };
 
 export default authClientService;
