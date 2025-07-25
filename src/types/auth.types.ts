@@ -3,7 +3,7 @@ export interface SignUpDataLocal {
   email: string;
   name: string;
   phone: string;
-  hashedPassword: string;
+  password: string;
 }
 
 // 일반 로그인 자료 구조 : DB

@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import { ConflictError, UnauthorizedError } from "../types/errors";
 import { ErrorMessage } from "../constants/ErrorMessage";
 import { generateAccessToken } from "../utils/token.util";
-import profileClientRepository from "../repositories/profileClient.repository";
+import profileClientRepository from "../repositories/client.repository";
 import profileMoverRespository from "../repositories/profileMover.respository";
 
 // ✅ refreshToken Api

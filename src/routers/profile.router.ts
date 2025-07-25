@@ -1,5 +1,5 @@
 import express from "express";
-import profileClientController from "../controllers/profileClient.controller";
+import clientController from "../controllers/client.controller";
 import { validateReq, verifyAccessToken } from "../middlewares/auth.middleware";
 import profileMoverController from "../controllers/profileMover.controller";
 import { MoverProfileSchema } from "../dtos/mover.dto";
@@ -27,7 +27,7 @@ profileRouter.patch(
   profileMoverController.moverPatchProfile,
 );
 
-// 일반 유저 프로필 등록
-profileRouter.patch("/clients", verifyAccessToken, profileClientController.post);
+// 일반 회원 프로필 등록 & 수정
+profileRouter.patch("/clients", verifyAccessToken, clientController.update);
 
 export default profileRouter;

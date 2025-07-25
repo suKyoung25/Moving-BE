@@ -1,4 +1,4 @@
-@token=
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ZDExNzRjZi0xMDViLTRhNTctYWE3NC03YTk1NTViMmFkZDgiLCJlbWFpbCI6InNreTNAZXhhbXBsZS5jb20iLCJuYW1lIjoic2t5IiwidXNlclR5cGUiOiJjbGllbnQiLCJpYXQiOjE3NTMzNTExOTcsImV4cCI6MTc1MzM1NDc5N30.ze6qY6xdy9xn74mSCwmnK2Cj7Zht4DdwVmHbP2H4WDo
 
 # ### 기사님 프로필 등록
 # POST http://localhost:4000/profile/mover
@@ -29,6 +29,16 @@ Authorization: Bearer {{token}}
 }
 
 ### 일반 프로필 등록
+PATCH http://localhost:4000/profile/clients
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+     "serviceType": ["SMALL", "HOME"],
+     "livingArea": ["서울", "경기"]
+}
+
+### 일반 프로필 수정
 PATCH http://localhost:4000/profile/clients
 Content-Type: application/json
 Authorization: Bearer {{token}}
