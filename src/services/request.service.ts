@@ -33,7 +33,7 @@ async function createRequest({
 
   // 새로운 견적 요청 알림 (to 기사)
   await notificationService.notifyEstimateRequest({
-    clientName: client!.name,
+    clientName: client!.name!,
     fromAddress: request.fromAddress,
     toAddress: request.toAddress,
     moveType: request.moveType,

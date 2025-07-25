@@ -279,7 +279,7 @@ async function confirmEstimate(estimateId: string, clientId: string) {
   // 견적 확정 알림 (to 기사)
   await notificationService.notifyEstimateConfirmed({
     userId: result.moverId,
-    clientName: client!.name,
+    clientName: client!.name!,
     type: "ESTIMATE_CONFIRMED",
     targetId: estimateId,
     targetUrl: `/my-quotes/mover/${estimateId}`,

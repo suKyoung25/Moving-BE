@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import authClientService from "../services/authClient.service";
-import { signInSchema, signUpSchema, SignInRequestDTO, SignUpRequestDTO } from "../dtos/auth.dto";
+import { SignInRequestDTO, SignUpRequestDTO } from "../dtos/auth.dto";
 
 // ✅ 일반 회원가입
 async function signUp(req: Request<{}, {}, SignUpRequestDTO>, res: Response, next: NextFunction) {
