@@ -32,10 +32,8 @@ infoRouter.get("/", (req, res) => {
       <body>
         <h1>Moving API</h1>
         <p>이 서버는 코드잇 고급 프로젝트 4팀의 백엔드 API입니다.</p>
-        <p>주요 엔드포인트:</p>
         <ul>
           <li><a href="/docs">/docs</a> - Swagger 문서</li>
-          <li><a href="/auth">/auth</a> - 인증 라우터</li>
         </ul>
       </body>
     </html>
