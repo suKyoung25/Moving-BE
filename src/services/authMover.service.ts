@@ -24,13 +24,13 @@ async function createMover(user: CreateMoverInput) {
   const accessToken = generateAccessToken({
     userId: createdMover.id,
     email: createdMover.email,
-    name: createdMover.name,
+    name: createdMover.name!,
     userType: createdMover.userType,
   });
   const refreshToken = generateRefreshToken({
     userId: createdMover.id,
     email: createdMover.email,
-    name: createdMover.name,
+    name: createdMover.name!,
     userType: createdMover.userType,
   });
 
@@ -59,13 +59,13 @@ async function setMoverByEmail(user: GetMoverInput) {
   const accessToken = generateAccessToken({
     userId: mover.id,
     email: mover.email,
-    name: mover.name,
+    name: mover.name!,
     userType: mover.userType,
   });
   const refreshToken = generateRefreshToken({
     userId: mover.id,
     email: mover.email,
-    name: mover.name,
+    name: mover.name!,
     userType: mover.userType,
   });
 

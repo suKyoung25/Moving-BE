@@ -1,6 +1,6 @@
 import { Client } from "@prisma/client";
 import prisma from "../configs/prisma.config";
-import { SignUpDataLocal, SocialLoginData } from "../types";
+import { SignUpDataLocal, SignUpDataSocial } from "../types";
 
 async function findById(id: Client["id"]) {
   return await prisma.client.findUnique({
@@ -24,6 +24,7 @@ async function findByEmail(email: Client["email"]) {
 }
 
 async function findByPhone(phone: Client["phone"]) {
+  if (!phone) return null;
   return await prisma.client.findUnique({
     where: { phone },
   });
@@ -44,14 +45,14 @@ async function create(user: SignUpDataLocal) {
 }
 
 // ✅ 소셜 로그인
-async function update(id: string, data: SocialLoginData) {
+async function update(id: string, data: SignUpDataSocial) {
   return prisma.client.update({
     where: { id },
     data: data,
   });
 }
 
-async function createOrUpdate({ provider, providerId, email, name, phone }: SocialLoginData) {
+async function createOrUpdate({ provider, providerId, email, name, phone }: SignUpDataSocial) {
   return prisma.client.upsert({
     where: { provider_providerId: { provider, providerId } },
     update: { email, name, phone },
