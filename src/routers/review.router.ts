@@ -1,12 +1,15 @@
 import { Router } from "express";
 import reviewController from "../controllers/review.controller";
-import { validateReq } from "../middlewares/auth.middleware";
+import { validateReq, verifyAccessToken } from "../middlewares/auth.middleware";
 import { CreateReviewSchema, UpdateReviewschema } from "../dtos/review.dto";
 
 const reviewRouter = Router();
 
 // 내가 작성한 리뷰 목록
 reviewRouter.get("/me", reviewController.getMyReviews);
+
+// 기사님에게 달린 리뷰 목록 (기사님용)
+reviewRouter.get("/mover", verifyAccessToken, reviewController.getMoverReviews);
 
 // 리뷰 작성
 reviewRouter.post("/", validateReq(CreateReviewSchema), reviewController.createReview);

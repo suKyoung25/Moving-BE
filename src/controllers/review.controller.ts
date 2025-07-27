@@ -18,6 +18,24 @@ async function getMyReviews(req: Request, res: Response, next: NextFunction) {
   }
 }
 
+// 기사님에게 달린 리뷰 목록 조회
+async function getMoverReviews(req: Request, res: Response, next: NextFunction) {
+  try {
+    const moverId = req.auth!.userId;
+    
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 6;
+    
+    const result = await reviewService.getMoverReviews(moverId, page, limit);
+    res.status(200).json({ 
+      message: "기사님 리뷰 목록 조회 성공", 
+      data: result 
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 // 리뷰 작성
 async function createReview(
   req: Request<{}, {}, CreateReviewDto>,
@@ -97,6 +115,7 @@ async function getWritableReviews(req: Request, res: Response, next: NextFunctio
 
 export default {
   getMyReviews,
+  getMoverReviews,
   createReview,
   updateReview,
   deleteReview,
