@@ -6,7 +6,8 @@ const {
   getMovers, 
   getMoverDetail, 
   toggleFavoriteMover,
-  designateMover 
+  designateMover,
+  getMoverProfile,
 } = moverController;
 
 const moverRouter = express.Router();
@@ -19,6 +20,9 @@ moverRouter.get('/:moverId', getMoverDetail);
 
 // 기사님 찜 토글
 moverRouter.post('/:moverId/toggle-favorite', verifyAccessToken, toggleFavoriteMover);
+
+// 기사님 본인 프로필 조회
+moverRouter.get('/profile', verifyAccessToken, getMoverProfile);
 
 // 기사님 지정 요청 (PATCH)
 moverRouter.patch('/:moverId', verifyAccessToken, designateMover);

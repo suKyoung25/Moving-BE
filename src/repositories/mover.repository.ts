@@ -122,20 +122,12 @@ async function fetchMoverDetail(moverId: string, clientId?: string): Promise<Mov
     if (!mover) throw new NotFoundError("기사님을 찾을 수 없습니다.");
 
     return {
-      id: mover.id,
-      nickName: mover.nickName,
-      name: mover.name!,
-      phone: mover.phone!,
-      profileImage: mover.profileImage,
-      career: mover.career,
-      serviceType: mover.serviceType,
-      serviceArea: mover.serviceArea.map((r) => r.regionName),
-      description: mover.description,
-      averageReviewRating: mover.averageReviewRating,
-      reviewCount: mover.reviewCount,
-      estimateCount: mover.estimateCount,
-      favoriteCount: mover.favoriteCount || 0,
-      isFavorite: mover.favorites?.length > 0,
+      ...mover,
+      name: mover.name || '',
+      phone: mover.phone || '',
+      serviceArea: mover.serviceArea.map((r) => r.regionName), // Region 객체 → 문자열 배열
+      favoriteCount: mover.favoriteCount || 0, // null → 0
+      isFavorite: Boolean(mover.favorites?.length), // 찜 여부만 계산
     };
   } catch (error) {
     throw new ServerError("기사님 상세 조회 중 오류 발생", error);
@@ -348,6 +340,7 @@ async function findMoversByServiceArea(regions: string[]) {
     },
   });
 }
+
 
 export default {
   fetchMovers,

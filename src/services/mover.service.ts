@@ -46,9 +46,20 @@ async function designateMover(clientId: string, requestId: string, moverId: stri
   return moverRepository.designateMover(requestId, moverId);
 }
 
+// 기사님 본인 프로필 조회
+async function getMoverProfile(moverId: string) {
+  if (!moverId) {
+    throw new BadRequestError("moverId가 필요합니다.");
+  }
+  
+  // 기존 fetchMoverDetail 재활용 (clientId 없이 호출)
+  return moverRepository.fetchMoverDetail(moverId);
+}
+
 export default {
   getMovers,
   getMoverDetail,
   toggleFavoriteMover,
   designateMover,
+  getMoverProfile,
 };
