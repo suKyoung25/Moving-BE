@@ -69,10 +69,20 @@ async function getEstimateMoverId(estimateId: Estimate["id"]) {
 // 대기 중인 견적서 조회
 async function findPendingEstimatesByClientId(clientId: Client["id"]) {
   try {
-    const estimates = prisma.request.findMany({
+    const confirmedRequestIds = await prisma.estimate.findMany({
+      where: {
+        isClientConfirmed: true,
+      },
+      select: { requestId: true },
+    });
+
+    const excludedRequestIds = confirmedRequestIds.map((e) => e.requestId);
+
+    const estimates = await prisma.request.findMany({
       where: {
         clientId,
         isPending: true,
+        id: { notIn: excludedRequestIds },
         estimate: {
           some: {
             moverStatus: "CONFIRMED",
@@ -87,18 +97,28 @@ async function findPendingEstimatesByClientId(clientId: Client["id"]) {
             isClientConfirmed: false,
           },
           include: {
-            mover: true,
+            mover: {
+              select: {
+                id: true,
+                name: true,
+                nickName: true,
+                profileImage: true,
+                averageReviewRating: true,
+                reviewCount: true,
+                favoriteCount: true,
+                estimateCount: true,
+                career: true,
+              },
+            },
           },
         },
         designatedRequest: true,
       },
     });
 
-    const result = await estimates;
-
-    return result;
-  } catch (e) {
-    throw new ServerError("대기 중인 견적서 조회 중 서버 오류가 발생했습니다", e);
+    return estimates;
+  } catch (error) {
+    throw new ServerError("대기 중인 견적 조회 중 오류 발생", error);
   }
 }
 
@@ -211,6 +231,7 @@ async function findEstimateDetailById(estimateId: string, clientId: string) {
             fromAddress: true,
             toAddress: true,
             requestedAt: true,
+            designatedRequest: true,
           },
         },
         mover: {
@@ -237,6 +258,15 @@ async function findEstimateDetailById(estimateId: string, clientId: string) {
   }
 }
 
+async function findConfirmedEstimate(requestId: string) {
+  return await prisma.estimate.findFirst({
+    where: {
+      requestId,
+      isClientConfirmed: true,
+    },
+  });
+}
+
 export default {
   findWritableEstimatesByClientId,
   findPendingEstimatesByClientId,
@@ -248,4 +278,5 @@ export default {
   incrementMoverEstimateCount,
   findEstimateById,
   findEstimateDetailById,
+  findConfirmedEstimate,
 };
