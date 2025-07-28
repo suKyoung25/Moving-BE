@@ -1,16 +1,19 @@
 import { Strategy as NaverStrategy, Profile } from "passport-naver";
-import authClientService from "../../services/authClient.service";
 import providerMap from "../../utils/providerMap.util";
 import { NotFoundError } from "../../types/errors";
+import authService from "../../services/auth.service";
+import { Request } from "express";
 
 const naverStrategyOptions = {
   clientID: process.env.NAVER_CLIENT_ID!,
   clientSecret: process.env.NAVER_CLIENT_SECRET!,
   callbackURL: "/auth/naver/callback",
+  passReqToCallback: true as const, // 쿼리 문자열에 userType 넣음
 };
 
 // ✅ 인증 함수 실행해서 프로필 정보를 id 코드로 넘김
 async function verify(
+  req: Request,
   accessToken: string,
   refreshToken: string,
   profile: Profile,
@@ -18,6 +21,7 @@ async function verify(
 ) {
   // enum <-> string 변환
   const providerEnumValue = providerMap[profile.provider];
+  const userType = req.query.state || "client";
 
   // 이메일 없으면 오류 처리
   if (!profile._json.email) {
@@ -25,13 +29,20 @@ async function verify(
   }
 
   // 사용자 데이터
-  const userInfo = await authClientService.oAuthCreateOrUpdate({
-    provider: providerEnumValue,
-    providerId: profile.id,
-    email: profile._json.email,
-    name: profile.displayName,
-    phone: (profile._json as any).mobile,
-  });
+  let userInfo;
+  if (userType === "client") {
+    userInfo = await authService.oAuthCreateOrUpdate({
+      provider: providerEnumValue,
+      providerId: profile.id,
+      email: profile._json.email,
+      name: profile.displayName,
+      phone: (profile._json as any).mobile,
+    });
+  } else if (userType === "mover") {
+    // !!!
+  } else {
+    throw new NotFoundError("소셜 로그인해야 하는데 userType 없음");
+  }
 
   done(null, userInfo); // req.user = user;
 }

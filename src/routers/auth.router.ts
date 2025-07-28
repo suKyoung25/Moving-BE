@@ -37,28 +37,39 @@ authRouter.post(
 // ✅ Client 로그인 - Local
 authRouter.post("/signin/client", validateReq(signInSchema), authClientController.login);
 
-// ✅ Client 구글 로그인
-authRouter.get("/google", passport.authenticate("google", { scope: ["profile", "email"] })); // 구글창 이동
+// ✅ 구글 로그인
+authRouter.get("/google", passport.authenticate("google", { scope: ["profile", "email"] })); // 구글 설정창 이동
+
 authRouter.get(
   "/google/callback",
   passport.authenticate("google", { session: false }),
-  authClientController.loginEasily,
-); // 진짜 구글 로그인
+  authController.signInEasily,
+); // 구글 로그인
 
-// ✅ Client 카카오 로그인
-authRouter.get("/kakao", passport.authenticate("kakao", { scope: ["account_email"] })); // 카카오 설정창 이동
+// ✅ 카카오 로그인
+authRouter.get("/google", (req, res, next) => {
+  const userType = (req.query.userType as string) || "client";
+  passport.authenticate("google", {
+    scope: ["profile", "email"],
+    state: userType,
+  })(req, res, next);
+});
+
 authRouter.get(
   "/kakao/callback",
   passport.authenticate("kakao", { session: false }),
-  authClientController.loginEasily,
-); // 진짜 카카오 로그인
+  authController.signInEasily,
+); // 카카오 로그인
 
-// ✅ Client 네이버 로그인
+// ✅ 네이버 로그인
 authRouter.get("/naver", passport.authenticate("naver", { scope: ["name", "email", "mobile"] })); // 네이버 설정창 이동
-authRouter.get(
-  "/naver/callback",
-  passport.authenticate("naver", { session: false }),
-  authClientController.loginEasily,
-); // 진짜 네이버 로그인
+
+authRouter.get("/naver", (req, res, next) => {
+  const userType = (req.query.userType as string) || "client";
+  passport.authenticate("naver", {
+    scope: ["name", "email", "mobile"],
+    state: userType,
+  })(req, res, next);
+});
 
 export default authRouter;
