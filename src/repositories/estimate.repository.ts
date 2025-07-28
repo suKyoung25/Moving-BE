@@ -194,6 +194,49 @@ async function findEstimateById(tx: Prisma.TransactionClient, estimateId: string
   });
 }
 
+// client 견적 상세 조회
+async function findEstimateDetailById(estimateId: string, clientId: string) {
+  try {
+    const estimate = await prisma.estimate.findFirst({
+      where: {
+        id: estimateId,
+        clientId: clientId,
+      },
+      include: {
+        request: {
+          select: {
+            id: true,
+            moveType: true,
+            moveDate: true,
+            fromAddress: true,
+            toAddress: true,
+            requestedAt: true,
+          },
+        },
+        mover: {
+          select: {
+            id: true,
+            name: true,
+            nickName: true,
+            profileImage: true,
+            career: true,
+            introduction: true,
+            description: true,
+            averageReviewRating: true,
+            reviewCount: true,
+            favoriteCount: true,
+            estimateCount: true,
+          },
+        },
+      },
+    });
+
+    return estimate;
+  } catch (e) {
+    throw new ServerError("견적 상세 조회 중 서버 오류가 발생했습니다", e);
+  }
+}
+
 export default {
   findWritableEstimatesByClientId,
   findPendingEstimatesByClientId,
@@ -204,4 +247,5 @@ export default {
   updateEstimateConfirmed,
   incrementMoverEstimateCount,
   findEstimateById,
+  findEstimateDetailById,
 };
