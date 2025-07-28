@@ -1,5 +1,5 @@
 import express from "express";
-import { moverSignin, moverSingup } from "../controllers/authMover.controller";
+import { moverSignin, moverSignup } from "../controllers/authMover.controller";
 import authController from "../controllers/auth.controller";
 import authClientController from "../controllers/authClient.controller";
 import {
@@ -20,7 +20,7 @@ authRouter.post("/refresh-token", authController.setRefreshToken);
 authRouter.get("/", verifyAccessToken, authController.getMe);
 
 //기사님 회원가입 - Local
-authRouter.post("/signup/mover", validateReq(signUpSchema), checkMoverSignUpInfo, moverSingup); // <- 수경 님 여기 Singup / Signup 오타 발견했어요.
+authRouter.post("/signup/mover", validateReq(signUpSchema), checkMoverSignUpInfo, moverSignup);
 
 //기사님 로그인 - Local
 authRouter.post("/signin/mover", validateReq(signInSchema), checkMoverSignInInfo, moverSignin);
