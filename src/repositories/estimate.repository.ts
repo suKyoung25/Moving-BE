@@ -1,5 +1,4 @@
 import { Client, Estimate, Mover, Prisma } from "@prisma/client";
-
 import prisma from "../configs/prisma.config";
 import { ServerError } from "../types/errors";
 
@@ -150,11 +149,14 @@ async function findReceivedEstimatesByClientId(clientId: Client["id"]) {
 }
 
 // 이사날에 해당하는 견적 찾기 (알림)
-async function findEstimateByMoveDate(date: Date) {
+async function findEstimateByMoveDate(start: Date, end: Date) {
   return await prisma.estimate.findMany({
     where: {
       request: {
-        moveDate: date,
+        moveDate: {
+          gte: start,
+          lt: end,
+        },
       },
     },
     include: {

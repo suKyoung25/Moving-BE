@@ -10,8 +10,8 @@ datasource db {
 model Client {
   id                 String     @id @default(uuid())
   email              String     @unique
-  name               String
-  phone              String     @unique
+  name               String?
+  phone              String?    @unique
   hashedPassword     String?
   profileImage       String?
   provider           Provider   @default(LOCAL)
@@ -26,14 +26,16 @@ model Client {
   estimates  Estimate[]
   reviews    Review[]
   favorites  Favorite[]
+
+  @@unique([provider, providerId])
 }
 
 model Mover {
   id                  String     @id @default(uuid())
   email               String     @unique
-  name                String
+  name                String?
   nickName            String?    @unique
-  phone               String     @unique
+  phone               String?    @unique
   hashedPassword      String?
   profileImage        String?
   provider            Provider   @default(LOCAL)
@@ -55,6 +57,8 @@ model Mover {
   reviews            Review[]
   favorites          Favorite[]
   designatedRequests DesignatedRequest[]
+
+  @@unique([provider, providerId])
 }
 
 model Request {
@@ -168,5 +172,6 @@ enum EstimateStatus {
 enum NotificationType {
   NEW_ESTIMATE
   ESTIMATE_CONFIRMED
+  ESTIMATE_REJECTED
   MOVING_DAY
 }

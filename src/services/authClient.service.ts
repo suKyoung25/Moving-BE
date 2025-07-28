@@ -1,6 +1,7 @@
+import prisma from "../configs/prisma.config";
 import { ErrorMessage } from "../constants/ErrorMessage";
 import authClientRepository from "../repositories/authClient.repository";
-import { LoginDataLocal, SignUpDataLocal } from "../types";
+import { LoginDataLocal, SignUpDataLocal, SignUpDataSocial } from "../types";
 import { NotFoundError } from "../types/errors";
 import { filterSensitiveUserData, hashPassword, verifyPassword } from "../utils/auth.util";
 import { generateAccessToken, generateRefreshToken } from "../utils/token.util";
@@ -19,13 +20,13 @@ async function create(client: SignUpDataLocal) {
   const accessToken = generateAccessToken({
     userId: newClient.id,
     email: newClient.email,
-    name: newClient.name,
+    name: newClient.name!,
     userType: newClient.userType,
   });
   const refreshToken = generateRefreshToken({
     userId: newClient.id,
     email: newClient.email,
-    name: newClient.name,
+    name: newClient.name!,
     userType: newClient.userType,
   });
 
@@ -49,14 +50,14 @@ async function loginWithLocal({ email, hashedPassword }: LoginDataLocal) {
   const accessToken = generateAccessToken({
     userId: client.id,
     email: client.email,
-    name: client.name,
+    name: client.name!,
     userType: client.userType,
   });
 
   const refreshToken = generateRefreshToken({
     userId: client.id,
     email: client.email,
-    name: client.name,
+    name: client.name!,
     userType: client.userType,
   });
 
@@ -65,6 +66,35 @@ async function loginWithLocal({ email, hashedPassword }: LoginDataLocal) {
   return { accessToken, refreshToken, user };
 }
 
-const authClientService = { create, loginWithLocal };
+// ✅ 소셜 로그인
+
+async function oAuthCreateOrUpdate({ provider, providerId, name, email, phone }: SignUpDataSocial) {
+  // 1. 이메일로 사용자가 있는지 찾음
+  const existingUser = await authClientRepository.findByEmailRaw(email);
+
+  // 2. 이미 존재하는 사용자면 없는 정보 추가
+  if (existingUser) {
+    return await authClientRepository.update(existingUser.id, {
+      provider,
+      providerId,
+      name,
+      email,
+      phone,
+    });
+  }
+}
+// else {
+// 3. 없으면 자료 자체를 새로 생성
+//   return await authClientRepository.create({
+//     provider,
+//     providerId,
+//     name,
+//     email,
+//     phone,
+//   });
+// }
+// }
+
+const authClientService = { create, loginWithLocal, oAuthCreateOrUpdate };
 
 export default authClientService;

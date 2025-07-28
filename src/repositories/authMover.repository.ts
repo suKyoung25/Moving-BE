@@ -43,6 +43,7 @@ async function getMoverByEmail(email: Mover["email"]) {
 
 //전화번호로 기사님 조회
 async function getMoverByPhone(phone: Mover["phone"]) {
+  if (!phone) return null;
   return await prisma.mover.findUnique({
     where: {
       phone,

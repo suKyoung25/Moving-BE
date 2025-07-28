@@ -1,185 +1,405 @@
-import {
-  PrismaClient,
-  Provider,
-  MoveType,
-  EstimateStatus,
-  NotificationType,
-  Region,
-  Client,
-  Mover,
-  Estimate,
-  Review,
-  Notification,
-  Favorite,
-  Request,
-  DesignatedRequest,
-} from "@prisma/client";
+import { PrismaClient, MoveType, EstimateStatus } from "@prisma/client";
 import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
-const REGIONS: string[] = [
-  "서울",
-  "경기",
-  "인천",
-  "강원",
-  "충북",
-  "충남",
-  "세종",
-  "대전",
-  "전북",
-  "전남",
-  "광주",
-  "경북",
-  "경남",
-  "대구",
-  "울산",
+const regionNames = [
   "부산",
+  "경기",
+  "충북",
+  "대구",
+  "세종",
+  "전남",
+  "서울",
+  "울산",
+  "충남",
+  "강원",
   "제주",
+  "경남",
+  "전북",
+  "대전",
+  "경북",
+  "인천",
+  "광주",
 ];
+
+const clientNames = ["양성경", "김수경", "신수민", "심유빈", "임정빈", "오하영", "홍성훈"];
+
+const moverNames = [
+  "류제천",
+  "강서진",
+  "민시우",
+  "서지우",
+  "이동현",
+  "김민성",
+  "박다온",
+  "최나윤",
+  "윤승우",
+  "정지후",
+  "임도현",
+  "노하윤",
+  "배지우",
+  "이수민",
+  "조서하",
+  "안현수",
+  "구예준",
+  "유지호",
+  "황윤호",
+  "신지민",
+];
+
+const BCRYPT_SALT_ROUNDS = 10;
+const DEFAULT_PASSWORD = "password1";
+
+// date-fns의 addDays 대체 함수(UTC 기준 날짜 연산)
+function addDays(date: Date, days: number): Date {
+  const result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
+}
+
+async function getHashedPassword(): Promise<string> {
+  return await bcrypt.hash(DEFAULT_PASSWORD, BCRYPT_SALT_ROUNDS);
+}
 
 async function main(): Promise<void> {
   // 외래키 의존성 역순으로 삭제
   await prisma.$executeRawUnsafe(`
-  TRUNCATE TABLE "Favorite", "Notification", "Review", "Estimate", "DesignatedRequest", "Request", "Mover", "Client", "Region"
+  TRUNCATE TABLE "Favorite", "Review", "Estimate", "DesignatedRequest", "Request", "Mover", "Client", "Region"
   RESTART IDENTITY CASCADE;
 `);
 
-  // 1. Region 데이터 생성 (17개)
-  const regionRecords: Region[] = await Promise.all(
-    REGIONS.map((regionName) => prisma.region.create({ data: { regionName } })),
-  );
-
-  // 2. Client 10명 생성 (지역 순환, 비밀번호 해시)
-  const clients: Client[] = [];
-  for (let i = 0; i < 10; i++) {
-    const plainPassword = `password${i + 1}`;
-    const hashedPassword = await bcrypt.hash(plainPassword, 10);
-
-    const client: Client = await prisma.client.create({
-      data: {
-        email: `client${i + 1}@example.com`,
-        name: `고객${i + 1}`,
-        phone: `0101234567${i}`,
-        hashedPassword: hashedPassword,
-        provider: Provider.LOCAL,
-        serviceType: [MoveType.HOME],
-        livingArea: { connect: [{ id: regionRecords[i % regionRecords.length].id }] },
-      },
+  // 1. 리전(지역) 보장
+  const regions: { id: string; regionName: string }[] = [];
+  for (const regionName of regionNames) {
+    const region = await prisma.region.upsert({
+      where: { regionName },
+      update: {},
+      create: { regionName },
     });
-    clients.push(client);
+    regions.push(region);
   }
 
-  // 3. Mover 10명 생성 (지역 순환, 비밀번호 해시)
-  const movers: Mover[] = [];
-  for (let i = 0; i < 10; i++) {
-    const plainPassword = `moverpassword${i + 1}`;
-    const hashedPassword = await bcrypt.hash(plainPassword, 10);
+  const hashedPassword = await getHashedPassword();
 
-    const mover: Mover = await prisma.mover.create({
-      data: {
-        email: `mover${i + 1}@example.com`,
-        name: `기사${i + 1}`,
-        nickName: `이사짱${i + 1}`,
-        phone: `0108765432${i}`,
-        hashedPassword: hashedPassword,
-        provider: Provider.LOCAL,
-        serviceType: [MoveType.HOME, MoveType.OFFICE],
-        serviceArea: { connect: [{ id: regionRecords[i % regionRecords.length].id }] },
-        introduction: `${i + 1}년 경력의 이사 전문가`,
-        description: "친절하고 꼼꼼한 서비스 제공",
+  // 2. 무버(Mover) 생성
+  for (let i = 0; i < moverNames.length; i++) {
+    await prisma.mover.upsert({
+      where: { email: `mover${i + 1}@gmail.com` },
+      update: {},
+      create: {
+        email: `mover${i + 1}@gmail.com`,
+        name: moverNames[i],
+        nickName: `${moverNames[i]}짱`,
+        phone: `010123410${(i + 1).toString().padStart(2, "0")}`,
+        hashedPassword,
+        career: i + 1,
+        introduction: `안녕하세요 ${moverNames[i]} 기사입니다.`,
+        description: `안녕하세요. 이사업계 경력 ${i + 1}년으로 안전한 이사를 도와드리는 ${
+          moverNames[i]
+        }입니다. 고객님의 물품을 소중하고 안전하게 운송하여 드립니다. 소형이사 및 가정이사 서비스를 제공합니다.`,
+        serviceType: [MoveType.SMALL, MoveType.HOME],
+        favoriteCount: i + 1,
+        estimateCount: i + 10,
+        averageReviewRating: 5.0,
+        reviewCount: i + 100,
+        serviceArea: { connect: [{ id: regions[i % regions.length].id }] },
+        isProfileCompleted: true,
       },
     });
-    movers.push(mover);
   }
 
-  // 4. Request 10건 생성
-  const requests: Request[] = [];
-  for (let i = 0; i < 10; i++) {
-    const request: Request = await prisma.request.create({
-      data: {
-        clientId: clients[i].id,
-        moveType: MoveType.HOME,
-        moveDate: new Date(`2025-08-${String(i + 1).padStart(2, "0")}T09:00:00.000Z`),
-        fromAddress: `서울 강남구 테헤란로 ${i + 1}`,
-        toAddress: `경기 성남시 분당구 판교로 ${i + 1}`,
-        isPending: true,
+  // 3. 클라이언트(Client) 생성
+  for (let i = 0; i < clientNames.length; i++) {
+    await prisma.client.upsert({
+      where: { email: `client${i + 1}@gmail.com` },
+      update: {},
+      create: {
+        email: `client${i + 1}@gmail.com`,
+        name: clientNames[i],
+        phone: `010123400${(i + 1).toString().padStart(2, "0")}`,
+        hashedPassword,
+        serviceType: [MoveType.SMALL, MoveType.HOME],
+        livingArea: { connect: [{ id: regions[i % regions.length].id }] },
+        isProfileCompleted: true,
       },
     });
-    requests.push(request);
   }
 
-  // 5. DesignatedRequest 10건 생성
-  const designatedRequests: DesignatedRequest[] = [];
-  for (let i = 0; i < 10; i++) {
-    const designatedRequest: DesignatedRequest = await prisma.designatedRequest.create({
-      data: {
-        requestId: requests[i].id,
-        moverId: movers[i].id,
-      },
+  // 4. 무버/클라이언트 목록 확보
+  const allMovers = await prisma.mover.findMany();
+  const allClients = await prisma.client.findMany();
+
+  // '류제천', '양성경' 선택
+  const ryooMover = await prisma.mover.findFirst({ where: { name: "류제천" } });
+  const yangClient = await prisma.client.findFirst({ where: { name: "양성경" } });
+
+  // 5. 각 클라이언트(양성경 제외)에 isPending==true 요청 생성
+  for (const client of allClients.filter((c) => c.name !== "양성경")) {
+    const exist = await prisma.request.findFirst({
+      where: { clientId: client.id, isPending: true },
     });
-    designatedRequests.push(designatedRequest);
+    if (!exist) {
+      for (let i = 0; i < allClients.length; i++) {
+        await prisma.request.create({
+          data: {
+            clientId: client.id,
+            moveType: MoveType.HOME,
+            moveDate: addDays(new Date(), 1 + i),
+            fromAddress: `서울 중구 난계로 ${i + 1}`,
+            toAddress: `경기 수원시 팔달구 갓메산로 ${i + 1}`,
+            isPending: true,
+          },
+        });
+      }
+    }
   }
 
-  // 6. Estimate 10건 생성 (각 client, mover 1:1 매칭)
-  const estimates: Estimate[] = [];
-  for (let i = 0; i < 10; i++) {
-    const estimate: Estimate = await prisma.estimate.create({
-      data: {
-        clientId: clients[i].id,
-        moverId: movers[i].id,
-        requestId: requests[i].id,
-        price: 250000 + i * 10000,
-        moverStatus: EstimateStatus.CONFIRMED,
-        isClientConfirmed: false,
-        comment: "엘리베이터 있음, 짐 많음",
-      },
+  // 6. 양성경 특수 로직
+  if (yangClient) {
+    // (A) isPending==true request 생성 or 재사용
+    const yangTrueRequest =
+      (await prisma.request.findFirst({
+        where: { clientId: yangClient.id, isPending: true },
+      })) ||
+      (await prisma.request.create({
+        data: {
+          clientId: yangClient.id,
+          moveType: MoveType.SMALL,
+          moveDate: new Date(),
+          fromAddress: "서울 중구 삼일대로 343",
+          toAddress: "서울 중구 청계천로 100",
+          isPending: true,
+        },
+      }));
+
+    // (B) 과거 20개 요청 보장 + 견적 생성(중복 불가)
+    let oldRequests = await prisma.request.findMany({
+      where: { clientId: yangClient.id, isPending: false },
+      orderBy: { moveDate: "asc" },
     });
-    estimates.push(estimate);
-  }
 
-  // 7. Review 10건 생성 (각 estimate별 1:1)
-  const reviews: Review[] = [];
-  for (let i = 0; i < 10; i++) {
-    const review: Review = await prisma.review.create({
-      data: {
-        rating: 5 - (i % 3),
-        content: `정말 만족스러운 이사였습니다! 리뷰 ${i + 1}`,
-        clientId: clients[i].id,
-        moverId: movers[i].id,
-        estimateId: estimates[i].id,
+    while (oldRequests.length < 20) {
+      const req = await prisma.request.create({
+        data: {
+          clientId: yangClient.id,
+          moveType: MoveType.OFFICE,
+          moveDate: addDays(new Date(), oldRequests.length + 2),
+          fromAddress: `서울 중구 삼일대로 ${oldRequests.length + 1}`,
+          toAddress: `서울 강남구 선릉로 ${oldRequests.length + 1}`,
+          isPending: false,
+        },
+      });
+      oldRequests.push(req);
+
+      // 견적(estimate) 생성, 중복 체크
+      const mover = allMovers[oldRequests.length % allMovers.length];
+      const exist = await prisma.estimate.findUnique({
+        where: {
+          requestId_moverId: {
+            requestId: req.id,
+            moverId: mover.id,
+          },
+        },
+      });
+      if (!exist) {
+        await prisma.estimate.create({
+          data: {
+            clientId: yangClient.id,
+            moverId: mover.id,
+            requestId: req.id,
+            moverStatus: EstimateStatus.CONFIRMED,
+            isClientConfirmed: true,
+            comment: "신속한 이사 도와드리겠습니다.",
+            price: 100000 + oldRequests.length * 10000, // 예시 가격 로직
+          },
+        });
+      }
+    }
+
+    // (C) yangTrueRequest에 대해 20명 기사 모두 견적(중복 불가)
+    for (const mover of allMovers) {
+      const exist = await prisma.estimate.findUnique({
+        where: {
+          requestId_moverId: {
+            requestId: yangTrueRequest.id,
+            moverId: mover.id,
+          },
+        },
+      });
+      if (!exist) {
+        await prisma.estimate.create({
+          data: {
+            clientId: yangClient.id,
+            moverId: mover.id,
+            requestId: yangTrueRequest.id,
+            moverStatus: EstimateStatus.CONFIRMED,
+            comment: "견적 확정 시 세부 일정 안내 도와드리겠습니다.",
+            price: 180000 + mover.id.length * 1000, // 예시 가격 로직
+          },
+        });
+      }
+    }
+
+    // (D) 양성경이 9명 기사를 찜(Favorite, 중복 불가)
+    for (let i = 0; i < 9; i++) {
+      const mover = allMovers[i];
+      const fav = await prisma.favorite.findUnique({
+        where: {
+          clientId_moverId: { clientId: yangClient.id, moverId: mover.id },
+        },
+      });
+      if (!fav) {
+        await prisma.favorite.create({
+          data: {
+            clientId: yangClient.id,
+            moverId: mover.id,
+          },
+        });
+      }
+    }
+
+    // (E) 조건에 맞는 견적에만 리뷰 생성 (중복 불가)
+    const confirmedEstimates = await prisma.estimate.findMany({
+      where: {
+        clientId: yangClient.id,
+        isClientConfirmed: true,
+        request: { moveDate: { lte: new Date() } },
       },
+      include: { request: true },
+      orderBy: { request: { moveDate: "asc" } },
+      take: 10,
     });
-    reviews.push(review);
+    for (let i = 0; i < confirmedEstimates.length; i++) {
+      const est = confirmedEstimates[i];
+      const reviewExist = await prisma.review.findUnique({
+        where: { estimateId: est.id },
+      });
+      if (!reviewExist) {
+        await prisma.review.create({
+          data: {
+            rating: (i % 5) + 1,
+            content: `처음 견적 받아봤는데, 엄청 친절하시고 꼼꼼하세요! 귀찮게 이것저것 물어봤는데 잘 알려주셨습니다. 원룸 이사는 믿고 맡기세요! :)`,
+            clientId: yangClient.id,
+            moverId: est.moverId,
+            estimateId: est.id,
+          },
+        });
+      }
+    }
   }
 
-  // 8. Notification 10건 생성
-  const notifications: Notification[] = [];
-  for (let i = 0; i < 10; i++) {
-    const notification: Notification = await prisma.notification.create({
-      data: {
-        clientId: clients[i].id,
-        moverId: movers[i].id,
-        content: `새로운 견적이 도착했습니다. 알림 ${i + 1}`,
-        isRead: false,
-        type: NotificationType.NEW_ESTIMATE,
+  // 7. 류제천 무버 특수 시드(중복 견적 금지)
+  if (ryooMover && yangClient) {
+    // (A) 3개 지정견적요청 생성
+    for (let i = 0; i < 3; i++) {
+      const client = allClients[(i + 10) % allClients.length];
+      const targetReq = await prisma.request.create({
+        data: {
+          clientId: client.id,
+          moveType: MoveType.HOME,
+          moveDate: addDays(new Date(), 1 + i),
+          fromAddress: `부산 강서구 가달1로 ${i + 1}`,
+          toAddress: `울산 남구 갈밭로 ${i + 1}`,
+          isPending: false,
+        },
+      });
+      await prisma.designatedRequest.upsert({
+        where: {
+          requestId_moverId: { requestId: targetReq.id, moverId: ryooMover.id },
+        },
+        update: {},
+        create: {
+          requestId: targetReq.id,
+          moverId: ryooMover.id,
+        },
+      });
+    }
+
+    // (B) CONFIRMED 20, REJECTED 20개 견적(중복 확인)
+    const yangClientOldRequests = await prisma.request.findMany({
+      where: { clientId: yangClient.id, isPending: false },
+    });
+    for (let i = 0; i < 20; i++) {
+      // CONFIRMED
+      const req1 = yangClientOldRequests[i % yangClientOldRequests.length];
+      if (req1) {
+        const exist1 = await prisma.estimate.findUnique({
+          where: {
+            requestId_moverId: {
+              requestId: req1.id,
+              moverId: ryooMover.id,
+            },
+          },
+        });
+        if (!exist1) {
+          await prisma.estimate.create({
+            data: {
+              clientId: allClients[(i + 1) % allClients.length].id,
+              moverId: ryooMover.id,
+              requestId: req1.id,
+              moverStatus: EstimateStatus.CONFIRMED,
+              comment: `류제천 컨펌 견적 ${i + 1}`,
+              isClientConfirmed: true,
+              price: 500000 + i * 7000,
+            },
+          });
+        }
+      }
+      // REJECTED
+      const req2 = yangClientOldRequests[(i + 1) % yangClientOldRequests.length];
+      if (req2) {
+        const exist2 = await prisma.estimate.findUnique({
+          where: {
+            requestId_moverId: {
+              requestId: req2.id,
+              moverId: ryooMover.id,
+            },
+          },
+        });
+        if (!exist2) {
+          await prisma.estimate.create({
+            data: {
+              clientId: allClients[(i + 2) % allClients.length].id,
+              moverId: ryooMover.id,
+              requestId: req2.id,
+              moverStatus: EstimateStatus.REJECTED,
+              comment: `류제천 거절 견적 ${i + 1}`,
+              price: 100000 + i * 6000,
+            },
+          });
+        }
+      }
+    }
+
+    // (C) 리뷰 10개 (isClientConfirmed:true & moveDate<=오늘 견적 중복불가)
+    const validEstimates = await prisma.estimate.findMany({
+      where: {
+        moverId: ryooMover.id,
+        isClientConfirmed: true,
+        request: { moveDate: { lte: new Date() } },
       },
+      orderBy: { request: { moveDate: "desc" } },
+      take: 10,
     });
-    notifications.push(notification);
+    for (let i = 0; i < validEstimates.length; i++) {
+      const est = validEstimates[i];
+      const reviewExist = await prisma.review.findUnique({
+        where: { estimateId: est.id },
+      });
+      if (!reviewExist) {
+        await prisma.review.create({
+          data: {
+            rating: (i % 5) + 1,
+            content: `류제천 ${i + 1}번째 리뷰 상세 코멘트입니다.`,
+            clientId: allClients[(i + 2) % allClients.length].id,
+            moverId: ryooMover.id,
+            estimateId: est.id,
+          },
+        });
+      }
+    }
   }
-
-  // 9. Favorite 10건 생성 (client, mover 1:1)
-  const favorites: Favorite[] = [];
-  for (let i = 0; i < 10; i++) {
-    const favorite: Favorite = await prisma.favorite.create({
-      data: {
-        clientId: clients[i].id,
-        moverId: movers[i].id,
-      },
-    });
-    favorites.push(favorite);
-  }
-
   console.log("🌱 Seed completed successfully");
 }
 

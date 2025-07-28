@@ -2,6 +2,6 @@
 export type CreatedToken = {
   userId: string;
   email: string;
-  name: string;
+  name: string | null;
   userType: string;
 };

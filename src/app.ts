@@ -17,13 +17,16 @@ import requestRouter from "./routers/request.router";
 import { verifyAccessToken } from "./middlewares/auth.middleware";
 import favoriteRouter from "./routers/favorite.router";
 import accountRouter from "./routers/account.router";
-import NotificationRouter from "./routers/notification.router";
+import notificationRouter from "./routers/notification.router";
+import imageRouter from "./routers/image.router";
+import "./schedule/notification.cron";
 
 const app = express();
 const PORT = process.env.PORT;
 
 // trust proxy 설정 (쿠키 보안 관련: production 시 필요)
 app.set("trust proxy", 1);
+
 // 미들웨어
 app.use(
   cors({
@@ -46,7 +49,8 @@ app.use("/reviews", verifyAccessToken, reviewRouter);
 app.use("/estimates", verifyAccessToken, estimateRouter);
 app.use("/favorites", verifyAccessToken, favoriteRouter);
 app.use("/requests", requestRouter);
-app.use("/notifications", verifyAccessToken, NotificationRouter);
+app.use("/notifications", verifyAccessToken, notificationRouter);
+app.use("/images", verifyAccessToken, imageRouter);
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 // 에러 핸들러

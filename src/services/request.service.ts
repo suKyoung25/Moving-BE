@@ -31,9 +31,9 @@ async function createRequest({
   // 견적 요청한 유저 이름 조회
   const client = await authClientRepository.findById(clientId);
 
-  // 새로운 견적 요청 알림 생성 (to 기사)
+  // 새로운 견적 요청 알림 (to 기사)
   await notificationService.notifyEstimateRequest({
-    clientName: client!.name,
+    clientName: client!.name!,
     fromAddress: request.fromAddress,
     toAddress: request.toAddress,
     moveType: request.moveType,

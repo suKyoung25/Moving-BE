@@ -9,7 +9,6 @@
 import { MoveType, Prisma } from "@prisma/client";
 import profileMoverRespository from "../repositories/profileMover.respository";
 import { MoverProfile } from "../types";
-import prisma from "../configs/prisma.config";
 
 //기사님 프로필 생성과 수정
 async function modifyMoverProfile(user: MoverProfile) {

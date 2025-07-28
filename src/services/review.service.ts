@@ -40,6 +40,39 @@ async function getMyReviews(clientId: Client["id"], page = 1, limit = 6) {
   };
 }
 
+async function getMoverReviews(moverId: string, page = 1, limit = 6) {
+  if (page < 1) page = 1;
+  if (limit < 1) limit = 6;
+
+  const offset = (page - 1) * limit;
+  const { reviews, total } = await reviewRepository.findReviewsByMoverId(moverId, offset, limit);
+
+  // 결과 매핑
+  const mappedReviews = reviews.map((e) => ({
+    id: e.id,
+    rating: e.rating,
+    content: e.content,
+    createdAt: e.createdAt,
+    clientName: e.client.name,
+    price: e.estimate.price,
+    moveType: e.estimate.request.moveType,
+    moveDate: e.estimate.request.moveDate,
+    isDesignatedEstimate:
+      Array.isArray(e.estimate.request.designatedRequest) &&
+      e.estimate.request.designatedRequest.some((dr) => dr.moverId === moverId),
+  }));
+
+  return {
+    reviews: mappedReviews,
+    total,
+    pagination: {
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
+}
+
 // 리뷰 작성
 async function createReview(data: CreateReviewDto, clientId: Client["id"]) {
   const { estimateId, rating, content } = data;
@@ -142,6 +175,7 @@ async function getWritableReviews(clientId: Client["id"], page = 1, limit = 6) {
 
 export default {
   getMyReviews,
+  getMoverReviews,
   createReview,
   updateReview,
   deleteReview,

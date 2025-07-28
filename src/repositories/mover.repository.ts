@@ -122,20 +122,12 @@ async function fetchMoverDetail(moverId: string, clientId?: string): Promise<Mov
     if (!mover) throw new NotFoundError("기사님을 찾을 수 없습니다.");
 
     return {
-      id: mover.id,
-      nickName: mover.nickName,
-      name: mover.name,
-      phone: mover.phone,
-      profileImage: mover.profileImage,
-      career: mover.career,
-      serviceType: mover.serviceType,
-      serviceArea: mover.serviceArea.map((r) => r.regionName),
-      description: mover.description,
-      averageReviewRating: mover.averageReviewRating,
-      reviewCount: mover.reviewCount,
-      estimateCount: mover.estimateCount,
-      favoriteCount: mover.favoriteCount || 0,
-      isFavorite: mover.favorites?.length > 0,
+      ...mover,
+      name: mover.name || '',
+      phone: mover.phone || '',
+      serviceArea: mover.serviceArea.map((r) => r.regionName), // Region 객체 → 문자열 배열
+      favoriteCount: mover.favoriteCount || 0, // null → 0
+      isFavorite: Boolean(mover.favorites?.length), // 찜 여부만 계산
     };
   } catch (error) {
     throw new ServerError("기사님 상세 조회 중 오류 발생", error);
@@ -243,23 +235,22 @@ async function toggleFavoriteMover(clientId: string, moverId: string) {
   }
 }
 
-
 // 지정 견적 요청
 async function designateMover(requestId: string, moverId: string, clientId?: string) {
   try {
     console.log(`지정 견적 요청: requestId=${requestId}, moverId=${moverId}, clientId=${clientId}`);
-    
+
     // 1. 요청 존재 여부 및 권한 확인
     let request;
     if (clientId) {
       // clientId가 있으면 권한 체크
       request = await prisma.request.findFirst({
-        where: { 
+        where: {
           id: requestId,
           clientId: clientId,
-          isPending: true 
+          isPending: true,
         },
-        select: { id: true, isPending: true, clientId: true }
+        select: { id: true, isPending: true, clientId: true },
       });
 
       if (!request) {
@@ -269,7 +260,7 @@ async function designateMover(requestId: string, moverId: string, clientId?: str
       // clientId가 없으면 기본 확인만
       request = await prisma.request.findUnique({
         where: { id: requestId },
-        select: { id: true, isPending: true }
+        select: { id: true, isPending: true },
       });
 
       if (!request) {
@@ -284,7 +275,7 @@ async function designateMover(requestId: string, moverId: string, clientId?: str
     // 2. 기사 존재 여부 확인
     const mover = await prisma.mover.findUnique({
       where: { id: moverId },
-      select: { id: true, nickName: true }
+      select: { id: true, nickName: true },
     });
 
     if (!mover) {
@@ -307,28 +298,31 @@ async function designateMover(requestId: string, moverId: string, clientId?: str
 
     // 4. 지정 견적 요청 생성
     const designatedRequest = await prisma.designatedRequest.create({
-      data: { 
-        requestId, 
-        moverId 
+      data: {
+        requestId,
+        moverId,
       },
     });
 
     console.log(`지정 견적 요청 생성 완료: ${designatedRequest.id}`);
     return designatedRequest;
-    
   } catch (error: unknown) {
     console.error(`지정 견적 요청 오류:`, error);
-    
+
     // Prisma 중복 키 오류 처리
-    if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') {
+    if (error && typeof error === "object" && "code" in error && error.code === "P2002") {
       throw new ConflictError("이미 지정 견적을 요청한 기사님입니다.");
     }
-    
+
     // 커스텀 에러 다시 던지기
-    if (error instanceof NotFoundError || error instanceof ConflictError || error instanceof BadRequestError) {
+    if (
+      error instanceof NotFoundError ||
+      error instanceof ConflictError ||
+      error instanceof BadRequestError
+    ) {
       throw error;
     }
-    
+
     throw new ServerError("지정 견적 요청 중 오류가 발생했습니다.", error);
   }
 }
@@ -346,6 +340,7 @@ async function findMoversByServiceArea(regions: string[]) {
     },
   });
 }
+
 
 export default {
   fetchMovers,
