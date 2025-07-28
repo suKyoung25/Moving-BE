@@ -36,6 +36,44 @@ async function findReviewsByClientId(clientId: Client["id"], offset: number, lim
   return { reviews, total };
 }
 
+// 기사님에게 달린 리뷰 목록 조회 (페이징 포함)
+async function findReviewsByMoverId(moverId: string, offset: number, limit: number) {
+  const [reviews, total] = await Promise.all([
+    prisma.review.findMany({
+      where: { moverId },
+      select: {
+        id: true,
+        rating: true,
+        content: true,
+        createdAt: true,
+        client: { 
+          select: { 
+            name: true 
+          } 
+        },
+        estimate: {
+          select: {
+            price: true,
+            request: {
+              select: {
+                moveType: true,
+                moveDate: true,
+                designatedRequest: { select: { moverId: true } },
+              },
+            },
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+      skip: offset,
+      take: limit,
+    }),
+    prisma.review.count({ where: { moverId } }),
+  ]);
+
+  return { reviews, total };
+}
+
 // mover 리뷰 평점 및 개수 통계 업데이트 (트랜잭션 내부에서 호출)
 async function updateMoverReviewStatsTx(moverId: Mover["id"], tx: Prisma.TransactionClient) {
   const stats = await tx.review.aggregate({
@@ -87,6 +125,7 @@ async function deleteReviewTx(tx: Prisma.TransactionClient, reviewId: Review["id
 
 export default {
   findReviewsByClientId,
+  findReviewsByMoverId,
   updateMoverReviewStatsTx,
   createReviewTx,
   findReviewByEstimateId,

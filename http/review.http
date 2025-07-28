@@ -1,10 +1,17 @@
 @token=
-@reviewId=2ffb4c46-fc89-48f0-ac3b-dc4f1fcbf189
+@moverToken=
+@reviewId=
 
 ### 내가 작성한 리뷰 목록 조회
 GET http://localhost:4000/reviews/me
 Authorization: Bearer {{token}}
 Content-Type: application/json
+
+### 기사님이 받은 리뷰 목록 조회
+GET http://localhost:4000/reviews/mover
+Authorization: Bearer {{moverToken}}
+Content-Type: application/json
+
 
 ### 리뷰 작성
 POST http://localhost:4000/reviews

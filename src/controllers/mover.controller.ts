@@ -72,9 +72,26 @@ async function designateMover(req: Request, res: Response, next: NextFunction) {
   }
 }
 
+// 기사님 본인 프로필 조회
+async function getMoverProfile(req: Request, res: Response, next: NextFunction) {
+  try {
+    const moverId = req.auth!.userId;
+    const result = await moverService.getMoverProfile(moverId);
+    
+    res.status(200).json({
+      message: "기사님 프로필 조회 성공",
+      data: result
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+
 export default {
   getMovers,
   getMoverDetail,
   toggleFavoriteMover,
   designateMover,
+  getMoverProfile,
 };
