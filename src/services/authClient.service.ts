@@ -102,7 +102,6 @@ async function oAuthCreateOrUpdate(data: SignUpDataSocial) {
   });
 
   user = filterSensitiveUserData(user);
-  console.log(user);
   return { accessToken, refreshToken, user };
 }
 
