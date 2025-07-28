@@ -15,7 +15,7 @@ interface EstimateInput {
 
 const prisma = new PrismaClient();
 
-// client 데기 중인 견적서 조회
+// client 대기 중인 견적서 조회
 async function getPendingEstimates(clientId: Client["id"]) {
   const requests = await estimateRepository.findPendingEstimatesByClientId(clientId);
 
@@ -221,38 +221,49 @@ async function getEstimatesByStatus(moverId: string) {
 async function getReceivedEstimates(clientId: Client["id"], category: "all" | "confirmed" = "all") {
   const requests = await estimateRepository.findReceivedEstimatesByClientId(clientId);
 
-  return requests.map((req) => ({
-    requestId: req.id,
-    moveDate: req.moveDate,
-    fromAddress: req.fromAddress,
-    toAddress: req.toAddress,
-    moveType: req.moveType,
-    requestedAt: req.requestedAt,
-    designatedRequest: req.designatedRequest,
-    estimates: req.estimate
-      .filter((e) => {
-        if (category === "confirmed") {
-          return e.moverStatus === "CONFIRMED" && e.isClientConfirmed === true;
-        }
-        return true;
-      })
-      .map((e) => ({
-        estimateId: e.id,
-        moverId: e.mover.id,
-        moverName: e.mover.name,
-        moverNickName: e.mover.nickName,
-        profileImage: e.mover.profileImage,
-        comment: e.comment,
-        price: e.price,
-        created: e.createdAt,
-        reviewRating: e.mover.averageReviewRating,
-        reviewCount: e.mover.reviewCount,
-        career: e.mover.career,
-        estimateCount: e.mover.estimateCount,
-        favoriteCount: e.mover.favoriteCount,
-        isConfirmed: e.moverStatus === "CONFIRMED" && e.isClientConfirmed === true,
-      })),
-  }));
+  return await Promise.all(
+    requests.map(async (req) => {
+      return {
+        requestId: req.id,
+        moveDate: req.moveDate,
+        fromAddress: req.fromAddress,
+        toAddress: req.toAddress,
+        moveType: req.moveType,
+        requestedAt: req.requestedAt,
+        designatedRequest: req.designatedRequest,
+        estimates: await Promise.all(
+          req.estimate
+            .filter((e) => {
+              if (category === "confirmed") {
+                return e.moverStatus === "CONFIRMED" && e.isClientConfirmed === true;
+              }
+              return true;
+            })
+            .map(async (e) => {
+              const isFavorited = await estimateRepository.isFavoriteMover(clientId, e.mover.id);
+
+              return {
+                estimateId: e.id,
+                moverId: e.mover.id,
+                moverName: e.mover.name,
+                moverNickName: e.mover.nickName,
+                profileImage: e.mover.profileImage,
+                comment: e.comment,
+                price: e.price,
+                created: e.createdAt,
+                reviewRating: e.mover.averageReviewRating,
+                reviewCount: e.mover.reviewCount,
+                career: e.mover.career,
+                estimateCount: e.mover.estimateCount,
+                favoriteCount: e.mover.favoriteCount,
+                isConfirmed: e.moverStatus === "CONFIRMED" && e.isClientConfirmed === true,
+                isFavorited,
+              };
+            }),
+        ),
+      };
+    }),
+  );
 }
 
 // client 견적 확정
@@ -296,11 +307,15 @@ async function getEstimateDetail(estimateId: string, clientId: string) {
     throw new ServerError("견적을 찾을 수 없습니다.");
   }
 
+  const requestId = estimate.request.id;
+
+  // Request에 다른 확정된 견적이 있는지 조회
+  const confirmedEstimate = await estimateRepository.findConfirmedEstimate(requestId);
+
+  const isConfirmedByAnyone = !!confirmedEstimate;
+
   // 찜한 기사님 확인
   const isFavorite = await estimateRepository.isFavoriteMover(clientId, estimate.moverId);
-
-  // 견적 상태
-  const status = estimate.isClientConfirmed ? "received" : "pending";
 
   return {
     id: estimate.id,
@@ -309,7 +324,7 @@ async function getEstimateDetail(estimateId: string, clientId: string) {
     isClientConfirmed: estimate.isClientConfirmed,
     comment: estimate.comment,
     createdAt: estimate.createdAt,
-    status,
+    status: isConfirmedByAnyone ? "received" : "pending",
     request: estimate.request,
     mover: estimate.mover,
     isFavorite: !!isFavorite,

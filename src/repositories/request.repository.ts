@@ -3,6 +3,9 @@ import prisma from "../configs/prisma.config";
 import { CreateRequestDto } from "../dtos/request.dto";
 import { GetFilteredRequestsInput } from "../types";
 
+const now = new Date();
+const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+
 // 견적 요청 (일반 유저)
 async function createEstimateRequest(request: CreateRequestDto, clientId: string) {
   return await prisma.request.create({
@@ -28,40 +31,104 @@ async function getFilteredRequests({
   cursor,
   moverId,
 }: GetFilteredRequestsInput) {
-  const where: Prisma.RequestWhereInput = {
-    ...(moveType && { moveType: { in: moveType } }),
-    ...(serviceAreaList &&
-      serviceAreaList.length > 0 && {
-        OR: serviceAreaList.flatMap((area) => [
+  const mover = await prisma.mover.findUnique({
+    where: { id: moverId },
+    select: {
+      serviceArea: {
+        select: { id: true },
+      },
+    },
+  });
+
+  // 공통 NOT 조건: 내가 이미 응답한 요청이거나, 누군가에게 이미 확정된 요청이면 NOT으로 제외
+  const notCondition: Prisma.RequestWhereInput = {
+    OR: [
+      {
+        estimate: {
+          some: {
+            moverId,
+          },
+        },
+      },
+      {
+        estimate: {
+          some: {
+            isClientConfirmed: true,
+          },
+        },
+      },
+    ],
+  };
+
+  const moverLivingAreaIds = mover?.serviceArea.map((r) => r.id) ?? [];
+
+  let where: Prisma.RequestWhereInput;
+
+  if (isDesignated) {
+    // 지정견적 요청만 보기 ON: 지역 조건은 제거, 이사 유형은 유지
+    where = {
+      moveType: {
+        in: moveType,
+      },
+      designatedRequest: {
+        some: {
+          moverId,
+        },
+      },
+      ...(keyword && {
+        client: {
+          name: {
+            contains: keyword,
+            mode: "insensitive",
+          },
+        },
+      }),
+      // 오늘 이후 이사만 가져오기
+
+      moveDate: {
+        gte: tomorrow,
+      },
+      NOT: notCondition,
+    };
+  } else {
+    // 지정견적 요청만 보기 OFF: 지역 조건 포함
+    where = {
+      moveType: {
+        in: moveType,
+      },
+      client: {
+        livingArea: {
+          some: {
+            id: { in: moverLivingAreaIds },
+          },
+        },
+        ...(keyword && {
+          name: {
+            contains: keyword,
+            mode: "insensitive",
+          },
+        }),
+      },
+      ...(serviceAreaList!.length > 0 && {
+        OR: serviceAreaList!.flatMap((area) => [
           { fromAddress: { contains: area } },
           { toAddress: { contains: area } },
         ]),
       }),
-    ...(isDesignated === true && {
-      designatedRequest: {
-        some: {
-          mover: {
-            id: moverId,
-          },
-        },
+      // 오늘 이후 이사만 가져오기
+      moveDate: {
+        gte: tomorrow,
       },
-    }),
-    ...(keyword && {
-      client: {
-        name: {
-          contains: keyword,
-          mode: "insensitive",
-        },
-      },
-    }),
-  };
+      NOT: notCondition,
+    };
+  }
 
   const orderBy: Prisma.RequestOrderByWithRelationInput =
-    sort === "moveDate"
-      ? { moveDate: "asc" } // 이사일 빠른순
-      : sort === "requestedAt"
-      ? { requestedAt: "asc" } // 요청일 빠른순
-      : { requestedAt: "asc" }; // 기본 정렬: 요청일 빠른순
+    sort === "moveDate-asc"
+      ? { moveDate: "asc" }
+      : sort === "moveDate-desc"
+      ? { moveDate: "desc" }
+      : { moveDate: "asc" };
 
   const args = {
     where,
@@ -102,11 +169,11 @@ async function getFilteredRequests({
 //받은 요청 조회(일반)
 async function fetchClientActiveRequests(clientId: string) {
   return prisma.request.findMany({
-    where: { 
+    where: {
       clientId,
-      isPending: true 
+      isPending: true,
     },
-    orderBy: { requestedAt: 'desc' },
+    orderBy: { requestedAt: "desc" },
     select: {
       id: true,
       moveType: true,
@@ -114,7 +181,7 @@ async function fetchClientActiveRequests(clientId: string) {
       fromAddress: true,
       toAddress: true,
       requestedAt: true,
-    }
+    },
   });
 }
 

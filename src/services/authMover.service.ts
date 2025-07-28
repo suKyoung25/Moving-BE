@@ -83,7 +83,7 @@ async function setMoverByEmail(user: GetMoverInput) {
     email: mover?.email,
     nickName: mover?.nickName,
     userType: mover?.userType,
-    // profileCompleted: mover?.profileCompleted,
+    isProfileCompleted: mover?.isProfileCompleted,
   };
 }
 
