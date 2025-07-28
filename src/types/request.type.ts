@@ -5,7 +5,7 @@ export interface GetReceivedRequestsQuery {
   serviceArea?: string;
   isDesignated?: string;
   keyword?: string;
-  sort?: "moveDate" | "requestedAt";
+  sort?: "moveDate-asc" | "moveDate-desc";
   limit?: string;
   cursor?: string;
   moverId: string;
@@ -16,7 +16,7 @@ export interface GetFilteredRequestsInput {
   serviceAreaList?: string[];
   isDesignated?: boolean;
   keyword?: string;
-  sort?: "moveDate" | "requestedAt";
+  sort?: "moveDate-asc" | "moveDate-desc";
   limit?: number;
   cursor?: string;
   moverId: string;
