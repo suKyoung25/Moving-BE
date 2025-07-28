@@ -4,4 +4,5 @@ export type CreatedToken = {
   email: string;
   name: string;
   userType: string;
+  isProfileCompleted?: boolean;
 };

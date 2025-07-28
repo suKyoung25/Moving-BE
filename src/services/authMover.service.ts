@@ -43,6 +43,7 @@ async function createMover(user: CreateMoverInput) {
       name: createdMover.name,
       phone: createdMover.phone,
       userType: createdMover.userType,
+      isProfileCompleted: createdMover?.isProfileCompleted,
     },
   };
 }
@@ -67,6 +68,7 @@ async function setMoverByEmail(user: GetMoverInput) {
     email: mover.email,
     name: mover.name!,
     userType: mover.userType,
+    isProfileCompleted: mover?.isProfileCompleted,
   });
 
   return {
@@ -83,7 +85,7 @@ async function setMoverByEmail(user: GetMoverInput) {
     email: mover?.email,
     nickName: mover?.nickName,
     userType: mover?.userType,
-    // profileCompleted: mover?.profileCompleted,
+    isProfileCompleted: mover?.isProfileCompleted,
   };
 }
 
