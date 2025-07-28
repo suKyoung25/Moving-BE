@@ -54,5 +54,12 @@ Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-  "estimateId": "ddc7beb4-f645-4e12-8749-14aac1a688ab"
+  "estimateId": "f102cfa0-10f8-4edb-bb02-5a39f4b9ff0f"
 }
+
+### 견적 상세 조회
+GET http://localhost:4000/estimates/361f225d-7164-4bc2-9a4d-d1bcf991f1d0
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+

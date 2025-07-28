@@ -1,6 +1,6 @@
 import { Client, PrismaClient, EstimateStatus } from "@prisma/client";
 import estimateRepository from "../repositories/estimate.repository";
-import { BadRequestError } from "../types/errors";
+import { BadRequestError, ServerError } from "../types/errors";
 
 interface EstimateInput {
   price?: number;
@@ -257,6 +257,35 @@ async function confirmEstimate(estimateId: string, clientId: string) {
   });
 }
 
+// 견적 상세 조회
+async function getEstimateDetail(estimateId: string, clientId: string) {
+  // 견적 상세 조회
+  const estimate = await estimateRepository.findEstimateDetailById(estimateId, clientId);
+
+  if (!estimate) {
+    throw new ServerError("견적을 찾을 수 없습니다.");
+  }
+
+  // 찜한 기사님 확인
+  const isFavorite = await estimateRepository.isFavoriteMover(clientId, estimate.moverId);
+
+  // 견적 상태
+  const status = estimate.isClientConfirmed ? "received" : "pending";
+
+  return {
+    id: estimate.id,
+    price: estimate.price,
+    moverStatus: estimate.moverStatus,
+    isClientConfirmed: estimate.isClientConfirmed,
+    comment: estimate.comment,
+    createdAt: estimate.createdAt,
+    status,
+    request: estimate.request,
+    mover: estimate.mover,
+    isFavorite: !!isFavorite,
+  };
+}
+
 export default {
   getPendingEstimates,
   createEstimate,
@@ -266,4 +295,5 @@ export default {
   getEstimatesByStatus,
   getReceivedEstimates,
   confirmEstimate,
+  getEstimateDetail,
 };

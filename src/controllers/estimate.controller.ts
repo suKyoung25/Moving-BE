@@ -204,6 +204,32 @@ async function confirmEstimate(req: Request, res: Response, next: NextFunction) 
   }
 }
 
+// 견적 상세 조회
+async function getEstimateDetail(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { estimateId } = req.params;
+    const clientId = req.auth!.userId;
+
+    if (!estimateId) {
+      return res.status(400).json({ message: "estimateId는 필수입니다." });
+    }
+
+    if (!clientId) {
+      res.status(401).json({ message: "clientId (사용자 인증 정보)가 필요합니다." });
+      return;
+    }
+
+    const estimateDetail = await estimateService.getEstimateDetail(estimateId, clientId);
+
+    res.status(200).json({
+      message: "견적 상세 조회 성공",
+      data: estimateDetail,
+    });
+  } catch (e) {
+    next(e);
+  }
+}
+
 export default {
   getPendingEstimates,
   sendEstimateToRequest,
@@ -213,4 +239,5 @@ export default {
   getRejectedEstimates,
   getReceivedEstimates,
   confirmEstimate,
+  getEstimateDetail,
 };

@@ -27,4 +27,7 @@ estimateRouter.get("/received", estimateController.getReceivedEstimates as Reque
 // 견적 확정
 estimateRouter.post("/confirmed", estimateController.confirmEstimate);
 
+// 견적 상세 조회
+estimateRouter.get("/:estimateId", estimateController.getEstimateDetail);
+
 export default estimateRouter;
