@@ -1,8 +1,8 @@
 import { Strategy as KakaoStrategy, Profile } from "passport-kakao";
 import providerMap from "../../utils/providerMap.util";
 import { NotFoundError } from "../../types/errors";
-import authService from "../../services/auth.service";
 import { Request } from "express";
+import authClientService from "../../services/authClient.service";
 
 const kakaoStrategyOptions = {
   clientID: process.env.KAKAO_CLIENT_ID!,
@@ -35,7 +35,7 @@ async function verify(
   let userInfo;
   if (userType === "client") {
     // 사용자 데이터
-    userInfo = await authService.oAuthCreateOrUpdate({
+    userInfo = await authClientService.oAuthCreateOrUpdate({
       provider: providerEnumValue,
       providerId: profile.id.toString(),
       email: profile._json.kakao_account.email,

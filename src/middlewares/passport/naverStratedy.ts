@@ -1,8 +1,8 @@
 import { Strategy as NaverStrategy, Profile } from "passport-naver";
 import providerMap from "../../utils/providerMap.util";
 import { NotFoundError } from "../../types/errors";
-import authService from "../../services/auth.service";
 import { Request } from "express";
+import authClientService from "../../services/authClient.service";
 
 const naverStrategyOptions = {
   clientID: process.env.NAVER_CLIENT_ID!,
@@ -31,7 +31,7 @@ async function verify(
   // 사용자 데이터
   let userInfo;
   if (userType === "client") {
-    userInfo = await authService.oAuthCreateOrUpdate({
+    userInfo = await authClientService.oAuthCreateOrUpdate({
       provider: providerEnumValue,
       providerId: profile.id,
       email: profile._json.email,

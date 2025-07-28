@@ -1,6 +1,7 @@
 import { Client } from "@prisma/client";
 import prisma from "../configs/prisma.config";
 import { SignUpDataLocal } from "../types";
+import { SignUpDataSocial } from "../types";
 
 async function findById(id: Client["id"]) {
   return await prisma.client.findUnique({
@@ -38,11 +39,37 @@ async function create(user: SignUpDataLocal) {
   return { ...newClient, userType: "client" }; // userType: 헤더에서 씀
 }
 
+// ✅ 소셜 로그인
+async function save(user: SignUpDataSocial) {
+  const newClient = await prisma.client.create({
+    data: {
+      name: user.name,
+      email: user.email!,
+      phone: user.phone,
+      provider: user.provider,
+      providerId: user.providerId,
+    },
+  });
+
+  return { ...newClient, userType: "client" }; // userType: 헤더에서 씀
+}
+
+async function update(id: string, user: Omit<SignUpDataSocial, "email">) {
+  const newClient = await prisma.client.update({
+    where: { id },
+    data: user,
+  });
+
+  return { ...newClient, userType: "client" };
+}
+
 const authClientRepository = {
   findById,
   findByEmail,
   findByPhone,
   create,
+  save,
+  update,
 };
 
 export default authClientRepository;

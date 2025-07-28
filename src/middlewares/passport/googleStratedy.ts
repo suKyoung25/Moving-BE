@@ -2,7 +2,7 @@ import { Strategy as GoogleStrategy, Profile } from "passport-google-oauth20";
 import { Request } from "express";
 import providerMap from "../../utils/providerMap.util";
 import { NotFoundError } from "../../types/errors";
-import authService from "../../services/auth.service";
+import authClientService from "../../services/authClient.service";
 
 const googleStrategyOptions = {
   clientID: process.env.GOOGLE_CLIENT_ID!,
@@ -32,7 +32,7 @@ async function verify(
   let userInfo;
   if (userType === "client") {
     // 사용자 데이터
-    userInfo = await authService.oAuthCreateOrUpdate({
+    userInfo = await authClientService.oAuthCreateOrUpdate({
       provider: providerEnumValue,
       providerId: profile.id,
       email: profile.emails[0].value,
