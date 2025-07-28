@@ -22,14 +22,14 @@ async function getMyReviews(req: Request, res: Response, next: NextFunction) {
 async function getMoverReviews(req: Request, res: Response, next: NextFunction) {
   try {
     const moverId = req.auth!.userId;
-    
+
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 6;
-    
+
     const result = await reviewService.getMoverReviews(moverId, page, limit);
-    res.status(200).json({ 
-      message: "기사님 리뷰 목록 조회 성공", 
-      data: result 
+    res.status(200).json({
+      message: "기사님 리뷰 목록 조회 성공",
+      data: result,
     });
   } catch (error) {
     next(error);
@@ -89,7 +89,7 @@ async function deleteReview(
     const { reviewId } = req.params;
     await reviewService.deleteReview(reviewId, clientId);
 
-    res.status(204).end();
+    res.status(200).json({ message: "리뷰 삭제 성공" });
   } catch (error) {
     next(error);
   }
