@@ -3,6 +3,7 @@ import { ClientProfileRegister, ClientProfileUpdate } from "../types";
 import profileClientRepository from "../repositories/client.repository";
 import { ConflictError } from "../types/errors";
 import { ErrorMessage } from "../constants/ErrorMessage";
+import { generateAccessToken, generateRefreshToken } from "../utils/token.util";
 
 async function update(userId: Client["id"], profile: ClientProfileRegister | ClientProfileUpdate) {
   // ✅ 기존 프로필 등록했는지 확인 + 사용자 식별
@@ -24,8 +25,25 @@ async function update(userId: Client["id"], profile: ClientProfileRegister | Cli
       throw new ConflictError(ErrorMessage.NO_REGION);
     }
 
+    //토큰 생성
+    const accessToken = generateAccessToken({
+      userId: existingProfile.id,
+      email: existingProfile.email,
+      name: existingProfile.name!,
+      userType: existingProfile.userType,
+      isProfileCompleted: true,
+    });
+    const refreshToken = generateRefreshToken({
+      userId: existingProfile.id,
+      email: existingProfile.email,
+      name: existingProfile.name!,
+      userType: existingProfile.userType,
+      isProfileCompleted: true,
+    });
+
     // 반환
-    return await profileClientRepository.create(userId, newProfile);
+    const clientProfile = await profileClientRepository.create(userId, newProfile);
+    return { ...clientProfile, accessToken, refreshToken };
   }
 
   // ✅ 등록한 경우는 "수정"

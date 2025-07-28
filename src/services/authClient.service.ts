@@ -22,12 +22,14 @@ async function create(client: SignUpDataLocal) {
     email: newClient.email,
     name: newClient.name!,
     userType: newClient.userType,
+    isProfileCompleted: newClient?.isProfileCompleted,
   });
   const refreshToken = generateRefreshToken({
     userId: newClient.id,
     email: newClient.email,
     name: newClient.name!,
     userType: newClient.userType,
+    isProfileCompleted: newClient?.isProfileCompleted,
   });
 
   // 비밀번호와 전화번호 빼고 반환
@@ -52,6 +54,7 @@ async function loginWithLocal({ email, hashedPassword }: LoginDataLocal) {
     email: client.email,
     name: client.name!,
     userType: client.userType,
+    isProfileCompleted: client?.isProfileCompleted,
   });
 
   const refreshToken = generateRefreshToken({
@@ -59,6 +62,7 @@ async function loginWithLocal({ email, hashedPassword }: LoginDataLocal) {
     email: client.email,
     name: client.name!,
     userType: client.userType,
+    isProfileCompleted: client?.isProfileCompleted,
   });
 
   // 비밀번호와 전화번호 빼고 반환

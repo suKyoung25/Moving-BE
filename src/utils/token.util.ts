@@ -9,6 +9,7 @@ export function generateAccessToken(user: CreatedToken): string {
     email: user.email,
     name: user.name,
     userType: user.userType,
+    isProfileCompleted: user.isProfileCompleted,
   };
 
   const accessSecret = process.env.JWT_SECRET;
@@ -31,6 +32,7 @@ export function generateRefreshToken(user: CreatedToken): string {
     email: user.email,
     name: user.name,
     userType: user.userType,
+    isProfileCompleted: user.isProfileCompleted,
   };
 
   const refreshSecret = process.env.JWT_SECRET;
