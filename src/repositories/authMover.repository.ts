@@ -28,6 +28,13 @@ async function saveMover(user: CreateMoverInputwithHash) {
   return { ...createdMover, userType: "mover" }; //userType은 FE의 header에서 필요
 }
 
+// 아이디로 기사님 조회
+async function findMoverById(moverId: string) {
+  return await prisma.mover.findUnique({
+    where: { id: moverId },
+  });
+}
+
 //이메일로 기사님 조회
 async function getMoverByEmail(email: Mover["email"]) {
   const mover = await prisma.mover.findUnique({
@@ -53,6 +60,7 @@ async function getMoverByPhone(phone: Mover["phone"]) {
 
 export default {
   saveMover,
+  findMoverById,
   getMoverByEmail,
   getMoverByPhone,
 };
