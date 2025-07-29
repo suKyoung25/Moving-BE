@@ -87,25 +87,7 @@ async function oAuthCreateOrUpdate(data: SignUpDataSocial) {
     user = await authClientRepository.save(data);
   }
 
-  // 토큰 넣음: userType에서 오류 내서 hard coding함
-  const accessToken = generateAccessToken({
-    userId: user.id,
-    email: user.email,
-    name: user.name!,
-    userType: "client",
-    isProfileCompleted: user.isProfileCompleted,
-  });
-
-  const refreshToken = generateRefreshToken({
-    userId: user.id,
-    email: user.email,
-    name: user.name!,
-    userType: "client",
-    isProfileCompleted: user.isProfileCompleted,
-  });
-
-  user = filterSensitiveUserData(user);
-  return { accessToken, refreshToken, user };
+  return filterSensitiveUserData(user);
 }
 
 const authClientService = { create, loginWithLocal, oAuthCreateOrUpdate };

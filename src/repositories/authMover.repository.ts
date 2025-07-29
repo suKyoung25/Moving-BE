@@ -59,8 +59,9 @@ async function getMoverByPhone(phone: Mover["phone"]) {
 }
 
 //기사님 소셜 인증
+// ★ 수정: 이 주석 지우세요! userType 추가함
 async function createOrUpdate(data: SignUpDataSocial) {
-  return prisma.mover.upsert({
+  const newMover = await prisma.mover.upsert({
     where: {
       provider_providerId: {
         provider: data.provider,
@@ -76,6 +77,8 @@ async function createOrUpdate(data: SignUpDataSocial) {
       phone: data.phone,
     },
   });
+
+  return { ...newMover, userType: "mover" };
 }
 
 export default {
