@@ -69,9 +69,6 @@ async function signInEasily(req: Request, res: Response, next: NextFunction) {
 
     if (!user) throw new NotFoundError(ErrorMessage.USER_NOT_FOUND);
 
-    // 쿠키 설정
-    // res.cookie("accessToken", accessToken);
-
     // 데이터 받자마자 FE로 넘김 - 토큰은 쿼리로
     const redirectUrl = new URL(
       `${process.env.FRONTEND_URL}/api/auth/callback?token=${accessToken}`,

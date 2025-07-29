@@ -93,6 +93,7 @@ async function oAuthCreateOrUpdate(data: SignUpDataSocial) {
     email: user.email,
     name: user.name!,
     userType: "client",
+    isProfileCompleted: user.isProfileCompleted,
   });
 
   const refreshToken = generateRefreshToken({
@@ -100,6 +101,7 @@ async function oAuthCreateOrUpdate(data: SignUpDataSocial) {
     email: user.email,
     name: user.name!,
     userType: "client",
+    isProfileCompleted: user.isProfileCompleted,
   });
 
   user = filterSensitiveUserData(user);
