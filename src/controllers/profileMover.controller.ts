@@ -11,26 +11,6 @@ import { MoverProfileDto } from "../dtos/mover.dto";
 import { NotFoundError } from "../types/errors";
 import { ErrorMessage } from "../constants/ErrorMessage";
 
-// TODO 삭제 예정//기사님 프로필 생성
-// async function moverCreateProfile(
-//   req: Request<{}, {}, MoverProfileDto>,
-//   res: Response,
-//   next: NextFunction,
-// ) {
-//   try {
-//     const { userId } = req.auth!;
-
-//     const createdMoverProfile = await profileMoverService.modifyMoverProfile({
-//       ...req.body,
-//       userId,
-//     });
-//     const filteredMoverProfile = filterSensitiveUserData(createdMoverProfile);
-//     res.status(201).json(filteredMoverProfile);
-//   } catch (error) {
-//     next(error);
-//   }
-// }
-
 //기사님 프로필 수정
 async function moverPatchProfile(
   req: Request<{}, {}, MoverProfileDto>,

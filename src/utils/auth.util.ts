@@ -19,5 +19,10 @@ export function filterSensitiveUserData<T extends Client | Mover>(
 // ✅ 비밀번호 인증
 export async function verifyPassword(inputPassword: string, savedPassword: string) {
   const isValid = await bcrypt.compare(inputPassword, savedPassword);
-  if (!isValid) throw new ConflictError(ErrorMessage.PASSWORD_NOT_MATCH);
+
+  if (!isValid) {
+    throw new ConflictError(ErrorMessage.PASSWORD_NOT_MATCH);
+  } else {
+    return true;
+  }
 }
