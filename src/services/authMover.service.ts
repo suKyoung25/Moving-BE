@@ -103,7 +103,7 @@ async function oAuthCreateOrUpdate(socialData: SignUpDataSocial) {
     }
 
     // 유저 있으면 provider, providerId, name, phone, email 업데이트
-    const updatedUser = await authRepository.createOrUpdate({
+    const user = await authRepository.createOrUpdate({
       id: existingUser.id,
       provider: socialData.provider,
       providerId: socialData.providerId,
@@ -112,18 +112,35 @@ async function oAuthCreateOrUpdate(socialData: SignUpDataSocial) {
       phone: socialData.phone,
     });
 
-    return filterSensitiveUserData(updatedUser);
+    return filterSensitiveUserData(user);
   } else {
     // 유저 없으면 새로 생성
-    const createdUser = await authRepository.createOrUpdate({
+    const user = await authRepository.createOrUpdate({
       provider: socialData.provider,
       providerId: socialData.providerId,
       email: socialData.email,
       name: socialData.name,
       phone: socialData.phone,
     });
-    return filterSensitiveUserData(createdUser);
+    return filterSensitiveUserData(user);
   }
+
+  // 토큰 설정 추가
+  // const accessToken = generateAccessToken({
+  //   userId: user.id,
+  //   email: user.email,
+  //   name: user.name!,
+  //   userType: "client",
+  //   isProfileCompleted: user.isProfileCompleted,
+  // });
+
+  // const refreshToken = generateRefreshToken({
+  //   userId: user.id,
+  //   email: user.email,
+  //   name: user.name!,
+  //   userType: "client",
+  //   isProfileCompleted: user.isProfileCompleted,
+  // });
 }
 
 export default {
