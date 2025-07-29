@@ -26,12 +26,14 @@ async function createMover(user: CreateMoverInput) {
     email: createdMover.email,
     name: createdMover.name!,
     userType: createdMover.userType,
+    isProfileCompleted: createdMover?.isProfileCompleted,
   });
   const refreshToken = generateRefreshToken({
     userId: createdMover.id,
     email: createdMover.email,
     name: createdMover.name!,
     userType: createdMover.userType,
+    isProfileCompleted: createdMover?.isProfileCompleted,
   });
 
   return {
@@ -62,6 +64,7 @@ async function setMoverByEmail(user: GetMoverInput) {
     email: mover.email,
     name: mover.name!,
     userType: mover.userType,
+    isProfileCompleted: mover?.isProfileCompleted,
   });
   const refreshToken = generateRefreshToken({
     userId: mover.id,
@@ -76,16 +79,13 @@ async function setMoverByEmail(user: GetMoverInput) {
       userId: mover.id,
       email: mover.email,
       name: mover.name,
+      nickName: mover?.nickName,
       userType: mover.userType,
       phone: mover.phone,
+      isProfileCompleted: mover?.isProfileCompleted,
     },
     accessToken,
     refreshToken,
-    userId: mover?.id,
-    email: mover?.email,
-    nickName: mover?.nickName,
-    userType: mover?.userType,
-    isProfileCompleted: mover?.isProfileCompleted,
   };
 }
 
