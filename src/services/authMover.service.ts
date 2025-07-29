@@ -8,9 +8,9 @@
 
 import { ErrorMessage } from "../constants/ErrorMessage";
 import authRepository from "../repositories/authMover.repository";
-import { CreateMoverInput, GetMoverInput } from "../types";
-import { NotFoundError } from "../types/errors";
-import { hashPassword } from "../utils/auth.util";
+import { CreateMoverInput, GetMoverInput, SignUpDataSocial } from "../types";
+import { BadRequestError, NotFoundError } from "../types/errors";
+import { filterSensitiveUserData, hashPassword } from "../utils/auth.util";
 import { generateAccessToken, generateRefreshToken } from "../utils/token.util";
 
 //기사님 생성
@@ -89,7 +89,45 @@ async function setMoverByEmail(user: GetMoverInput) {
   };
 }
 
+//소셜에서 받은 정보가 DB에 없으면 (생성:create) 있으면 (수정:update)하는 함수
+async function oAuthCreateOrUpdate(socialData: SignUpDataSocial) {
+  const existingUser = await authRepository.getMoverByEmail(socialData.email);
+
+  if (existingUser) {
+    // 이메일 있어도, 소셜 종류(provider)가 다르면 에러
+    if (
+      existingUser.provider !== socialData.provider ||
+      existingUser.providerId !== socialData.providerId
+    ) {
+      throw new BadRequestError(ErrorMessage.ALREADY_EXIST_USER);
+    }
+
+    // 유저 있으면 provider, providerId, name, phone, email 업데이트
+    const updatedUser = await authRepository.createOrUpdate({
+      id: existingUser.id,
+      provider: socialData.provider,
+      providerId: socialData.providerId,
+      name: socialData.name,
+      email: socialData.email,
+      phone: socialData.phone,
+    });
+
+    return filterSensitiveUserData(updatedUser);
+  } else {
+    // 유저 없으면 새로 생성
+    const createdUser = await authRepository.createOrUpdate({
+      provider: socialData.provider,
+      providerId: socialData.providerId,
+      email: socialData.email,
+      name: socialData.name,
+      phone: socialData.phone,
+    });
+    return filterSensitiveUserData(createdUser);
+  }
+}
+
 export default {
   createMover,
   setMoverByEmail,
+  oAuthCreateOrUpdate,
 };

@@ -12,7 +12,7 @@
 
 import { Mover } from "@prisma/client";
 import prisma from "../configs/prisma.config";
-import { CreateMoverInputwithHash } from "../types";
+import { CreateMoverInputwithHash, SignUpDataSocial } from "../types";
 
 //기사님 생성
 async function saveMover(user: CreateMoverInputwithHash) {
@@ -58,9 +58,30 @@ async function getMoverByPhone(phone: Mover["phone"]) {
   });
 }
 
+//기사님 소셜 인증
+async function createOrUpdate(data: SignUpDataSocial) {
+  return prisma.mover.upsert({
+    where: {
+      provider_providerId: {
+        provider: data.provider,
+        providerId: data.providerId,
+      },
+    },
+    update: { email: data.email, name: data.name },
+    create: {
+      provider: data.provider,
+      providerId: data.providerId,
+      email: data.email,
+      name: data.name,
+      phone: data.phone,
+    },
+  });
+}
+
 export default {
   saveMover,
   findMoverById,
   getMoverByEmail,
   getMoverByPhone,
+  createOrUpdate,
 };

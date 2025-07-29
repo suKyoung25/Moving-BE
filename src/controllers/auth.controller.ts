@@ -1,10 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { ConflictError, UnauthorizedError } from "../types/errors";
+import { ConflictError, NotFoundError, UnauthorizedError } from "../types/errors";
 import { ErrorMessage } from "../constants/ErrorMessage";
 import { generateAccessToken } from "../utils/token.util";
 import profileClientRepository from "../repositories/client.repository";
 import profileMoverRespository from "../repositories/profileMover.respository";
+import { SignInDataSocial } from "../types";
 
 // ✅ refreshToken Api
 async function setRefreshToken(req: Request, res: Response, next: NextFunction) {
@@ -61,9 +62,28 @@ async function getMe(req: Request, res: Response, next: NextFunction) {
   }
 }
 
+// ✅ 소셜 로그인
+async function signInEasily(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { accessToken, refreshToken, user } = req.user as unknown as SignInDataSocial;
+
+    if (!user) throw new NotFoundError(ErrorMessage.USER_NOT_FOUND);
+
+    // 데이터 받자마자 FE로 넘김 - 토큰은 쿼리로
+    const redirectUrl = new URL(
+      `${process.env.FRONTEND_URL}/api/auth/callback?token=${accessToken}`,
+    );
+
+    res.redirect(redirectUrl.toString());
+  } catch (error) {
+    next(error);
+  }
+}
+
 const authController = {
   setRefreshToken,
   getMe,
+  signInEasily,
 };
 
 export default authController;
