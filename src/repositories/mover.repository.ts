@@ -235,97 +235,6 @@ async function toggleFavoriteMover(clientId: string, moverId: string) {
   }
 }
 
-// 지정 견적 요청
-async function designateMover(requestId: string, moverId: string, clientId?: string) {
-  try {
-    console.log(`지정 견적 요청: requestId=${requestId}, moverId=${moverId}, clientId=${clientId}`);
-
-    // 1. 요청 존재 여부 및 권한 확인
-    let request;
-    if (clientId) {
-      // clientId가 있으면 권한 체크
-      request = await prisma.request.findFirst({
-        where: {
-          id: requestId,
-          clientId: clientId,
-          isPending: true,
-        },
-        select: { id: true, isPending: true, clientId: true },
-      });
-
-      if (!request) {
-        throw new NotFoundError("본인의 진행 중인 요청만 지정 견적을 요청할 수 있습니다.");
-      }
-    } else {
-      // clientId가 없으면 기본 확인만
-      request = await prisma.request.findUnique({
-        where: { id: requestId },
-        select: { id: true, isPending: true },
-      });
-
-      if (!request) {
-        throw new NotFoundError("요청을 찾을 수 없습니다.");
-      }
-
-      if (!request.isPending) {
-        throw new BadRequestError("이미 완료된 요청입니다.");
-      }
-    }
-
-    // 2. 기사 존재 여부 확인
-    const mover = await prisma.mover.findUnique({
-      where: { id: moverId },
-      select: { id: true, nickName: true },
-    });
-
-    if (!mover) {
-      throw new NotFoundError("기사님을 찾을 수 없습니다.");
-    }
-
-    // 3. 이미 지정 요청한 기사인지 확인
-    const existingDesignation = await prisma.designatedRequest.findUnique({
-      where: {
-        requestId_moverId: {
-          requestId,
-          moverId,
-        },
-      },
-    });
-
-    if (existingDesignation) {
-      throw new ConflictError("이미 지정 견적을 요청한 기사님입니다.");
-    }
-
-    // 4. 지정 견적 요청 생성
-    const designatedRequest = await prisma.designatedRequest.create({
-      data: {
-        requestId,
-        moverId,
-      },
-    });
-
-    console.log(`지정 견적 요청 생성 완료: ${designatedRequest.id}`);
-    return designatedRequest;
-  } catch (error: unknown) {
-    console.error(`지정 견적 요청 오류:`, error);
-
-    // Prisma 중복 키 오류 처리
-    if (error && typeof error === "object" && "code" in error && error.code === "P2002") {
-      throw new ConflictError("이미 지정 견적을 요청한 기사님입니다.");
-    }
-
-    // 커스텀 에러 다시 던지기
-    if (
-      error instanceof NotFoundError ||
-      error instanceof ConflictError ||
-      error instanceof BadRequestError
-    ) {
-      throw error;
-    }
-
-    throw new ServerError("지정 견적 요청 중 오류가 발생했습니다.", error);
-  }
-}
 
 // 지역 기반 기사 조회
 async function findMoversByServiceArea(regions: string[]) {
@@ -347,6 +256,5 @@ export default {
   fetchMoverDetail,
   findFavorite,
   toggleFavoriteMover,
-  designateMover,
   findMoversByServiceArea,
 };

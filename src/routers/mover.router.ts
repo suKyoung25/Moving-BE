@@ -6,7 +6,6 @@ const {
   getMovers, 
   getMoverDetail, 
   toggleFavoriteMover,
-  designateMover,
   getMoverProfile,
 } = moverController;
 
@@ -23,8 +22,5 @@ moverRouter.get('/:moverId', getMoverDetail);
 
 // 기사님 찜 토글
 moverRouter.post('/:moverId/toggle-favorite', verifyAccessToken, toggleFavoriteMover);
-
-// 기사님 지정 요청 (PATCH)
-moverRouter.patch('/:moverId', verifyAccessToken, designateMover);
 
 export default moverRouter;

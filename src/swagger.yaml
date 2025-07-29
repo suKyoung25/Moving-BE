@@ -428,6 +428,31 @@ paths:
         "200":
           description: 조회 성공
 
+  /requests/draft:
+    get:
+      tags: [Request]
+      summary: 내 견적 요청 중간 상태 조회
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: 견적 요청 초안 조회
+
+    patch:
+      tags: [Request]
+      summary: 견적 요청 중간 상태 저장
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RequestDraft"
+      responses:
+        200:
+          description: 견적 요청 중간 저장
+
   /requests/client/active:
     get:
       tags: [Request]
@@ -635,6 +660,25 @@ components:
           type: string
         toAddress:
           type: string
+
+    RequestDraft:
+      type: object
+      properties:
+        moveType:
+          type: string
+          enum: [SMALL, HOME, OFFICE]
+        moveDate:
+          type: string
+          format: date
+        fromAddress:
+          type: string
+        toAddress:
+          type: string
+        currentStep:
+          type: integer
+          minimum: 0
+          maximum: 4
+      required: [currentStep]
 
     CreateEstimate:
       type: object

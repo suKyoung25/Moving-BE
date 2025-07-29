@@ -48,7 +48,7 @@ app.use("/movers", moverRouter);
 app.use("/reviews", verifyAccessToken, reviewRouter);
 app.use("/estimates", verifyAccessToken, estimateRouter);
 app.use("/favorites", verifyAccessToken, favoriteRouter);
-app.use("/requests", requestRouter);
+app.use("/requests", verifyAccessToken, requestRouter);
 app.use("/notifications", verifyAccessToken, notificationRouter);
 app.use("/images", verifyAccessToken, imageRouter);
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(specs));

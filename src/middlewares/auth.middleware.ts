@@ -1,11 +1,12 @@
 import { expressjwt } from "express-jwt";
-import { BadRequestError, ConflictError, NotFoundError } from "../types/errors";
+import { BadRequestError, ConflictError } from "../types/errors";
 import { ErrorMessage } from "../constants/ErrorMessage";
 import { ZodSchema } from "zod";
 import { Request, Response, NextFunction } from "express";
 import authMoverRepository from "../repositories/authMover.repository";
 import bcrypt from "bcrypt";
 import authClientRepository from "../repositories/authClient.repository";
+import authRepository from "../repositories/auth.repository";
 
 const secretKey = process.env.JWT_SECRET;
 
@@ -95,7 +96,7 @@ export async function checkClientSignUpInfo(req: Request, res: Response, next: N
     const { email, phone } = req.body; //주석: zod 통과한 req.body
 
     // 이미 사용한 정보 확인
-    const existingEmail = await authClientRepository.findByEmailRaw(email);
+    const existingEmail = await authRepository.findByEmailRaw(email);
     const existingPhone = await authClientRepository.findByPhone(phone);
 
     const fieldErrors: Record<string, string> = {};
