@@ -8,6 +8,7 @@ export const ErrorMessage = {
   JWT_SECRET_NOT_FOUND: "jwt 시크릿키를 찾을 수 없습니다.",
   JWT_EXPIRES_IN_NOT_FOUND: "jwt 유효기간을 찾을 수 없습니다.",
   PROFILE_NOT_FOUND: "프로필 수정에 실패했습니다.",
+  DRAFT_NOT_FOUND: "견적 요청 초안이 존재하지 않습니다.",
 
   // Not Match
   PASSWORD_NOT_MATCH: "비밀번호가 일치하지 않습니다.",

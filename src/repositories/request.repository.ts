@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { Prisma, RequestDraft } from "@prisma/client";
 import prisma from "../configs/prisma.config";
 import { CreateRequestDto } from "../dtos/request.dto";
 import { GetFilteredRequestsInput } from "../types";
@@ -6,9 +6,30 @@ import { GetFilteredRequestsInput } from "../types";
 const now = new Date();
 const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
 
+async function getRequestDraftById(clientId: string) {
+  return await prisma.requestDraft.findUnique({
+    where: { clientId },
+  });
+}
+
+// 견적 요청 중간 상태 저장
+async function saveRequestDraft(clientId: string, data: Partial<RequestDraft>) {
+  return await prisma.requestDraft.upsert({
+    where: { clientId },
+    update: {
+      ...data,
+      updatedAt: new Date(),
+    },
+    create: {
+      clientId,
+      ...data,
+    },
+  });
+}
+
 // 견적 요청 (일반 유저)
 async function createEstimateRequest(request: CreateRequestDto, clientId: string) {
-  return await prisma.request.create({
+  const result = await prisma.request.create({
     data: {
       ...request,
       client: {
@@ -18,6 +39,13 @@ async function createEstimateRequest(request: CreateRequestDto, clientId: string
       },
     },
   });
+
+  // 요청 완료되면 draft 제거
+  await prisma.requestDraft.delete({
+    where: { clientId },
+  });
+
+  return result;
 }
 
 // 받은 요청 조회 (기사님)
@@ -166,7 +194,7 @@ async function getFilteredRequests({
   };
 }
 
-//받은 요청 조회(일반)
+// 활성 견적 요청 조회
 async function fetchClientActiveRequests(clientId: string) {
   return prisma.request.findMany({
     where: {
@@ -174,18 +202,12 @@ async function fetchClientActiveRequests(clientId: string) {
       isPending: true,
     },
     orderBy: { requestedAt: "desc" },
-    select: {
-      id: true,
-      moveType: true,
-      moveDate: true,
-      fromAddress: true,
-      toAddress: true,
-      requestedAt: true,
-    },
   });
 }
 
 export default {
+  getRequestDraftById,
+  saveRequestDraft,
   createEstimateRequest,
   getFilteredRequests,
   fetchClientActiveRequests,
