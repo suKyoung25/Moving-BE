@@ -6,9 +6,19 @@ import notificationService from "../services/notification.service";
 async function getNotifications(req: Request, res: Response, next: NextFunction) {
   try {
     const userId = req.auth!.userId;
-    const { list, hasUnread } = await notificationService.getNotifications(userId);
+    const { cursor, limit } = req.query as { cursor?: string; limit?: string };
+    const { list, hasUnread } = await notificationService.getNotifications(
+      userId,
+      cursor,
+      Number(limit),
+    );
 
-    res.json({ message: "알림 조회 성공", hasUnread, notifications: list });
+    res.json({
+      message: "알림 조회 성공",
+      hasUnread,
+      nextCursor: list.nextCursor,
+      notifications: list.notifications,
+    });
   } catch (error) {
     next(error);
   }

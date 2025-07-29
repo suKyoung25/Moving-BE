@@ -1,3 +1,4 @@
+import { skip } from "node:test";
 import prisma from "../configs/prisma.config";
 import { NotificationPayload } from "../types";
 
@@ -8,13 +9,33 @@ async function getNotification(notificationId: string) {
   });
 }
 
-// 알림 목록 조회
-async function getNotifications(userId: string) {
-  return await prisma.notification.findMany({
+// 알림 목록 조회 (무한스크롤)
+async function getNotifications({
+  userId,
+  cursor,
+  limit = 6,
+}: {
+  userId: string;
+  cursor?: string;
+  limit?: number;
+}) {
+  const take = Number(limit) || 6;
+
+  const items = await prisma.notification.findMany({
     where: { userId },
     orderBy: { createdAt: "desc" },
-    take: 6,
+    take: take + 1,
+    ...(cursor && {
+      skip: 1,
+      cursor: { id: cursor },
+    }),
   });
+
+  const hasNext = items.length > take;
+  const notifications = items.slice(0, take);
+  const nextCursor = hasNext ? notifications[notifications.length - 1].id : null;
+
+  return { notifications, nextCursor };
 }
 
 // 읽지 않은 알림 여부

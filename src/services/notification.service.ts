@@ -5,6 +5,7 @@ import moverRepository from "../repositories/mover.repository";
 import { ForbiddenError, NotFoundError } from "../types/errors";
 import { ErrorMessage } from "../constants/ErrorMessage";
 import { NotificationPayload, NotifyConfirmEstimate, NotifyNewEstimate } from "../types";
+import { Estimate, NotificationType } from "@prisma/client";
 
 // 알림 전송 + 저장 함수
 async function sendAndSaveNotification({
@@ -20,9 +21,9 @@ async function sendAndSaveNotification({
 }
 
 // 알림 목록 조회
-async function getNotifications(userId: string) {
+async function getNotifications(userId: string, cursor?: string, limit?: number) {
   const [list, hasUnread] = await Promise.all([
-    notificationRepository.getNotifications(userId),
+    notificationRepository.getNotifications({ userId, cursor, limit }),
     notificationRepository.hasUnreadNotifications(userId),
   ]);
 
@@ -101,10 +102,32 @@ async function notifyEstimateConfirmed({
   await sendAndSaveNotification({ userId, content, type, targetId, targetUrl });
 }
 
+// 이사 알림
+async function notifyMovingDay(estimate: Estimate, content: string) {
+  const client = sendAndSaveNotification({
+    userId: estimate.clientId,
+    content,
+    type: NotificationType.MOVING_DAY,
+    targetId: estimate.id,
+    targetUrl: `/my-quotes/client/${estimate.id}`,
+  });
+
+  const mover = sendAndSaveNotification({
+    userId: estimate.moverId,
+    content,
+    type: NotificationType.MOVING_DAY,
+    targetId: estimate.id,
+    targetUrl: `/my-quotes/mover/${estimate.id}`,
+  });
+
+  await Promise.all([client, mover]);
+}
+
 export default {
   sendAndSaveNotification,
   getNotifications,
   readNotification,
   notifyEstimateRequest,
   notifyEstimateConfirmed,
+  notifyMovingDay,
 };
