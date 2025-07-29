@@ -81,8 +81,8 @@ async function createEstimate({ price, comment, moverId, clientId, requestId }: 
     userId: result.clientId,
     moverName: mover.nickName!,
     type: "ESTIMATE_CONFIRMED",
-    targetId: requestId,
-    targetUrl: `/my-quotes/client/${requestId}`,
+    targetId: result.id,
+    targetUrl: `/my-quotes/client/${result.id}`,
   });
 
   return result;

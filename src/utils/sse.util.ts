@@ -35,9 +35,8 @@ export function parseRegion(address: string): string {
   const parts = address.split(" ");
   const sido = parts[0].replace("시", ""); // "서울시" -> "서울"
   const sigungu = parts.find((p) => /[시군구]/.test(p)) || "";
-  const sigunguShort = sigungu.replace(/(시|군|구)/, "");
 
-  return `${sido}(${sigunguShort})`;
+  return `${sido}(${sigungu})`;
 }
 
 export function parseRegionKeywords(address: string): string[] {
