@@ -19,6 +19,6 @@ requestRouter.get("/", requestController.getReceivedRequests);
 requestRouter.get("/client/active", requestController.getClientActiveRequests);
 
 // 기사님 지정 요청 (일반 > 기사)
-requestRouter.patch('/movers/:moverId', verifyAccessToken, requestController.designateMover);
+requestRouter.patch("/movers/:moverId", requestController.designateMover);
 
 export default requestRouter;
