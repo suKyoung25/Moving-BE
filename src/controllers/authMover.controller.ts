@@ -11,7 +11,7 @@ import authService from "../services/authMover.service";
 import { SignInRequestDTO, SignUpRequestDTO } from "../dtos/auth.dto";
 
 //기사님 회원가입
-async function moverSingup(
+async function moverSignup(
   req: Request<{}, {}, SignUpRequestDTO>,
   res: Response,
   next: NextFunction,
@@ -43,4 +43,4 @@ async function moverSignin(
   }
 }
 
-export { moverSingup, moverSignin };
+export { moverSignup, moverSignin };

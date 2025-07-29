@@ -9,6 +9,8 @@
 import { MoveType, Prisma } from "@prisma/client";
 import profileMoverRespository from "../repositories/profileMover.respository";
 import { MoverProfile } from "../types";
+import { generateAccessToken, generateRefreshToken } from "../utils/token.util";
+import authMoverRepository from "../repositories/authMover.repository";
 
 //기사님 프로필 생성과 수정
 async function modifyMoverProfile(user: MoverProfile) {
@@ -38,7 +40,29 @@ async function modifyMoverProfile(user: MoverProfile) {
     };
   }
 
-  return await profileMoverRespository.modifyMoverProfile(user, updateData);
+  const mover = await authMoverRepository.findMoverById(user.userId);
+
+  if (!mover) return null;
+
+  // 프로필 등록 시 토큰 재발급
+  const accessToken = generateAccessToken({
+    userId: mover.id,
+    email: mover.email,
+    name: mover.name,
+    userType: "mover",
+    isProfileCompleted: true,
+  });
+  const refreshToken = generateRefreshToken({
+    userId: mover.id,
+    email: mover.email,
+    name: mover.name,
+    userType: "mover",
+    isProfileCompleted: true,
+  });
+
+  const updatedMover = await profileMoverRespository.modifyMoverProfile(user, updateData);
+
+  return { ...updatedMover, accessToken, refreshToken };
 }
 
 export default {

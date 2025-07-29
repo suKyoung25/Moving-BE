@@ -80,7 +80,7 @@ export async function checkMoverSignInInfo(req: Request, res: Response, next: Ne
     const isPasswordValid = await bcrypt.compare(password, mover.hashedPassword!);
     if (!isPasswordValid) {
       fieldErrors.password = ErrorMessage.PASSWORD_NOT_MATCH;
-      throw new ConflictError("비밀번호가 일치하지 않습니다.", fieldErrors);
+      throw new ConflictError(ErrorMessage.PASSWORD_NOT_MATCH, fieldErrors);
     }
 
     next();

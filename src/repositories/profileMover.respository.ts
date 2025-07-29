@@ -37,39 +37,6 @@ async function findRegionByLabel(user: MoverProfile) {
 //기사님 프로필 생성/수정
 async function modifyMoverProfile(user: MoverProfile, updateData: Prisma.MoverUpdateInput) {
   try {
-    //TODO: 삭제 예정 //업데이트할 데이터 목록
-    // const updateData: Prisma.MoverUpdateInput = {
-    //   profileImage: user.image,
-    //   nickName: user.nickName,
-    //   career: user.career,
-    //   introduction: user.introduction,
-    //   description: user.description,
-    //   isProfileCompleted: true,
-    // };
-
-    // //서비스 종류
-    // if (user.serviceType && user.serviceType.length > 0) {
-    //   updateData.serviceType = {
-    //     set: user.serviceType as MoveType[], // (enum 타입)
-    //   };
-    // }
-
-    // //서비스 지역
-    // if (user.serviceArea && user.serviceArea.length > 0) {
-    //   const matchedRegions = await prisma.region.findMany({
-    //     // (관계형이라서 stirng > id로 변환해줘야함)
-    //     where: {
-    //       regionName: {
-    //         in: user.serviceArea,
-    //       },
-    //     },
-    //   });
-
-    //   updateData.serviceArea = {
-    //     set: matchedRegions.map((region) => ({ id: region.id })),
-    //   };
-    // }
-
     const modifiedMoverProfile = await prisma.mover.update({
       where: { id: user.userId },
       data: updateData,
