@@ -12,7 +12,7 @@ export const serviceTypeSchema = z
 export const livingAreaSchema = z
   .array(z.string())
   .min(1, ErrorMessage.NO_REGION)
-  .max(3, ErrorMessage.MAX_REGION);
+  .max(5, ErrorMessage.MAX_REGION);
 
 // ✅ 프로필 생성/수정을 함수로 분기처리 함
 export function profileClientSchema(mode: "create" | "update") {

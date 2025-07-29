@@ -1,4 +1,4 @@
-import { Provider } from "@prisma/client";
+import { Client, Provider } from "@prisma/client";
 
 // 일반 회원가입 자료 구조 : DB에 저장
 export interface SignUpDataLocal {
@@ -16,11 +16,18 @@ export interface LoginDataLocal {
 
 // 소셜 로그인
 export interface SignUpDataSocial {
+  id?: string;
   provider: Provider;
   providerId: string;
   email: string;
-  name: string;
-  phone: string;
+  name?: string;
+  phone?: string;
+}
+
+export interface SignInDataSocial {
+  accessToken: string;
+  refreshToken: string;
+  user: SignUpDataSocial & { userType: string };
 }
 
 //기사님 회원가입할 때 필요한 값 (컨트롤러, 서비스 단)
