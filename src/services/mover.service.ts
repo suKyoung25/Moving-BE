@@ -37,15 +37,6 @@ async function toggleFavoriteMover(clientId: string, moverId: string) {
 }
 
 
-// 기사 지정
-async function designateMover(clientId: string, requestId: string, moverId: string) {
-  if (!clientId || !requestId || !moverId) {
-    throw new BadRequestError("필수 값 누락");
-  }
-
-  return moverRepository.designateMover(requestId, moverId);
-}
-
 // 기사님 본인 프로필 조회
 async function getMoverProfile(moverId: string) {
   if (!moverId) {
@@ -60,6 +51,5 @@ export default {
   getMovers,
   getMoverDetail,
   toggleFavoriteMover,
-  designateMover,
   getMoverProfile,
 };

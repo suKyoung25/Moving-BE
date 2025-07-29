@@ -78,10 +78,20 @@ async function getClientActiveRequests(clientId: string) {
   return requestRepository.fetchClientActiveRequests(clientId);
 }
 
+// 기사 지정
+async function designateMover(clientId: string, requestId: string, moverId: string) {
+  if (!clientId || !requestId || !moverId) {
+    throw new BadRequestError("필수 값 누락");
+  }
+
+  return requestRepository.designateMover(requestId, moverId, clientId);
+}
+
 export default {
   getDraft,
   saveDraft,
   createRequest,
   getReceivedRequests,
   getClientActiveRequests,
+  designateMover,
 };
