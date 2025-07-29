@@ -16,6 +16,7 @@ export interface LoginDataLocal {
 
 // 소셜 로그인
 export interface SignUpDataSocial {
+  id?: string;
   provider: Provider;
   providerId: string;
   email: string;

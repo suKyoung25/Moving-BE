@@ -3,6 +3,7 @@ import { Request } from "express";
 import providerMap from "../../utils/providerMap.util";
 import { NotFoundError } from "../../types/errors";
 import authClientService from "../../services/authClient.service";
+import authMoverService from "../../services/authMover.service";
 
 const googleStrategyOptions = {
   clientID: process.env.GOOGLE_CLIENT_ID!,
@@ -41,8 +42,15 @@ async function verify(
     });
   } else if (userType === "mover") {
     // !!!
+    userInfo = await authMoverService.oAuthCreateOrUpdate({
+      provider: providerEnumValue,
+      providerId: profile.id,
+      email: profile.emails[0].value,
+      name: profile.displayName,
+      phone: "",
+    });
   } else {
-    throw new NotFoundError("소셜 로그인해야 하는데 userType 없음");
+    throw new NotFoundError("소셜 로그인 해야 하는데 userType을 못 받아옴");
   }
 
   done(null, userInfo); // req.user = user;
