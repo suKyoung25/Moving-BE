@@ -17,6 +17,7 @@ async function update(
 
     // ✅ 프로필 등록 vs 수정 판단
     const existingProfile = await profileClientRepository.findById(userId);
+
     const mode = existingProfile?.isProfileCompleted === true ? "update" : "create";
 
     // ✅ 유형별 parse
@@ -25,7 +26,7 @@ async function update(
     if (mode === "create") {
       parsedData = profileClientSchema("create").parse(req.body) as ClientProfileRegisterDto;
     } else {
-      parsedData = profileClientSchema("create").parse(req.body) as ClientProfileUpdateDto;
+      parsedData = profileClientSchema("update").parse(req.body) as ClientProfileUpdateDto;
     }
 
     const newProfile = await profileClientService.update(userId, parsedData);
