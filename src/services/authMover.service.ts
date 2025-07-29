@@ -122,25 +122,9 @@ async function oAuthCreateOrUpdate(socialData: SignUpDataSocial) {
       name: socialData.name,
       phone: socialData.phone,
     });
+
     return filterSensitiveUserData(user);
   }
-
-  // 토큰 설정 추가
-  // const accessToken = generateAccessToken({
-  //   userId: user.id,
-  //   email: user.email,
-  //   name: user.name!,
-  //   userType: "client",
-  //   isProfileCompleted: user.isProfileCompleted,
-  // });
-
-  // const refreshToken = generateRefreshToken({
-  //   userId: user.id,
-  //   email: user.email,
-  //   name: user.name!,
-  //   userType: "client",
-  //   isProfileCompleted: user.isProfileCompleted,
-  // });
 }
 
 export default {
