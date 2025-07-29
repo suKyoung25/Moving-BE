@@ -55,8 +55,19 @@ async function getClientActiveRequests(req: Request, res: Response, next: NextFu
   }
 }
 
+// 기사님 지정 요청
+async function designateMover(req: Request, res: Response, next: NextFunction) {
+  try {
+    await requestService.designateMover(req.auth!.userId, req.body.requestId, req.params.moverId);
+    res.status(200).json({ message: "지정 성공" });
+  } catch (error) {
+    next(error);
+  }
+}
+
 export default {
   createRequest,
   getReceivedRequests,
   getClientActiveRequests,
+  designateMover,
 };

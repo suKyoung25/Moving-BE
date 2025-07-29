@@ -62,16 +62,6 @@ async function toggleFavoriteMover(req: Request, res: Response, next: NextFuncti
   }
 }
 
-
-async function designateMover(req: Request, res: Response, next: NextFunction) {
-  try {
-    await moverService.designateMover(req.auth!.userId, req.body.requestId, req.params.moverId);
-    res.status(200).json({ message: "지정 성공" });
-  } catch (error) {
-    next(error);
-  }
-}
-
 // 기사님 본인 프로필 조회
 async function getMoverProfile(req: Request, res: Response, next: NextFunction) {
   try {
@@ -92,6 +82,5 @@ export default {
   getMovers,
   getMoverDetail,
   toggleFavoriteMover,
-  designateMover,
   getMoverProfile,
 };
