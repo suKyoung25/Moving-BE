@@ -210,7 +210,22 @@ async function incrementMoverEstimateCount(tx: Prisma.TransactionClient, moverId
 async function findEstimateById(tx: Prisma.TransactionClient, estimateId: string) {
   return tx.estimate.findUnique({
     where: { id: estimateId },
-    select: { isClientConfirmed: true, moverId: true, clientId: true },
+    select: {
+      isClientConfirmed: true,
+      moverId: true,
+      clientId: true,
+      request: {
+        select: { id: true },
+      },
+    },
+  });
+}
+
+// request ispending 변경
+async function updateRequestPendingFalse(tx: Prisma.TransactionClient, requestId: string) {
+  return tx.request.update({
+    where: { id: requestId },
+    data: { isPending: false },
   });
 }
 
@@ -279,4 +294,5 @@ export default {
   findEstimateById,
   findEstimateDetailById,
   findConfirmedEstimate,
+  updateRequestPendingFalse,
 };

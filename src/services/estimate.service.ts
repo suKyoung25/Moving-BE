@@ -281,6 +281,8 @@ async function confirmEstimate(estimateId: string, clientId: string) {
     // 기사님 estimateCount +1
     await estimateRepository.incrementMoverEstimateCount(tx, estimate.moverId);
 
+    await estimateRepository.updateRequestPendingFalse(tx, estimate.request.id);
+
     return { estimateId, moverId: estimate.moverId };
   });
 

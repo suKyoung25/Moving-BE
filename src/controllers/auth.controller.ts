@@ -2,10 +2,10 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { ConflictError, NotFoundError, UnauthorizedError } from "../types/errors";
 import { ErrorMessage } from "../constants/ErrorMessage";
-import { generateAccessToken } from "../utils/token.util";
+import { generateAccessToken, generateRefreshToken } from "../utils/token.util";
 import profileClientRepository from "../repositories/client.repository";
 import profileMoverRespository from "../repositories/profileMover.respository";
-import { SignInDataSocial } from "../types";
+import { CreatedToken, SignInDataSocial } from "../types";
 
 // ✅ refreshToken Api
 async function setRefreshToken(req: Request, res: Response, next: NextFunction) {
@@ -65,14 +65,33 @@ async function getMe(req: Request, res: Response, next: NextFunction) {
 // ✅ 소셜 로그인
 async function signInEasily(req: Request, res: Response, next: NextFunction) {
   try {
-    const { accessToken, refreshToken, user } = req.user as unknown as SignInDataSocial;
+    const user = req.user as any;
 
     if (!user) throw new NotFoundError(ErrorMessage.USER_NOT_FOUND);
 
-    // 데이터 받자마자 FE로 넘김 - 토큰은 쿼리로
+    const tokenPayload = {
+      userId: user.id,
+      email: user.email,
+      name: user.name ?? null,
+      userType: user.userType,
+      isProfileCompleted: user.isProfileCompleted,
+    };
+
+    const accessToken = generateAccessToken(tokenPayload);
+    const refreshToken = generateRefreshToken(tokenPayload);
+
+    // 데이터 받자마자 FE로 넘김 - accessToken은 쿼리로
     const redirectUrl = new URL(
       `${process.env.FRONTEND_URL}/api/auth/callback?token=${accessToken}`,
     );
+
+    // 데이터 받자마자 FE로 넘김 - refreshToken은 쿠키로
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 14 * 24 * 60 * 60 * 1000, // 2주
+    });
 
     res.redirect(redirectUrl.toString());
   } catch (error) {
