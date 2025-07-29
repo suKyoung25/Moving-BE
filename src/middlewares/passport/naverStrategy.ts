@@ -1,13 +1,14 @@
-import { Strategy as KakaoStrategy, Profile } from "passport-kakao";
+import { Strategy as NaverStrategy, Profile } from "passport-naver";
 import providerMap from "../../utils/providerMap.util";
 import { NotFoundError } from "../../types/errors";
 import { Request } from "express";
 import authClientService from "../../services/authClient.service";
+import authMoverService from "../../services/authMover.service";
 
-const kakaoStrategyOptions = {
-  clientID: process.env.KAKAO_CLIENT_ID!,
-  clientSecret: process.env.KAKAO_CLIENT_SECRET!,
-  callbackURL: "/auth/kakao/callback",
+const naverStrategyOptions = {
+  clientID: process.env.NAVER_CLIENT_ID!,
+  clientSecret: process.env.NAVER_CLIENT_SECRET!,
+  callbackURL: "/auth/naver/callback",
   passReqToCallback: true as const, // 쿼리 문자열에 userType 넣음
 };
 
@@ -23,27 +24,29 @@ async function verify(
   const providerEnumValue = providerMap[profile.provider];
   const userType = req.query.state || "client";
 
-  // 데이터 형태 변환
-  const kakaoAccount = profile._json?.kakao_account;
-  const email = kakaoAccount?.email;
-
   // 이메일 없으면 오류 처리
-  if (!email) {
-    return done(new NotFoundError("카카오 이메일 x"));
+  if (!profile._json.email) {
+    return done(new NotFoundError("네이버 이메일 x"));
   }
 
+  // 사용자 데이터
   let userInfo;
   if (userType === "client") {
-    // 사용자 데이터
     userInfo = await authClientService.oAuthCreateOrUpdate({
       provider: providerEnumValue,
-      providerId: profile.id.toString(),
-      email: profile._json.kakao_account.email,
-      // name: "",
-      // phone: "",
+      providerId: profile.id,
+      email: profile._json.email,
+      name: profile.displayName,
+      phone: (profile._json as any).mobile, // 타입 오류 수정
     });
   } else if (userType === "mover") {
-    // !!!
+    const userInfo = await authMoverService.oAuthCreateOrUpdate({
+      provider: providerEnumValue,
+      providerId: profile.id,
+      email: profile._json.email,
+      name: profile.displayName,
+      phone: (profile._json as any).mobile,
+    });
   } else {
     throw new NotFoundError("소셜 로그인해야 하는데 userType 없음");
   }
@@ -52,6 +55,6 @@ async function verify(
 }
 
 // ✅ 실행
-const kakaoStrategy = new KakaoStrategy(kakaoStrategyOptions, verify);
+const naverStrategy = new NaverStrategy(naverStrategyOptions, verify);
 
-export default kakaoStrategy;
+export default naverStrategy;

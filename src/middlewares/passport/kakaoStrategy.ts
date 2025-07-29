@@ -1,14 +1,14 @@
-import { Strategy as GoogleStrategy, Profile } from "passport-google-oauth20";
-import { Request } from "express";
+import { Strategy as KakaoStrategy, Profile } from "passport-kakao";
 import providerMap from "../../utils/providerMap.util";
 import { NotFoundError } from "../../types/errors";
+import { Request } from "express";
 import authClientService from "../../services/authClient.service";
 import authMoverService from "../../services/authMover.service";
 
-const googleStrategyOptions = {
-  clientID: process.env.GOOGLE_CLIENT_ID!,
-  clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-  callbackURL: "/auth/google/callback",
+const kakaoStrategyOptions = {
+  clientID: process.env.KAKAO_CLIENT_ID!,
+  clientSecret: process.env.KAKAO_CLIENT_SECRET!,
+  callbackURL: "/auth/kakao/callback",
   passReqToCallback: true as const, // 쿼리 문자열에 userType 넣음
 };
 
@@ -24,39 +24,41 @@ async function verify(
   const providerEnumValue = providerMap[profile.provider];
   const userType = req.query.state || "client";
 
+  // 데이터 형태 변환
+  const kakaoAccount = profile._json?.kakao_account;
+  const email = kakaoAccount?.email;
+
   // 이메일 없으면 오류 처리
-  if (!profile.emails || profile.emails.length === 0) {
-    return done(new NotFoundError("구글 이메일 x"));
+  if (!email) {
+    return done(new NotFoundError("카카오 이메일 x"));
   }
 
-  // 사용자 데이터
   let userInfo;
   if (userType === "client") {
     // 사용자 데이터
     userInfo = await authClientService.oAuthCreateOrUpdate({
       provider: providerEnumValue,
-      providerId: profile.id,
-      email: profile.emails[0].value,
-      name: profile.displayName,
-      phone: "",
+      providerId: profile.id.toString(),
+      email: profile._json.kakao_account.email,
+      // name: "",
+      // phone: "",
     });
   } else if (userType === "mover") {
-    // !!!
     userInfo = await authMoverService.oAuthCreateOrUpdate({
       provider: providerEnumValue,
-      providerId: profile.id,
-      email: profile.emails[0].value,
-      name: profile.displayName,
-      phone: "",
+      providerId: profile.id.toString(), //kakao는 숫자로 주기 때문에 문자로 변환 필수
+      email: profile._json.kakao_account.email,
+      // name: null, Info: 카카오에서는 실명을 제공하지 않음
+      // phone: null, Info: 카카오에서는 전화번호를 제공하지 않음
     });
   } else {
-    throw new NotFoundError("소셜 로그인 해야 하는데 userType을 못 받아옴");
+    throw new NotFoundError("소셜 로그인해야 하는데 userType 없음");
   }
 
   done(null, userInfo); // req.user = user;
 }
 
 // ✅ 실행
-const googleStrategy = new GoogleStrategy(googleStrategyOptions, verify);
+const kakaoStrategy = new KakaoStrategy(kakaoStrategyOptions, verify);
 
-export default googleStrategy;
+export default kakaoStrategy;
