@@ -21,11 +21,12 @@ model Client {
   serviceType        MoveType[]
   isProfileCompleted Boolean    @default(false)
 
-  livingArea Region[]
-  requests   Request[]
-  estimates  Estimate[]
-  reviews    Review[]
-  favorites  Favorite[]
+  livingArea   Region[]
+  requests     Request[]
+  estimates    Estimate[]
+  reviews      Review[]
+  favorites    Favorite[]
+  requestDraft RequestDraft[]
 
   @@unique([provider, providerId])
 }
@@ -74,6 +75,19 @@ model Request {
   client            Client              @relation(fields: [clientId], references: [id], onDelete: Cascade)
   estimate          Estimate[]
   designatedRequest DesignatedRequest[]
+}
+
+model RequestDraft {
+  id          String    @id @default(uuid())
+  clientId    String    @unique
+  moveType    MoveType?
+  moveDate    DateTime?
+  fromAddress String?
+  toAddress   String?
+  currentStep Int       @default(0)
+  updatedAt   DateTime  @updatedAt
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
 }
 
 model DesignatedRequest {

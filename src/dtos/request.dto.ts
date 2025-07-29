@@ -13,3 +13,13 @@ export const createRequestSchema = z.object({
 });
 
 export type CreateRequestDto = z.infer<typeof createRequestSchema>;
+
+export const requestDraftSchema = z.object({
+  moveType: z.enum(["SMALL", "HOME", "OFFICE"]).optional(),
+  moveDate: z.coerce.date().optional(),
+  fromAddress: z.string().min(1).optional(),
+  toAddress: z.string().min(1).optional(),
+  currentStep: z.number().int().min(0).max(4),
+});
+
+export type RequestDraftDto = z.infer<typeof requestDraftSchema>;
