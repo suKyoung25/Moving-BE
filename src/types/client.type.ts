@@ -16,4 +16,6 @@ export interface ClientProfileUpdate {
   profileImage?: string;
   serviceType?: MoveType[];
   livingArea?: string[];
+  newPassword?: string;
+  newPasswordConfirmation?: string;
 }
