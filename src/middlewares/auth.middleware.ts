@@ -117,6 +117,28 @@ export async function checkClientSignUpInfo(req: Request, res: Response, next: N
   }
 }
 
+// 선택적 인증 미들웨어 (토큰이 있으면 인증, 없어도 계속 진행)
+export const optionalAuth = (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const authHeader = req.headers.authorization;
+    
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.substring(7);
+      
+      // JWT 검증
+      const jwt = require('jsonwebtoken');
+      const decoded = jwt.verify(token, secretKey);
+      req.auth = decoded; // 토큰이 유효하면 req.auth에 설정
+    }
+    
+    // 토큰이 없거나 유효하지 않아도 계속 진행
+    next();
+  } catch (error) {
+    // JWT 검증 실패해도 계속 진행 (req.auth는 undefined 상태)
+    next(error);
+  }
+};
+
 // ✅ 로그인 유효성 검사 미들웨어 - 쓸지 모르겠음
 // export async function checkClientSignInInfo(req: Request, res: Response, next: NextFunction) {
 //   try {
