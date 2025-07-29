@@ -7,7 +7,11 @@ import {
 import profileClientService from "../services/client.service";
 import profileClientRepository from "../repositories/client.repository";
 
-async function update(req: Request, res: Response, next: NextFunction) {
+async function update(
+  req: Request<{}, {}, ClientProfileRegisterDto>,
+  res: Response,
+  next: NextFunction,
+) {
   try {
     const { userId } = req.auth!;
 

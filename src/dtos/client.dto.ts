@@ -3,7 +3,7 @@ import { ErrorMessage } from "../constants/ErrorMessage";
 import { emailSchema, nameSchema, passwordSchema, phoneSchema } from "./auth.dto";
 
 // ✅ 개별 스키마
-export const profileImageSchema = z.union([z.string(), z.instanceof(File)]).optional();
+export const profileImageSchema = z.string().optional();
 
 export const serviceTypeSchema = z
   .array(z.enum(["SMALL", "HOME", "OFFICE"]))

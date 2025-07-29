@@ -11,6 +11,7 @@ async function update(userId: Client["id"], profile: ClientProfileRegister | Cli
 
   // 등록 여부를 따져서
   const isRegistered = existingProfile.isProfileCompleted === true;
+  let clientProfile;
 
   // ✅ 등록 안 했으면 "등록"
   if (!isRegistered) {
@@ -25,30 +26,31 @@ async function update(userId: Client["id"], profile: ClientProfileRegister | Cli
       throw new ConflictError(ErrorMessage.NO_REGION);
     }
 
-    //토큰 생성
-    const accessToken = generateAccessToken({
-      userId: existingProfile.id,
-      email: existingProfile.email,
-      name: existingProfile.name!,
-      userType: existingProfile.userType,
-      isProfileCompleted: true,
-    });
-    const refreshToken = generateRefreshToken({
-      userId: existingProfile.id,
-      email: existingProfile.email,
-      name: existingProfile.name!,
-      userType: existingProfile.userType,
-      isProfileCompleted: true,
-    });
-
     // 반환
-    const clientProfile = await profileClientRepository.create(userId, newProfile);
-    return { ...clientProfile, accessToken, refreshToken };
+    clientProfile = await profileClientRepository.create(userId, newProfile);
+  } else {
+    // ✅ 등록한 경우는 "수정"
+    const newProfile = profile as ClientProfileUpdate;
+    clientProfile = await profileClientRepository.update(userId, newProfile);
   }
 
-  // ✅ 등록한 경우는 "수정"
-  const newProfile = profile as ClientProfileUpdate;
-  return await profileClientRepository.update(userId, newProfile);
+  // 토큰 생성
+  const accessToken = generateAccessToken({
+    userId: existingProfile.id,
+    email: existingProfile.email,
+    name: existingProfile.name!,
+    userType: existingProfile.userType,
+    isProfileCompleted: true,
+  });
+  const refreshToken = generateRefreshToken({
+    userId: existingProfile.id,
+    email: existingProfile.email,
+    name: existingProfile.name!,
+    userType: existingProfile.userType,
+    isProfileCompleted: true,
+  });
+
+  return { ...clientProfile, accessToken, refreshToken };
 }
 
 const profileClientService = {
