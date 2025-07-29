@@ -1,4 +1,3 @@
-import { skip } from "node:test";
 import prisma from "../configs/prisma.config";
 import { NotificationPayload } from "../types";
 

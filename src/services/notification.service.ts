@@ -4,7 +4,12 @@ import { parseRegionKeywords, sendNotificationTo } from "../utils/sse.util";
 import moverRepository from "../repositories/mover.repository";
 import { ForbiddenError, NotFoundError } from "../types/errors";
 import { ErrorMessage } from "../constants/ErrorMessage";
-import { NotificationPayload, NotifyConfirmEstimate, NotifyNewEstimate } from "../types";
+import {
+  NotificationPayload,
+  NotifyConfirmEstimate,
+  NotifyNewEstimate,
+  NotifyNewRequest,
+} from "../types";
 import { Estimate, NotificationType } from "@prisma/client";
 
 // 알림 전송 + 저장 함수
@@ -44,6 +49,22 @@ async function readNotification(notificationId: string, userId: string) {
   return await notificationRepository.updateNotification(notificationId);
 }
 
+// 새로운 견적 알림
+async function notifyEstimate({
+  clientId,
+  moverName,
+  moveType,
+  type,
+  targetId,
+  targetUrl,
+}: NotifyNewEstimate) {
+  const content = NotificationTemplate.NEW_ESTIMATE.client(moverName, moveType);
+
+  if (!content) return;
+
+  await sendAndSaveNotification({ userId: clientId, content, type, targetId, targetUrl });
+}
+
 // 새로운 견적 요청 알림
 async function notifyEstimateRequest({
   clientName,
@@ -53,7 +74,7 @@ async function notifyEstimateRequest({
   type,
   targetId,
   targetUrl,
-}: NotifyNewEstimate) {
+}: NotifyNewRequest) {
   // 주소에서 "서울", "성남", "영등포" 등 지역명 추출
   const fromRegions = parseRegionKeywords(fromAddress);
   const toRegions = parseRegionKeywords(toAddress);
@@ -127,6 +148,7 @@ export default {
   sendAndSaveNotification,
   getNotifications,
   readNotification,
+  notifyEstimate,
   notifyEstimateRequest,
   notifyEstimateConfirmed,
   notifyMovingDay,
