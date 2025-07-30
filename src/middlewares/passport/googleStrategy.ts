@@ -38,7 +38,6 @@ async function verify(
       providerId: profile.id,
       email: profile.emails[0].value,
       name: profile.displayName,
-      phone: undefined,
     });
   } else if (userType === "mover") {
     userInfo = await authMoverService.oAuthCreateOrUpdate({
@@ -46,13 +45,11 @@ async function verify(
       providerId: profile.id,
       email: profile.emails[0].value,
       name: profile.displayName,
-      phone: undefined,
     });
   } else {
     throw new NotFoundError("소셜 로그인 해야 하는데 userType을 못 받아옴");
   }
 
-  console.log("!!!", userInfo);
   done(null, userInfo); // req.user = user;
 }
 

@@ -4,7 +4,6 @@ import { CreateRequestDto } from "../dtos/request.dto";
 import { GetFilteredRequestsInput } from "../types";
 import { NotFoundError, ServerError, ConflictError, BadRequestError } from "../types/errors";
 
-
 const now = new Date();
 const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
 
