@@ -1,5 +1,5 @@
-import prisma from "@/configs/prisma.config";
-import { CreateMoverInputwithHash, SignUpDataSocial } from "@/types";
+import prisma from "../configs/prisma.config";
+import { CreateMoverInputwithHash, SignUpDataSocial } from "../types";
 import { Mover } from "@prisma/client";
 
 // 기사님 생성

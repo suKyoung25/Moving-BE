@@ -1,5 +1,5 @@
-import prisma from "@/configs/prisma.config";
-import { ServerError } from "@/types";
+import prisma from "../configs/prisma.config";
+import { ServerError } from "../types";
 import { Client, Estimate, Mover, Prisma } from "@prisma/client";
 
 // 작성 가능한 리뷰 목록

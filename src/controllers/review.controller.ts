@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { Review } from "@prisma/client";
-import reviewService from "@/services/review.service";
-import { CreateReviewDto, UpdateReviewDto } from "@/dtos/review.dto";
+import reviewService from "../services/review.service";
+import { CreateReviewDto, UpdateReviewDto } from "../dtos/review.dto";
 
 // 공통 페이징 헬퍼 함수
 function getPaginationParams(req: Request) {

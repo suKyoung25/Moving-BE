@@ -1,5 +1,5 @@
-import prisma from "@/configs/prisma.config";
-import { NotificationPayload } from "@/types";
+import prisma from "../configs/prisma.config";
+import { NotificationPayload } from "../types";
 
 // 알림 상세 조회
 async function getNotification(notificationId: string) {

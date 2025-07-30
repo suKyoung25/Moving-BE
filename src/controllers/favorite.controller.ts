@@ -1,4 +1,4 @@
-import favoriteService from "@/services/favorite.service";
+import favoriteService from "../services/favorite.service";
 import { NextFunction, Request, Response } from "express";
 
 // 찜한 기사님 목록

@@ -1,9 +1,9 @@
 import { Response, Request, NextFunction } from "express";
 import bcrypt from "bcrypt";
-import authMoverRepository from "@/repositories/authMover.repository";
-import accountMoverRepository from "@/repositories/accountMover.repository";
-import { ErrorMessage } from "@/constants/ErrorMessage";
-import { ConflictError } from "@/types";
+import authMoverRepository from "../repositories/authMover.repository";
+import accountMoverRepository from "../repositories/accountMover.repository";
+import { ErrorMessage } from "../constants/ErrorMessage";
+import { ConflictError } from "../types";
 
 // (프로필) 컨트롤러단 진입 전 DB와 대조하여 에러 띄움
 export async function checkMoverProfileInfo(req: Request, res: Response, next: NextFunction) {

@@ -1,5 +1,5 @@
-import prisma from "@/configs/prisma.config";
-import { EditMoverAccountWithHash } from "@/types";
+import prisma from "../configs/prisma.config";
+import { EditMoverAccountWithHash } from "../types";
 
 // 기사님 기본 정보 수정
 async function patchMoverAccount(patchData: EditMoverAccountWithHash) {

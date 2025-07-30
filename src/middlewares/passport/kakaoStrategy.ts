@@ -1,9 +1,9 @@
 import { Strategy as KakaoStrategy, Profile } from "passport-kakao";
 
 import { Request } from "express";
-import { NotFoundError, providerMap } from "@/types";
-import authClientService from "@/services/authClient.service";
-import authMoverService from "@/services/authMover.service";
+import { NotFoundError, providerMap } from "../../types";
+import authClientService from "../../services/authClient.service";
+import authMoverService from "../../services/authMover.service";
 
 const kakaoStrategyOptions = {
   clientID: process.env.KAKAO_CLIENT_ID!,

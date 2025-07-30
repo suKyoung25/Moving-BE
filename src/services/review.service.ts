@@ -1,8 +1,8 @@
-import prisma from "@/configs/prisma.config";
-import { CreateReviewDto } from "@/dtos/review.dto";
-import estimateRepository from "@/repositories/estimate.repository";
-import reviewRepository from "@/repositories/review.repository";
-import { BadRequestError, ForbiddenError, NotFoundError, ValidationError } from "@/types";
+import prisma from "../configs/prisma.config";
+import { CreateReviewDto } from "../dtos/review.dto";
+import estimateRepository from "../repositories/estimate.repository";
+import reviewRepository from "../repositories/review.repository";
+import { BadRequestError, ForbiddenError, NotFoundError, ValidationError } from "../types";
 import { Client, Review } from "@prisma/client";
 
 // 내가 작성한 리뷰 목록 (페이징 포함)

@@ -1,5 +1,5 @@
-import moverRepository from "@/repositories/mover.repository";
-import { BadRequestError } from "@/types";
+import moverRepository from "../repositories/mover.repository";
+import { BadRequestError } from "../types";
 
 interface GetMoversParams {
   page?: number;

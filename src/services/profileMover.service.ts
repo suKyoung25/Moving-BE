@@ -1,7 +1,7 @@
-import authMoverRepository from "@/repositories/authMover.repository";
-import profileMoverRespository from "@/repositories/profileMover.respository";
-import { MoverProfile } from "@/types";
-import { generateAccessToken, generateRefreshToken } from "@/utils/token.util";
+import authMoverRepository from "../repositories/authMover.repository";
+import profileMoverRespository from "../repositories/profileMover.respository";
+import { MoverProfile } from "../types";
+import { generateAccessToken, generateRefreshToken } from "../utils/token.util";
 import { MoveType, Prisma } from "@prisma/client";
 
 // 기사님 프로필 생성과 수정

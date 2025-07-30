@@ -1,12 +1,12 @@
-import prisma from "@/configs/prisma.config";
-import { CreateRequestDto } from "@/dtos/request.dto";
+import prisma from "../configs/prisma.config";
+import { CreateRequestDto } from "../dtos/request.dto";
 import {
   BadRequestError,
   ConflictError,
   GetFilteredRequestsInput,
   NotFoundError,
   ServerError,
-} from "@/types";
+} from "../types";
 import { Prisma, RequestDraft } from "@prisma/client";
 
 const now = new Date();

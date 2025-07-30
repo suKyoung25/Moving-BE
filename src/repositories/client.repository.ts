@@ -1,6 +1,6 @@
-import prisma from "@/configs/prisma.config";
-import { ClientProfileRegister, ClientProfileUpdate } from "@/types";
-import { filterSensitiveUserData } from "@/utils/auth.util";
+import prisma from "../configs/prisma.config";
+import { ClientProfileRegister, ClientProfileUpdate } from "../types";
+import { filterSensitiveUserData } from "../utils/auth.util";
 import { Client, MoveType } from "@prisma/client";
 
 // 사용자 반환 (id로)

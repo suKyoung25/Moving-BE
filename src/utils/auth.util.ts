@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import { Client, Mover } from "@prisma/client";
-import { ConflictError } from "@/types";
-import { ErrorMessage } from "@/constants/ErrorMessage";
+import { ConflictError } from "../types";
+import { ErrorMessage } from "../constants/ErrorMessage";
 
 // 비밀번호 해싱 함수
 export function hashPassword(password: string) {

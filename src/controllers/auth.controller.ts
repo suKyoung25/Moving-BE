@@ -1,10 +1,10 @@
-import { ErrorMessage } from "@/constants/ErrorMessage";
-import profileClientRepository from "@/repositories/client.repository";
-import profileMoverRespository from "@/repositories/profileMover.respository";
-import { ConflictError, NotFoundError, UnauthorizedError } from "@/types";
-import { generateAccessToken, generateRefreshToken } from "@/utils/token.util";
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import { ConflictError, NotFoundError, UnauthorizedError } from "../types";
+import { ErrorMessage } from "../constants/ErrorMessage";
+import { generateAccessToken, generateRefreshToken } from "../utils/token.util";
+import profileClientRepository from "../repositories/client.repository";
+import profileMoverRespository from "../repositories/profileMover.respository";
 
 // refreshToken Api
 async function setRefreshToken(req: Request, res: Response, next: NextFunction) {

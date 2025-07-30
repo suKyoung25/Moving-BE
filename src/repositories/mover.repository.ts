@@ -1,5 +1,5 @@
-import prisma from "@/configs/prisma.config";
-import { ConflictError, MoverDetail, NotFoundError, ServerError, SimplifiedMover } from "@/types";
+import prisma from "../configs/prisma.config";
+import { ConflictError, MoverDetail, NotFoundError, ServerError, SimplifiedMover } from "../types";
 
 interface GetMoversParams {
   page?: number;

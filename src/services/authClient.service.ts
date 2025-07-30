@@ -1,15 +1,15 @@
-import { ErrorMessage } from "@/constants/ErrorMessage";
-import authRepository from "@/repositories/auth.repository";
-import authClientRepository from "@/repositories/authClient.repository";
+import { ErrorMessage } from "../constants/ErrorMessage";
+import authRepository from "../repositories/auth.repository";
+import authClientRepository from "../repositories/authClient.repository";
 import {
   BadRequestError,
   LoginDataLocal,
   NotFoundError,
   SignUpDataLocal,
   SignUpDataSocial,
-} from "@/types";
-import { filterSensitiveUserData, hashPassword, verifyPassword } from "@/utils/auth.util";
-import { generateAccessToken, generateRefreshToken } from "@/utils/token.util";
+} from "../types";
+import { filterSensitiveUserData, hashPassword, verifyPassword } from "../utils/auth.util";
+import { generateAccessToken, generateRefreshToken } from "../utils/token.util";
 
 // 회원가입 - Local
 async function create(client: SignUpDataLocal) {

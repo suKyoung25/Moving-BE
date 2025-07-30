@@ -1,5 +1,5 @@
-import favoriteRepository from "@/repositories/favorite.repository";
-import { BadRequestError } from "@/types";
+import favoriteRepository from "../repositories/favorite.repository";
+import { BadRequestError } from "../types";
 import { Client } from "@prisma/client";
 
 // 찜한 기사님 목록

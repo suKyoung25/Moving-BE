@@ -1,4 +1,4 @@
-import moverService from "@/services/mover.service";
+import moverService from "../services/mover.service";
 import { Request, Response, NextFunction } from "express";
 
 async function getMovers(req: Request, res: Response, next: NextFunction) {
