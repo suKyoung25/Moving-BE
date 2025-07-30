@@ -5,7 +5,13 @@ export interface NotifyInput {
   targetId: string;
   targetUrl: string;
 }
+
 export interface NotifyNewEstimate extends NotifyInput {
+  clientId: string;
+  moverName: string;
+  moveType: MoveType;
+}
+export interface NotifyNewRequest extends NotifyInput {
   clientName: string;
   fromAddress: string;
   toAddress: string;

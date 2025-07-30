@@ -172,7 +172,10 @@ async function findReceivedEstimatesByClientId(clientId: Client["id"]) {
 async function findEstimateByMoveDate(start: Date, end: Date) {
   return await prisma.estimate.findMany({
     where: {
+      moverStatus: "CONFIRMED",
+      isClientConfirmed: true,
       request: {
+        isPending: false,
         moveDate: {
           gte: start,
           lt: end,
