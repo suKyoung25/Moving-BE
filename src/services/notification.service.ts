@@ -10,7 +10,8 @@ import {
   NotifyNewEstimate,
   NotifyNewRequest,
 } from "../types";
-import { parseRegionKeywords, sendNotificationTo } from "../utils/sse.util";
+import { parseRegionKeywords } from "../utils/region.util";
+import { sendNotificationTo } from "../utils/sse.helper";
 import { Estimate, NotificationType } from "@prisma/client";
 
 // 알림 전송 + 저장 함수
