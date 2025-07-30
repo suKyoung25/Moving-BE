@@ -1,4 +1,4 @@
-import { s3 } from "@/utils/uploadToS3";
+import { s3 } from "../utils/uploadToS3";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 

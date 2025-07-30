@@ -1,6 +1,6 @@
-import prisma from "@/configs/prisma.config";
-import { ErrorMessage } from "@/constants/ErrorMessage";
-import { BadRequestError, MoverProfile } from "@/types";
+import prisma from "../configs/prisma.config";
+import { ErrorMessage } from "../constants/ErrorMessage";
+import { BadRequestError, MoverProfile } from "../types";
 import { Mover, Prisma } from "@prisma/client";
 
 // 기사님 찾기

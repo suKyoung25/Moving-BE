@@ -1,8 +1,8 @@
-import { ErrorMessage } from "@/constants/ErrorMessage";
-import { MoverProfileDto } from "@/dtos/mover.dto";
-import profileMoverService from "@/services/profileMover.service";
-import { NotFoundError } from "@/types";
-import { filterSensitiveUserData } from "@/utils/auth.util";
+import { ErrorMessage } from "../constants/ErrorMessage";
+import { MoverProfileDto } from "../dtos/mover.dto";
+import profileMoverService from "../services/profileMover.service";
+import { NotFoundError } from "../types";
+import { filterSensitiveUserData } from "../utils/auth.util";
 import { NextFunction, Request, Response } from "express";
 
 // 기사님 프로필 수정

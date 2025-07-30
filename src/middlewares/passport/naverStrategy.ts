@@ -1,8 +1,8 @@
 import { Strategy as NaverStrategy, Profile } from "passport-naver";
-import { NotFoundError, providerMap } from "@/types";
+import { NotFoundError, providerMap } from "../../types";
 import { Request } from "express";
-import authClientService from "@/services/authClient.service";
-import authMoverService from "@/services/authMover.service";
+import authClientService from "../../services/authClient.service";
+import authMoverService from "../../services/authMover.service";
 
 const naverStrategyOptions = {
   clientID: process.env.NAVER_CLIENT_ID!,

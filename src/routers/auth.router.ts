@@ -1,14 +1,14 @@
-import authController from "@/controllers/auth.controller";
-import authClientController from "@/controllers/authClient.controller";
-import { moverSignin, moverSignup } from "@/controllers/authMover.controller";
-import { signInSchema, signUpSchema } from "@/dtos/auth.dto";
+import authController from "../controllers/auth.controller";
+import authClientController from "../controllers/authClient.controller";
+import { moverSignin, moverSignup } from "../controllers/authMover.controller";
+import { signInSchema, signUpSchema } from "../dtos/auth.dto";
 import {
   checkClientSignUpInfo,
   checkMoverSignInInfo,
   checkMoverSignUpInfo,
   validateReq,
   verifyAccessToken,
-} from "@/middlewares/auth.middleware";
+} from "../middlewares/auth.middleware";
 import express from "express";
 import passport from "passport";
 

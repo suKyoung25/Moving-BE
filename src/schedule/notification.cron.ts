@@ -1,8 +1,8 @@
 import cron from "node-cron";
 import { addDays, startOfDay } from "date-fns";
-import estimateRepository from "@/repositories/estimate.repository";
-import { NotificationTemplate } from "@/constants/NotificationTemplate";
-import notificationService from "@/services/notification.service";
+import estimateRepository from "../repositories/estimate.repository";
+import { NotificationTemplate } from "../constants/NotificationTemplate";
+import notificationService from "../services/notification.service";
 
 cron.schedule("0 0 * * *", async () => {
   console.log("🕖 Running moving day notification at 9AM");

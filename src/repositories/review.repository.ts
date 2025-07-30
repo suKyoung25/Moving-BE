@@ -1,4 +1,4 @@
-import prisma from "@/configs/prisma.config";
+import prisma from "../configs/prisma.config";
 import { Client, Prisma, Review, Mover, Estimate } from "@prisma/client";
 
 // 내가 작성한 리뷰 목록 (페이징 포함)

@@ -1,4 +1,4 @@
-import notificationController from "@/controllers/notification.controller";
+import notificationController from "../controllers/notification.controller";
 import { Router } from "express";
 
 const notificationRouter = Router();

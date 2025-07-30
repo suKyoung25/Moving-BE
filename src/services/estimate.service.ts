@@ -1,9 +1,9 @@
-import estimateRepository from "@/repositories/estimate.repository";
-import moverRepository from "@/repositories/mover.repository";
+import estimateRepository from "../repositories/estimate.repository";
+import moverRepository from "../repositories/mover.repository";
 import { Client, PrismaClient, EstimateStatus } from "@prisma/client";
 import notificationService from "./notification.service";
-import { BadRequestError, ServerError } from "@/types";
-import authClientRepository from "@/repositories/authClient.repository";
+import { BadRequestError, ServerError } from "../types";
+import authClientRepository from "../repositories/authClient.repository";
 
 interface EstimateInput {
   price?: number;

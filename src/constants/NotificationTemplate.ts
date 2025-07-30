@@ -1,4 +1,4 @@
-import { moveTypeMap, parseRegion } from "@/utils/sse.util";
+import { moveTypeMap, parseRegion } from "../utils/sse.util";
 
 export const NotificationTemplate = {
   NEW_ESTIMATE: {

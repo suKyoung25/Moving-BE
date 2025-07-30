@@ -1,6 +1,6 @@
-import reviewController from "@/controllers/review.controller";
-import { CreateReviewSchema, UpdateReviewschema } from "@/dtos/review.dto";
-import { validateReq, verifyAccessToken } from "@/middlewares/auth.middleware";
+import reviewController from "../controllers/review.controller";
+import { CreateReviewSchema, UpdateReviewschema } from "../dtos/review.dto";
+import { validateReq, verifyAccessToken } from "../middlewares/auth.middleware";
 import { Router } from "express";
 
 const reviewRouter = Router();

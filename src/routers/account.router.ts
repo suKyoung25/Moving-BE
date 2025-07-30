@@ -1,7 +1,7 @@
-import accountMoverController from "@/controllers/accountMover.controller";
-import { editAccountMoverSchema } from "@/dtos/mover.dto";
-import { validateReq } from "@/middlewares/auth.middleware";
-import { checkMoverProfileInfo } from "@/middlewares/profile.middleware";
+import accountMoverController from "../controllers/accountMover.controller";
+import { editAccountMoverSchema } from "../dtos/mover.dto";
+import { validateReq } from "../middlewares/auth.middleware";
+import { checkMoverProfileInfo } from "../middlewares/profile.middleware";
 import express from "express";
 
 const accountRouter = express.Router();

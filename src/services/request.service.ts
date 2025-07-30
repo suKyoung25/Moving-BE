@@ -1,10 +1,10 @@
-import { CreateRequestDto } from "@/dtos/request.dto";
-import authClientRepository from "@/repositories/authClient.repository";
-import requestRepository from "@/repositories/request.repository";
+import { CreateRequestDto } from "../dtos/request.dto";
+import authClientRepository from "../repositories/authClient.repository";
+import requestRepository from "../repositories/request.repository";
 import { MoveType, RequestDraft } from "@prisma/client";
 import notificationService from "./notification.service";
-import { BadRequestError, GetReceivedRequestsQuery } from "@/types";
-import { ErrorMessage } from "@/constants/ErrorMessage";
+import { BadRequestError, GetReceivedRequestsQuery } from "../types";
+import { ErrorMessage } from "../constants/ErrorMessage";
 
 // 견적 요청 중간 상태 조회
 async function getDraft(clientId: string) {

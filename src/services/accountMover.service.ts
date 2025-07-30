@@ -1,6 +1,6 @@
-import accountMoverRepository from "@/repositories/accountMover.repository";
-import { EditMoverAccount } from "@/types";
-import { hashPassword } from "@/utils/auth.util";
+import accountMoverRepository from "../repositories/accountMover.repository";
+import { EditMoverAccount } from "../types";
+import { hashPassword } from "../utils/auth.util";
 
 // 기사님 기본 정보 수정
 async function patchMoverAccount(newData: EditMoverAccount) {

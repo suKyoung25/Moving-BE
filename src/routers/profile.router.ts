@@ -1,7 +1,7 @@
-import profileClientController from "@/controllers/client.controller";
-import profileMoverController from "@/controllers/profileMover.controller";
-import { MoverProfileSchema } from "@/dtos/mover.dto";
-import { validateReq, verifyAccessToken } from "@/middlewares/auth.middleware";
+import profileClientController from "../controllers/client.controller";
+import profileMoverController from "../controllers/profileMover.controller";
+import { MoverProfileSchema } from "../dtos/mover.dto";
+import { validateReq, verifyAccessToken } from "../middlewares/auth.middleware";
 import express from "express";
 
 const profileRouter = express.Router();

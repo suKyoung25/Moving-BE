@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import authMoverService from "@/services/authMover.service";
-import { SignInRequestDto, SignUpRequestDto } from "@/dtos/auth.dto";
+import authMoverService from "../services/authMover.service";
+import { SignInRequestDto, SignUpRequestDto } from "../dtos/auth.dto";
 
 // 기사님 회원가입
 async function moverSignup(

@@ -1,4 +1,4 @@
-import { HttpError, UnauthorizedError } from "@/types";
+import { HttpError, UnauthorizedError } from "../types";
 import { ErrorRequestHandler } from "express";
 
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {

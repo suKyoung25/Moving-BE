@@ -1,4 +1,4 @@
-import { ErrorMessage } from "@/constants/ErrorMessage";
+import { ErrorMessage } from "../constants/ErrorMessage";
 import { z } from "zod";
 import { emailSchema, nameSchema, phoneSchema } from "./auth.dto";
 
