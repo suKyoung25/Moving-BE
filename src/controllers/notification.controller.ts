@@ -1,7 +1,7 @@
+import notificationService from "@/services/notification.service";
+import { UnauthorizedError } from "@/types";
+import { addUser, removeUser } from "@/utils/sse.util";
 import { NextFunction, Request, Response } from "express";
-import { UnauthorizedError } from "../types/errors";
-import { addUser, removeUser } from "../utils/sse.util";
-import notificationService from "../services/notification.service";
 
 async function getNotifications(req: Request, res: Response, next: NextFunction) {
   try {

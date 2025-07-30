@@ -1,13 +1,12 @@
+import { ErrorMessage } from "@/constants/ErrorMessage";
+import profileClientRepository from "@/repositories/client.repository";
+import profileMoverRespository from "@/repositories/profileMover.respository";
+import { ConflictError, NotFoundError, UnauthorizedError } from "@/types";
+import { generateAccessToken, generateRefreshToken } from "@/utils/token.util";
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { ConflictError, NotFoundError, UnauthorizedError } from "../types/errors";
-import { ErrorMessage } from "../constants/ErrorMessage";
-import { generateAccessToken, generateRefreshToken } from "../utils/token.util";
-import profileClientRepository from "../repositories/client.repository";
-import profileMoverRespository from "../repositories/profileMover.respository";
-import { CreatedToken, SignInDataSocial } from "../types";
 
-// ✅ refreshToken Api
+// refreshToken Api
 async function setRefreshToken(req: Request, res: Response, next: NextFunction) {
   try {
     // 1. 쿠키에서 refreshToken 가져옴
@@ -35,7 +34,7 @@ async function setRefreshToken(req: Request, res: Response, next: NextFunction) 
   }
 }
 
-// ✅ 토큰으로 사용자 불러오기
+// 토큰으로 사용자 불러오기
 async function getMe(req: Request, res: Response, next: NextFunction) {
   try {
     const user = req.auth;
@@ -44,14 +43,14 @@ async function getMe(req: Request, res: Response, next: NextFunction) {
       res.status(401).json({ message: "사용자 인증 정보가 없습니다." });
     }
 
-    // ✅ userType에 따라 불러오는 정보 달라짐
+    // userType에 따라 불러오는 정보 달라짐
     let newUser;
 
     if (user?.userType === "client") {
       newUser = await profileClientRepository.findById(user.userId);
     }
 
-    // ✅ userType에 따라 불러오는 정보 달라짐
+    // userType에 따라 불러오는 정보 달라짐
     if (user?.userType === "mover") {
       newUser = await profileMoverRespository.findById(user.userId);
     }
@@ -62,7 +61,7 @@ async function getMe(req: Request, res: Response, next: NextFunction) {
   }
 }
 
-// ✅ 소셜 로그인
+// 소셜 로그인
 async function signInEasily(req: Request, res: Response, next: NextFunction) {
   try {
     const user = req.user as any;

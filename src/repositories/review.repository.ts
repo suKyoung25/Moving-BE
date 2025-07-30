@@ -1,5 +1,5 @@
+import prisma from "@/configs/prisma.config";
 import { Client, Prisma, Review, Mover, Estimate } from "@prisma/client";
-import prisma from "../configs/prisma.config";
 
 // 내가 작성한 리뷰 목록 (페이징 포함)
 async function findReviewsByClientId(clientId: Client["id"], offset: number, limit: number) {
@@ -46,10 +46,10 @@ async function findReviewsByMoverId(moverId: string, offset: number, limit: numb
         rating: true,
         content: true,
         createdAt: true,
-        client: { 
-          select: { 
-            name: true 
-          } 
+        client: {
+          select: {
+            name: true,
+          },
         },
         estimate: {
           select: {

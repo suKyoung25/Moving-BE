@@ -1,5 +1,5 @@
+import favoriteService from "@/services/favorite.service";
 import { NextFunction, Request, Response } from "express";
-import favoriteService from "../services/favorite.service";
 
 // 찜한 기사님 목록
 async function getFavoriteMovers(req: Request, res: Response, next: NextFunction) {

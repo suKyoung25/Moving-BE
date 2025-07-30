@@ -3,11 +3,12 @@
   "version": "1.0.0",
   "main": "dist/app.js",
   "scripts": {
-    "dev": "ts-node-dev --respawn src/app.ts",
+    "dev": "ts-node-dev -r tsconfig-paths/register --respawn src/app.ts",
     "build": "tsc && npm run copy:swagger",
     "copy:swagger": "cp -r src/swagger.yaml dist/",
     "start": "node --enable-source-maps dist/app.js",
     "seed": "ts-node prisma/seed.ts",
+    "reset": "ts-node prisma/reset.ts",
     "ssh": "dotenv -- bash -c 'ssh -i \"$SSH_KEY_PATH\" -L 5432:$DB_HOST:5432 $EC2_USER@$EC2_HOST'",
     "postinstall": "prisma generate",
     "test": "jest",
@@ -64,6 +65,7 @@
     "ts-jest": "^29.4.0",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
+    "tsconfig-paths": "^4.2.0",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3"
   }

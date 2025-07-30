@@ -1,13 +1,13 @@
-import { NextFunction, Request, Response } from "express";
+import { ErrorMessage } from "@/constants/ErrorMessage";
 import {
   CreateRequestDto,
   createRequestSchema,
   RequestDraftDto,
   requestDraftSchema,
-} from "../dtos/request.dto";
-import requestService from "../services/request.service";
-import { ErrorMessage } from "../constants/ErrorMessage";
-import { BadRequestError } from "../types/errors";
+} from "@/dtos/request.dto";
+import requestService from "@/services/request.service";
+import { BadRequestError } from "@/types";
+import { NextFunction, Request, Response } from "express";
 
 // 견적 중간 상태 조회
 async function getDraft(req: Request, res: Response, next: NextFunction) {
@@ -80,8 +80,6 @@ async function getReceivedRequests(req: Request, res: Response, next: NextFuncti
 // 활성 요청 목록 조회 (일반)
 async function getClientActiveRequests(req: Request, res: Response, next: NextFunction) {
   try {
-    console.log("고객 활성 요청 조회:", req.auth?.userId);
-
     const requests = await requestService.getClientActiveRequests(req.auth!.userId);
 
     res.status(200).json({

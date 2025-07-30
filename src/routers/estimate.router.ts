@@ -1,5 +1,5 @@
+import estimateController from "@/controllers/estimate.controller";
 import { Router, RequestHandler } from "express";
-import estimateController from "../controllers/estimate.controller";
 
 const estimateRouter = Router();
 

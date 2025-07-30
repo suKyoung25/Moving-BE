@@ -1,16 +1,9 @@
-/**
- * @file profile.repository.ts
- * @description
- * 프로필 관련 유저 데이터를 다루는 repository 모듈
- */
-
+import prisma from "@/configs/prisma.config";
+import { ErrorMessage } from "@/constants/ErrorMessage";
+import { BadRequestError, MoverProfile } from "@/types";
 import { Mover, Prisma } from "@prisma/client";
-import prisma from "../configs/prisma.config";
-import { MoverProfile } from "../types";
-import { BadRequestError } from "../types/errors";
-import { ErrorMessage } from "../constants/ErrorMessage";
 
-//기사님 찾기
+// 기사님 찾기
 async function findById(id: Mover["id"]) {
   const mover = await prisma.mover.findUnique({
     where: { id },
@@ -22,8 +15,8 @@ async function findById(id: Mover["id"]) {
   return { ...mover, userType: "mover" };
 }
 
-//지역 라벨 > 지역 아이디 찾기 (관계형이라서 stirng > id로 변환해줘야함)
-//TODO: 지역 레포단을 만들 필요는 없을 것 같아서 우선 프로필 레포에 작성함
+// 지역 라벨 > 지역 아이디 찾기 (관계형이라서 stirng > id로 변환해줘야함)
+// TODO: 지역 레포단을 만들 필요는 없을 것 같아서 우선 프로필 레포에 작성함
 async function findRegionByLabel(user: MoverProfile) {
   return await prisma.region.findMany({
     where: {
@@ -34,7 +27,7 @@ async function findRegionByLabel(user: MoverProfile) {
   });
 }
 
-//기사님 프로필 생성/수정
+// 기사님 프로필 생성/수정
 async function modifyMoverProfile(user: MoverProfile, updateData: Prisma.MoverUpdateInput) {
   try {
     const modifiedMoverProfile = await prisma.mover.update({
@@ -45,7 +38,7 @@ async function modifyMoverProfile(user: MoverProfile, updateData: Prisma.MoverUp
       },
     });
 
-    return { ...modifiedMoverProfile, userType: "mover" }; //userType은 FE의 header에서 필요
+    return { ...modifiedMoverProfile, userType: "mover" }; // userType은 FE의 header에서 필요
   } catch (error) {
     throw new BadRequestError(ErrorMessage.BAD_REQUEST, error);
   }

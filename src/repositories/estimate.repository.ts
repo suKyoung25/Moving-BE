@@ -1,6 +1,6 @@
+import prisma from "@/configs/prisma.config";
+import { ServerError } from "@/types";
 import { Client, Estimate, Mover, Prisma } from "@prisma/client";
-import prisma from "../configs/prisma.config";
-import { ServerError } from "../types/errors";
 
 // 작성 가능한 리뷰 목록
 async function findWritableEstimatesByClientId(

@@ -1,17 +1,12 @@
+import profileClientController from "@/controllers/client.controller";
+import profileMoverController from "@/controllers/profileMover.controller";
+import { MoverProfileSchema } from "@/dtos/mover.dto";
+import { validateReq, verifyAccessToken } from "@/middlewares/auth.middleware";
 import express from "express";
-import clientController from "../controllers/client.controller";
-import { validateReq, verifyAccessToken } from "../middlewares/auth.middleware";
-import profileMoverController from "../controllers/profileMover.controller";
-import { MoverProfileSchema } from "../dtos/mover.dto";
 
 const profileRouter = express.Router();
 
-/**
- * @file profile.router.ts
- * @description 프로필 관련 라우트 정의 모듈 (프로필 등록, 프로필 수정 등)
- */
-
-//기사님 프로필 생성&수정
+// 기사님 프로필 생성&수정
 profileRouter.patch(
   "/mover",
   verifyAccessToken,
@@ -20,6 +15,6 @@ profileRouter.patch(
 );
 
 // 일반 회원 프로필 등록 & 수정
-profileRouter.patch("/clients", verifyAccessToken, clientController.update);
+profileRouter.patch("/clients", verifyAccessToken, profileClientController.update);
 
 export default profileRouter;

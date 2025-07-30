@@ -1,17 +1,11 @@
-/**
- * @file profile.controller.ts
- * @description
- * - 프로필 관련 HTTP 요청을 처리하는 컨트롤러
- */
-
+import { ErrorMessage } from "@/constants/ErrorMessage";
+import { MoverProfileDto } from "@/dtos/mover.dto";
+import profileMoverService from "@/services/profileMover.service";
+import { NotFoundError } from "@/types";
+import { filterSensitiveUserData } from "@/utils/auth.util";
 import { NextFunction, Request, Response } from "express";
-import profileMoverService from "../services/profileMover.service";
-import { filterSensitiveUserData } from "../utils/auth.util";
-import { MoverProfileDto } from "../dtos/mover.dto";
-import { NotFoundError } from "../types/errors";
-import { ErrorMessage } from "../constants/ErrorMessage";
 
-//기사님 프로필 수정
+// 기사님 프로필 수정
 async function moverPatchProfile(
   req: Request<{}, {}, MoverProfileDto>,
   res: Response,

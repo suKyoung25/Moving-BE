@@ -1,7 +1,6 @@
+import { ErrorMessage } from "@/constants/ErrorMessage";
+import { ConflictError, CreatedToken } from "@/types";
 import jwt from "jsonwebtoken";
-import { ConflictError } from "../types/errors";
-import { ErrorMessage } from "../constants/ErrorMessage";
-import { CreatedToken } from "../types";
 
 export function generateAccessToken(user: CreatedToken): string {
   const payload = {

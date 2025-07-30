@@ -1,5 +1,5 @@
+import requestController from "@/controllers/request.controller";
 import { Router } from "express";
-import requestController from "../controllers/request.controller";
 
 const requestRouter = Router();
 
