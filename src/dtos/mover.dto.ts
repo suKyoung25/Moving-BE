@@ -35,7 +35,8 @@ export const editAccountMoverSchema = z
       .string()
       .min(8, ErrorMessage.PASSWORD_LENGTH_LIMIT)
       .regex(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/, ErrorMessage.PASSWORD_REGEX)
-      .nonempty(ErrorMessage.NO_PASSWORD),
+      .optional()
+      .or(z.literal("")),
 
     newPassword: z
       .string()

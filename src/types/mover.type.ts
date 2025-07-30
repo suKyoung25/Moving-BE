@@ -38,7 +38,7 @@ export type EditMoverAccount = {
   name: string;
   email: string;
   phone: string;
-  existedPassword: string;
+  existedPassword?: string;
   newPassword?: string;
 };
 
