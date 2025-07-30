@@ -81,31 +81,16 @@ async function oAuthCreateOrUpdate(data: SignUpDataSocial) {
   if (existingUser) {
     if (existingUser.provider !== data.provider)
       throw new BadRequestError(`이미 ${existingUser.provider}로 가입된 이메일입니다.`);
-    user = await authClientRepository.update(existingUser.id, rest);
+
+    // + 사용자가 이름을 수정할 수 있게 덮어쓰기 하지 않음
+    const { name, ...dataWithoutName } = rest;
+    user = await authClientRepository.update(existingUser.id, dataWithoutName);
   } else {
     // 3. 없으면 자료 자체를 새로 생성
     user = await authClientRepository.save(data);
   }
 
-  // 토큰 넣음: userType에서 오류 내서 hard coding함
-  const accessToken = generateAccessToken({
-    userId: user.id,
-    email: user.email,
-    name: user.name!,
-    userType: "client",
-    isProfileCompleted: user.isProfileCompleted,
-  });
-
-  const refreshToken = generateRefreshToken({
-    userId: user.id,
-    email: user.email,
-    name: user.name!,
-    userType: "client",
-    isProfileCompleted: user.isProfileCompleted,
-  });
-
-  user = filterSensitiveUserData(user);
-  return { accessToken, refreshToken, user };
+  return filterSensitiveUserData(user);
 }
 
 const authClientService = { create, loginWithLocal, oAuthCreateOrUpdate };

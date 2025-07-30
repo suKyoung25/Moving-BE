@@ -45,7 +45,7 @@ app.use("/auth", authRouter);
 app.use("/profile", profileRouter);
 app.use("/dashboard", verifyAccessToken, accountRouter);
 app.use("/movers", moverRouter);
-app.use("/reviews", verifyAccessToken, reviewRouter);
+app.use("/reviews", reviewRouter);
 app.use("/estimates", verifyAccessToken, estimateRouter);
 app.use("/favorites", verifyAccessToken, favoriteRouter);
 app.use("/requests", verifyAccessToken, requestRouter);

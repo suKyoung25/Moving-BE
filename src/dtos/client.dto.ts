@@ -1,9 +1,9 @@
 import { z } from "zod";
 import { ErrorMessage } from "../constants/ErrorMessage";
-import { emailSchema, nameSchema, passwordSchema, phoneSchema } from "./auth.dto";
+import { emailSchema, nameSchema, phoneSchema } from "./auth.dto";
 
 // ✅ 개별 스키마
-export const profileImageSchema = z.string().url().optional();
+export const profileImageSchema = z.string().optional();
 
 export const serviceTypeSchema = z
   .array(z.enum(["SMALL", "HOME", "OFFICE"]))
@@ -13,6 +13,9 @@ export const livingAreaSchema = z
   .array(z.string())
   .min(1, ErrorMessage.NO_REGION)
   .max(5, ErrorMessage.MAX_REGION);
+
+const passwordSchema = z.string().optional();
+const basicPasswordSchema = z.string().min(8, "기존 비밀번호를 입력해주세요.").optional();
 
 // ✅ 프로필 생성/수정을 함수로 분기처리 함
 export function profileClientSchema(mode: "create" | "update") {
@@ -29,22 +32,47 @@ export function profileClientSchema(mode: "create" | "update") {
       name: nameSchema.optional(),
       email: emailSchema.optional(),
       phone: phoneSchema.optional(),
-      password: passwordSchema,
+      password: basicPasswordSchema,
       newPassword: passwordSchema.optional(),
       newPasswordConfirmation: z.string().optional().or(z.literal("")),
       profileImage: profileImageSchema,
       serviceType: serviceTypeSchema.optional(),
       livingArea: livingAreaSchema.optional(),
     })
-    .refine(
-      (data) =>
-        !data.newPassword ||
-        (data.newPassword && data.newPassword === data.newPasswordConfirmation),
-      {
-        message: ErrorMessage.NEW_PASSWORD_CONFIRMATION_NOT_MATCH,
-        path: ["newPasswordConfirmation"],
-      },
-    );
+    .superRefine((data, ctx) => {
+      const { newPassword, newPasswordConfirmation } = data;
+
+      // 1. 새 비밀번호를 설정하면 확인도 해야 함
+      const eitherPasswordExists = !!newPassword || !!newPasswordConfirmation;
+
+      if (eitherPasswordExists) {
+        if (!newPassword || newPassword.length < 8) {
+          ctx.addIssue({
+            path: ["newPassword"],
+            message: "새 비밀번호는 최소 8자리 이상이어야 합니다.",
+            code: z.ZodIssueCode.custom,
+          });
+        }
+
+        // 2. 자릿수 설정
+        if (!newPasswordConfirmation || newPasswordConfirmation.length < 8) {
+          ctx.addIssue({
+            path: ["newPasswordConfirmation"],
+            message: "새 비밀번호 확인은 최소 8자리 이상이어야 합니다.",
+            code: z.ZodIssueCode.custom,
+          });
+        }
+
+        // 3. 비밀번호 일치 여부
+        if (newPassword && newPasswordConfirmation && newPassword !== newPasswordConfirmation) {
+          ctx.addIssue({
+            path: ["newPasswordConfirmation"],
+            message: "비밀번호가 일치하지 않습니다.",
+            code: z.ZodIssueCode.custom,
+          });
+        }
+      }
+    });
 
   // 반환 처리
   return mode === "create" ? create : update;
