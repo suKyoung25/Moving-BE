@@ -12,7 +12,8 @@
     "ssh": "dotenv -- bash -c 'ssh -i \"$SSH_KEY_PATH\" -L 5432:$DB_HOST:5432 $EC2_USER@$EC2_HOST'",
     "postinstall": "prisma generate",
     "test": "jest",
-    "test:watch": "jest --watchAll"
+    "test:watch": "jest --watchAll",
+    "coverage": "npm test -- --coverage"
   },
   "author": "codeit-4team",
   "license": "ISC",
