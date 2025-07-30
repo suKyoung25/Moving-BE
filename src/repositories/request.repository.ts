@@ -164,6 +164,8 @@ async function getFilteredRequests({
       ? { moveDate: "desc" }
       : { moveDate: "asc" };
 
+  const totalCount = await prisma.request.count({ where });
+
   const args = {
     where,
     orderBy,
@@ -197,6 +199,7 @@ async function getFilteredRequests({
   return {
     result,
     nextCursor,
+    totalCount,
   };
 }
 
