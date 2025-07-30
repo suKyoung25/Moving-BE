@@ -2,18 +2,14 @@ import { MoveType, RequestDraft } from "@prisma/client";
 import { CreateRequestDto } from "../dtos/request.dto";
 import requestRepository from "../repositories/request.repository";
 import { GetReceivedRequestsQuery } from "../types";
-import { BadRequestError, NotFoundError } from "../types/errors";
+import { BadRequestError } from "../types/errors";
 import { ErrorMessage } from "../constants/ErrorMessage";
 import authClientRepository from "../repositories/authClient.repository";
 import notificationService from "./notification.service";
 
 // 견적 요청 중간 상태 조회
 async function getDraft(clientId: string) {
-  const draft = await requestRepository.getRequestDraftById(clientId);
-  if (!draft) {
-    throw new NotFoundError(ErrorMessage.DRAFT_NOT_FOUND);
-  }
-  return draft;
+  return await requestRepository.getRequestDraftById(clientId);
 }
 
 // 견적 요청 중간 상태 저장

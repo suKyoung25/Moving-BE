@@ -40,16 +40,14 @@ async function verify(
       provider: providerEnumValue,
       providerId: profile.id.toString(),
       email: profile._json.kakao_account.email,
-      // name: "",
-      // phone: "",
+      name: "카카오",
     });
   } else if (userType === "mover") {
     userInfo = await authMoverService.oAuthCreateOrUpdate({
       provider: providerEnumValue,
       providerId: profile.id.toString(), //kakao는 숫자로 주기 때문에 문자로 변환 필수
       email: profile._json.kakao_account.email,
-      // name: null, Info: 카카오에서는 실명을 제공하지 않음
-      // phone: null, Info: 카카오에서는 전화번호를 제공하지 않음
+      name: "카카오",
     });
   } else {
     throw new NotFoundError("소셜 로그인해야 하는데 userType 없음");

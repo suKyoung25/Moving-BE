@@ -71,18 +71,22 @@ async function createEstimate({ price, comment, moverId, clientId, requestId }: 
       mover: { connect: { id: moverId } },
       request: { connect: { id: requestId } },
     },
+    include: {
+      request: true,
+    },
   });
 
-  // 견적 보낸 기사 조회
+  // 견적 보내는 기사 이름 조회
   const mover = await moverRepository.fetchMoverDetail(moverId);
 
-  // 견적 확정 알림 (to 유저)
-  await notificationService.notifyEstimateConfirmed({
-    userId: result.clientId,
-    moverName: mover.nickName!,
-    type: "ESTIMATE_CONFIRMED",
-    targetId: requestId,
-    targetUrl: `/my-quotes/client/${requestId}`,
+  // 새로운 견적 알림 (to 유저)
+  await notificationService.notifyEstimate({
+    clientId,
+    moverName: mover!.name!,
+    moveType: result.request.moveType,
+    type: "NEW_ESTIMATE",
+    targetId: result.id,
+    targetUrl: `/my-quotes/client/${result.id}`,
   });
 
   return result;
@@ -284,6 +288,18 @@ async function confirmEstimate(estimateId: string, clientId: string) {
     await estimateRepository.updateRequestPendingFalse(tx, estimate.request.id);
 
     return { estimateId, moverId: estimate.moverId };
+  });
+
+  // 견적 보낸 기사 조회
+  const mover = await moverRepository.fetchMoverDetail(result.moverId);
+
+  // 견적 확정 알림 (to 유저)
+  await notificationService.notifyEstimateConfirmed({
+    userId: clientId,
+    moverName: mover.nickName!,
+    type: "ESTIMATE_CONFIRMED",
+    targetId: estimateId,
+    targetUrl: `/my-quotes/client/${estimateId}`,
   });
 
   // 견적 요청한 유저 조회

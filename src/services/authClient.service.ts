@@ -81,7 +81,10 @@ async function oAuthCreateOrUpdate(data: SignUpDataSocial) {
   if (existingUser) {
     if (existingUser.provider !== data.provider)
       throw new BadRequestError(`이미 ${existingUser.provider}로 가입된 이메일입니다.`);
-    user = await authClientRepository.update(existingUser.id, rest);
+
+    // + 사용자가 이름을 수정할 수 있게 덮어쓰기 하지 않음
+    const { name, ...dataWithoutName } = rest;
+    user = await authClientRepository.update(existingUser.id, dataWithoutName);
   } else {
     // 3. 없으면 자료 자체를 새로 생성
     user = await authClientRepository.save(data);
