@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import reviewService from "../services/review.service";
-import { CreateReviewDto, UpdateReviewDto } from "../dtos/review.dto";
 import { Review } from "@prisma/client";
+import reviewService from "@/services/review.service";
+import { CreateReviewDto, UpdateReviewDto } from "@/dtos/review.dto";
 
 // 내가 작성한 리뷰 목록
 async function getMyReviews(req: Request, res: Response, next: NextFunction) {
@@ -40,10 +40,10 @@ async function getMoverReviews(req: Request, res: Response, next: NextFunction) 
 async function getMoverReviewsById(req: Request, res: Response, next: NextFunction) {
   try {
     const { moverId } = req.params;
-    
+
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 6;
-    
+
     const result = await reviewService.getMoverReviews(moverId, page, limit);
     res.status(200).json({
       message: "기사님 리뷰 목록 조회 성공",

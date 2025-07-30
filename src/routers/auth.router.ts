@@ -1,15 +1,15 @@
-import express from "express";
-import { moverSignin, moverSignup } from "../controllers/authMover.controller";
-import authController from "../controllers/auth.controller";
-import authClientController from "../controllers/authClient.controller";
+import authController from "@/controllers/auth.controller";
+import authClientController from "@/controllers/authClient.controller";
+import { moverSignin, moverSignup } from "@/controllers/authMover.controller";
+import { signInSchema, signUpSchema } from "@/dtos/auth.dto";
 import {
   checkClientSignUpInfo,
   checkMoverSignInInfo,
   checkMoverSignUpInfo,
   validateReq,
   verifyAccessToken,
-} from "../middlewares/auth.middleware";
-import { signInSchema, signUpSchema } from "../dtos/auth.dto";
+} from "@/middlewares/auth.middleware";
+import express from "express";
 import passport from "passport";
 
 const authRouter = express.Router();
@@ -20,13 +20,13 @@ authRouter.post("/refresh-token", authController.setRefreshToken);
 // 사용자 불러오기
 authRouter.get("/", verifyAccessToken, authController.getMe);
 
-//기사님 회원가입 - Local
+// 기사님 회원가입 - Local
 authRouter.post("/signup/mover", validateReq(signUpSchema), checkMoverSignUpInfo, moverSignup);
 
-//기사님 로그인 - Local
+// 기사님 로그인 - Local
 authRouter.post("/signin/mover", validateReq(signInSchema), checkMoverSignInInfo, moverSignin);
 
-// ✅ Client 회원가입 - Local
+// Client 회원가입 - Local
 authRouter.post(
   "/signup/client",
   validateReq(signUpSchema),
@@ -34,10 +34,10 @@ authRouter.post(
   authClientController.signUp,
 );
 
-// ✅ Client 로그인 - Local
+// Client 로그인 - Local
 authRouter.post("/signin/client", validateReq(signInSchema), authClientController.login);
 
-// ✅ 구글 로그인
+// 구글 로그인
 authRouter.get("/google", (req, res, next) => {
   const userType = (req.query.userType as string) || "client";
   passport.authenticate("google", {
@@ -52,7 +52,7 @@ authRouter.get(
   authController.signInEasily,
 );
 
-// ✅ 카카오 로그인
+// 카카오 로그인
 authRouter.get("/kakao", (req, res, next) => {
   const userType = (req.query.userType as string) || "client";
   passport.authenticate("kakao", {
@@ -67,7 +67,7 @@ authRouter.get(
   authController.signInEasily,
 );
 
-// ✅ 네이버 로그인
+// 네이버 로그인
 authRouter.get("/naver", (req, res, next) => {
   const userType = (req.query.userType as string) || "client";
   passport.authenticate("naver", {

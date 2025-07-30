@@ -1,8 +1,13 @@
+import prisma from "@/configs/prisma.config";
+import { CreateRequestDto } from "@/dtos/request.dto";
+import {
+  BadRequestError,
+  ConflictError,
+  GetFilteredRequestsInput,
+  NotFoundError,
+  ServerError,
+} from "@/types";
 import { Prisma, RequestDraft } from "@prisma/client";
-import prisma from "../configs/prisma.config";
-import { CreateRequestDto } from "../dtos/request.dto";
-import { GetFilteredRequestsInput } from "../types";
-import { NotFoundError, ServerError, ConflictError, BadRequestError } from "../types/errors";
 
 const now = new Date();
 const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
@@ -209,8 +214,6 @@ async function fetchClientActiveRequests(clientId: string) {
 // 지정 견적 요청
 async function designateMover(requestId: string, moverId: string, clientId?: string) {
   try {
-    console.log(`지정 견적 요청: requestId=${requestId}, moverId=${moverId}, clientId=${clientId}`);
-
     // 1. 요청 존재 여부 및 권한 확인
     let request;
     if (clientId) {
@@ -275,7 +278,6 @@ async function designateMover(requestId: string, moverId: string, clientId?: str
       },
     });
 
-    console.log(`지정 견적 요청 생성 완료: ${designatedRequest.id}`);
     return designatedRequest;
   } catch (error: unknown) {
     console.error(`지정 견적 요청 오류:`, error);

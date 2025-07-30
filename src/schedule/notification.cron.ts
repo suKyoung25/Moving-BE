@@ -1,8 +1,8 @@
 import cron from "node-cron";
-import estimateRepository from "../repositories/estimate.repository";
-import { NotificationTemplate } from "../constants/NotificationTemplate";
-import notificationService from "../services/notification.service";
 import { addDays, startOfDay } from "date-fns";
+import estimateRepository from "@/repositories/estimate.repository";
+import { NotificationTemplate } from "@/constants/NotificationTemplate";
+import notificationService from "@/services/notification.service";
 
 cron.schedule("0 0 * * *", async () => {
   console.log("🕖 Running moving day notification at 9AM");
@@ -15,8 +15,6 @@ cron.schedule("0 0 * * *", async () => {
     estimateRepository.findEstimateByMoveDate(today, tomorrow),
     estimateRepository.findEstimateByMoveDate(tomorrow, dayAftertomorrow),
   ]);
-  console.log("오늘 이사 견적 수: ", todayMoves.length);
-  console.log("내일 이사 견적 수: ", tomorrowMoves.length);
 
   // 당일 이사 알림
   await Promise.all(

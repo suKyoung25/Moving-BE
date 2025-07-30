@@ -1,15 +1,16 @@
-import { NotificationTemplate } from "../constants/NotificationTemplate";
-import notificationRepository from "../repositories/notification.repository";
-import { parseRegionKeywords, sendNotificationTo } from "../utils/sse.util";
-import moverRepository from "../repositories/mover.repository";
-import { ForbiddenError, NotFoundError } from "../types/errors";
-import { ErrorMessage } from "../constants/ErrorMessage";
+import { ErrorMessage } from "@/constants/ErrorMessage";
+import { NotificationTemplate } from "@/constants/NotificationTemplate";
+import moverRepository from "@/repositories/mover.repository";
+import notificationRepository from "@/repositories/notification.repository";
 import {
+  ForbiddenError,
+  NotFoundError,
   NotificationPayload,
   NotifyConfirmEstimate,
   NotifyNewEstimate,
   NotifyNewRequest,
-} from "../types";
+} from "@/types";
+import { parseRegionKeywords, sendNotificationTo } from "@/utils/sse.util";
 import { Estimate, NotificationType } from "@prisma/client";
 
 // 알림 전송 + 저장 함수
@@ -75,7 +76,6 @@ async function notifyEstimateRequest({
   targetId,
   targetUrl,
 }: NotifyNewRequest) {
-  // 주소에서 "서울", "성남", "영등포" 등 지역명 추출
   const fromRegions = parseRegionKeywords(fromAddress);
   const toRegions = parseRegionKeywords(toAddress);
   const targetRegions = Array.from(new Set([...fromRegions, ...toRegions]));

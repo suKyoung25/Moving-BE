@@ -1,5 +1,5 @@
+import estimateService from "@/services/estimate.service";
 import { NextFunction, Request, Response } from "express";
-import estimateService from "../services/estimate.service";
 
 // 대기 중인 견적 조회
 async function getPendingEstimates(req: Request, res: Response, next: NextFunction) {
@@ -10,7 +10,7 @@ async function getPendingEstimates(req: Request, res: Response, next: NextFuncti
 
     return res.status(200).json({
       message: "대기 중인 견적 조회 성공",
-      data: data,
+      data,
     });
   } catch (e) {
     next(e);
@@ -27,6 +27,7 @@ async function sendEstimateToRequest(
     const moverId = req.auth!.userId;
     const { price, comment, clientId, requestId } = req.body;
 
+    // TODO: 커스텀 에러 객체 사용해주세요
     if (!price || !comment || !clientId || !requestId) {
       res.status(400).json({
         message: "price, comment, clientId, requestId는 모두 필수입니다.",
@@ -149,7 +150,6 @@ async function getRejectedEstimates(
 ): Promise<void> {
   try {
     const moverId = req.auth!.userId;
-    // const moverId = "83aef138-0eaa-4c06-8869-5fa19583b530"; //하드코딩 지우기
 
     if (!moverId) {
       res.status(401).json({ message: "moverId (사용자 인증 정보)가 필요합니다." });

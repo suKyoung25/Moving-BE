@@ -1,7 +1,7 @@
 import z from "zod";
 import { ErrorMessage } from "../constants/ErrorMessage";
 
-// ✅ 일반 회원가입 개별 스키마
+// 일반 회원가입 개별 스키마
 export const emailSchema = z.string().email().nonempty(ErrorMessage.NO_EMAIL);
 
 export const passwordSchema = z
@@ -20,7 +20,7 @@ export const phoneSchema = z
   .regex(/^\d{9,11}$/, ErrorMessage.PHONE_REGEX)
   .nonempty(ErrorMessage.NO_PHONE);
 
-// ✅ 일반 회원가입 DTO 및 zod 유효성 검사
+// 일반 회원가입 DTO 및 zod 유효성 검사
 export const signUpSchema = z
   .object({
     name: nameSchema,
@@ -34,7 +34,7 @@ export const signUpSchema = z
     path: ["passwordConfirmation"],
   });
 
-// ✅ 일반 로그인 DTO 및 zod 유효성 검사
+// 일반 로그인 DTO 및 zod 유효성 검사
 export const signInSchema = z.object({
   email: z.string().email().nonempty(ErrorMessage.NO_EMAIL),
 
@@ -45,6 +45,5 @@ export const signInSchema = z.object({
     .nonempty(ErrorMessage.NO_PASSWORD),
 });
 
-// ✅ DTO 모음
-export type SignUpRequestDTO = z.infer<typeof signUpSchema>;
-export type SignInRequestDTO = z.infer<typeof signInSchema>;
+export type SignUpRequestDto = z.infer<typeof signUpSchema>;
+export type SignInRequestDto = z.infer<typeof signInSchema>;

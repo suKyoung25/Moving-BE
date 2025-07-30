@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import accountMoverService from "../services/accountMover.service";
+import accountMoverService from "@/services/accountMover.service";
 
-//기사님 기본정보 수정
+// 기사님 기본정보 수정
 async function editAccountMover(req: Request, res: Response, next: NextFunction) {
   try {
     const moverId = req.auth?.userId!;

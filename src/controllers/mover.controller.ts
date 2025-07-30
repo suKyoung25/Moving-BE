@@ -1,5 +1,5 @@
+import moverService from "@/services/mover.service";
 import { Request, Response, NextFunction } from "express";
-import moverService from "../services/mover.service";
 
 async function getMovers(req: Request, res: Response, next: NextFunction) {
   try {
@@ -30,7 +30,6 @@ async function getMovers(req: Request, res: Response, next: NextFunction) {
 
 async function getMoverDetail(req: Request, res: Response, next: NextFunction) {
   try {
-    console.log("✅ getMoverDetail called", req.params.moverId);
     const result = await moverService.getMoverDetail(req.params.moverId, req.auth?.userId);
     res.status(200).json(result);
   } catch (error) {
@@ -41,20 +40,15 @@ async function getMoverDetail(req: Request, res: Response, next: NextFunction) {
 // 새로운 토글 엔드포인트
 async function toggleFavoriteMover(req: Request, res: Response, next: NextFunction) {
   try {
-    console.log("찜 토글 요청:", {
-      userId: req.auth?.userId,
-      moverId: req.params.moverId
-    });
-
     const result = await moverService.toggleFavoriteMover(req.auth!.userId, req.params.moverId);
-    
-    const message = result.action === 'added' ? '찜 추가 성공' : '찜 해제 성공';
-    
+
+    const message = result.action === "added" ? "찜 추가 성공" : "찜 해제 성공";
+
     res.status(200).json({
       message,
       action: result.action,
       isFavorite: result.isFavorite,
-      favoriteCount: result.favoriteCount
+      favoriteCount: result.favoriteCount,
     });
   } catch (error) {
     console.error("찜 토글 오류:", error);
@@ -67,16 +61,15 @@ async function getMoverProfile(req: Request, res: Response, next: NextFunction) 
   try {
     const moverId = req.auth!.userId;
     const result = await moverService.getMoverProfile(moverId);
-    
+
     res.status(200).json({
       message: "기사님 프로필 조회 성공",
-      data: result
+      data: result,
     });
   } catch (error) {
     next(error);
   }
 }
-
 
 export default {
   getMovers,

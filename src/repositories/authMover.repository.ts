@@ -1,20 +1,8 @@
-/**
- * @file auth.repository.ts
- * @description
- * 인증 관련 유저 데이터를 다루는 repository 모듈
- *
- * service 파일에서 사용 시:
- * import authRepository from "../repositories/auth.repository";
- *
- * const user = await authRepository.findByEmail(email);
- *
- */
-
+import prisma from "@/configs/prisma.config";
+import { CreateMoverInputwithHash, SignUpDataSocial } from "@/types";
 import { Mover } from "@prisma/client";
-import prisma from "../configs/prisma.config";
-import { CreateMoverInputwithHash, SignUpDataSocial } from "../types";
 
-//기사님 생성
+// 기사님 생성
 async function saveMover(user: CreateMoverInputwithHash) {
   const createdMover = await prisma.mover.create({
     data: {
@@ -25,7 +13,7 @@ async function saveMover(user: CreateMoverInputwithHash) {
     },
   });
 
-  return { ...createdMover, userType: "mover" }; //userType은 FE의 header에서 필요
+  return { ...createdMover, userType: "mover" }; // userType은 FE의 header에서 필요
 }
 
 // 아이디로 기사님 조회
@@ -35,7 +23,7 @@ async function findMoverById(moverId: string) {
   });
 }
 
-//이메일로 기사님 조회
+// 이메일로 기사님 조회
 async function getMoverByEmail(email: Mover["email"]) {
   const mover = await prisma.mover.findUnique({
     where: {
@@ -45,10 +33,10 @@ async function getMoverByEmail(email: Mover["email"]) {
 
   if (!mover) return null;
 
-  return { ...mover, userType: "mover" }; //userType은 FE의 header에서 필요
+  return { ...mover, userType: "mover" }; // userType은 FE의 header에서 필요
 }
 
-//전화번호로 기사님 조회
+// 전화번호로 기사님 조회
 async function getMoverByPhone(phone: Mover["phone"]) {
   if (!phone) return null;
   return await prisma.mover.findUnique({
@@ -58,8 +46,7 @@ async function getMoverByPhone(phone: Mover["phone"]) {
   });
 }
 
-//기사님 소셜 인증
-// ★ 수정: 이 주석 지우세요! userType 추가함
+// 기사님 소셜 인증
 async function createOrUpdate(data: SignUpDataSocial) {
   const newMover = await prisma.mover.upsert({
     where: {

@@ -1,9 +1,9 @@
-import prisma from "../configs/prisma.config";
-import { ClientProfileRegister, ClientProfileUpdate } from "../types";
+import prisma from "@/configs/prisma.config";
+import { ClientProfileRegister, ClientProfileUpdate } from "@/types";
+import { filterSensitiveUserData } from "@/utils/auth.util";
 import { Client, MoveType } from "@prisma/client";
-import { filterSensitiveUserData } from "../utils/auth.util";
 
-// ✅ 사용자 반환 (id로)
+// 사용자 반환 (id로)
 async function findById(id: Client["id"]) {
   const client = await prisma.client.findUnique({
     where: { id },
@@ -19,7 +19,7 @@ async function findById(id: Client["id"]) {
   return { ...safeClient, userType: "client", livingArea };
 }
 
-// ✅ 프로필 생성
+// 프로필 생성
 async function create(userId: Client["id"], profile: ClientProfileRegister) {
   // 배열1: serviceType. [user.serviceType]가 안 먹혀서 돌려씀
   const serviceTypes: MoveType[] | undefined = profile.serviceType
@@ -50,7 +50,7 @@ async function create(userId: Client["id"], profile: ClientProfileRegister) {
   return { ...newProfile, userType: "client" };
 }
 
-// ✅ 프로필 수정
+// 프로필 수정
 async function update(userId: Client["id"], profile: ClientProfileUpdate) {
   // 배열1: serviceType
   const serviceTypes: MoveType[] | undefined = profile.serviceType
@@ -83,10 +83,8 @@ async function update(userId: Client["id"], profile: ClientProfileUpdate) {
   return { ...newProfile, userType: "client" };
 }
 
-const profileClientRepository = {
+export default {
   findById,
   create,
   update,
 };
-
-export default profileClientRepository;

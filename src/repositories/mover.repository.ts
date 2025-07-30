@@ -1,6 +1,5 @@
-import prisma from "../configs/prisma.config";
-import { NotFoundError, ServerError, ConflictError, BadRequestError } from "../types/errors";
-import { SimplifiedMover, MoverDetail } from "../types/mover/mover.type";
+import prisma from "@/configs/prisma.config";
+import { ConflictError, MoverDetail, NotFoundError, ServerError, SimplifiedMover } from "@/types";
 
 interface GetMoversParams {
   page?: number;
@@ -33,9 +32,7 @@ async function fetchMovers(
     const whereCondition: any = {};
 
     if (search) {
-      whereCondition.OR = [
-        { nickName: { contains: search, mode: "insensitive" } },
-      ];
+      whereCondition.OR = [{ nickName: { contains: search, mode: "insensitive" } }];
     }
 
     if (area && area !== "all") {
@@ -121,8 +118,8 @@ async function fetchMoverDetail(moverId: string, clientId?: string): Promise<Mov
 
     return {
       ...mover,
-      name: mover.name || '',
-      phone: mover.phone || '',
+      name: mover.name || "",
+      phone: mover.phone || "",
       serviceArea: mover.serviceArea.map((r) => r.regionName), // Region 객체 → 문자열 배열
       favoriteCount: mover.favoriteCount || 0, // null → 0
       isFavorite: Boolean(mover.favorites?.length), // 찜 여부만 계산
@@ -146,8 +143,6 @@ async function findFavorite(clientId: string, moverId: string) {
 
 // 찜 토글 (추가/삭제를 한 번에 처리)
 async function toggleFavoriteMover(clientId: string, moverId: string) {
-  console.log(`찜 토글 요청: clientId=${clientId}, moverId=${moverId}`);
-
   try {
     // 1. 기사 존재 여부 확인
     const mover = await prisma.mover.findUnique({
@@ -164,8 +159,8 @@ async function toggleFavoriteMover(clientId: string, moverId: string) {
 
     if (existingFavorite) {
       // 3-a. 이미 찜한 상태 -> 찜 해제
-      console.log(`찜 해제 처리 중...`);
 
+      // TODO: result 사용이 안되는 것 같은데 확인 부탁드립니다
       const result = await prisma.$transaction([
         prisma.favorite.delete({
           where: {
@@ -185,7 +180,6 @@ async function toggleFavoriteMover(clientId: string, moverId: string) {
         }),
       ]);
 
-      console.log(`찜 해제 완료`);
       return {
         action: "removed" as const,
         isFavorite: false,
@@ -193,7 +187,6 @@ async function toggleFavoriteMover(clientId: string, moverId: string) {
       };
     } else {
       // 3-b. 찜하지 않은 상태 -> 찜 추가
-      console.log(`찜 추가 처리 중...`);
 
       const result = await prisma.$transaction([
         prisma.favorite.create({
@@ -209,7 +202,6 @@ async function toggleFavoriteMover(clientId: string, moverId: string) {
         }),
       ]);
 
-      console.log(`찜 추가 완료`);
       return {
         action: "added" as const,
         isFavorite: true,
@@ -233,7 +225,6 @@ async function toggleFavoriteMover(clientId: string, moverId: string) {
   }
 }
 
-
 // 지역 기반 기사 조회
 async function findMoversByServiceArea(regions: string[]) {
   return await prisma.mover.findMany({
@@ -247,7 +238,6 @@ async function findMoversByServiceArea(regions: string[]) {
     },
   });
 }
-
 
 export default {
   fetchMovers,

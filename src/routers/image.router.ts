@@ -1,6 +1,6 @@
+import imageController from "@/controllers/image.controller";
+import { upload } from "@/utils/uploadToS3";
 import Router from "express";
-import imageController from "../controllers/image.controller";
-import { upload } from "../utils/uploadToS3";
 
 const imageRouter = Router();
 
