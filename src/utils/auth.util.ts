@@ -1,14 +1,14 @@
 import bcrypt from "bcrypt";
 import { Client, Mover } from "@prisma/client";
-import { ConflictError } from "../types/errors";
-import { ErrorMessage } from "../constants/ErrorMessage";
+import { ConflictError } from "@/types";
+import { ErrorMessage } from "@/constants/ErrorMessage";
 
-// ✅ 비밀번호 해싱 함수
+// 비밀번호 해싱 함수
 export function hashPassword(password: string) {
   return bcrypt.hash(password, 10);
 }
 
-// ✅ 사용자 데이터에서 민감한 정보 뺌
+// 사용자 데이터에서 민감한 정보 뺌
 export function filterSensitiveUserData<T extends Client | Mover>(
   user: T,
 ): Omit<T, "hashedPassword" | "providerId"> {
@@ -16,7 +16,7 @@ export function filterSensitiveUserData<T extends Client | Mover>(
   return rest;
 }
 
-// ✅ 비밀번호 인증
+// 비밀번호 인증
 export async function verifyPassword(inputPassword: string, savedPassword: string) {
   const isValid = await bcrypt.compare(inputPassword, savedPassword);
 

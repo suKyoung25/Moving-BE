@@ -1,8 +1,8 @@
+import { ErrorMessage } from "@/constants/ErrorMessage";
 import { z } from "zod";
-import { ErrorMessage } from "../constants/ErrorMessage";
 import { emailSchema, nameSchema, phoneSchema } from "./auth.dto";
 
-// ✅ 개별 스키마
+// 개별 스키마
 export const profileImageSchema = z.string().optional();
 
 export const serviceTypeSchema = z
@@ -17,7 +17,7 @@ export const livingAreaSchema = z
 const passwordSchema = z.string().optional();
 const basicPasswordSchema = z.string().min(8, "기존 비밀번호를 입력해주세요.").optional();
 
-// ✅ 프로필 생성/수정을 함수로 분기처리 함
+// 프로필 생성/수정을 함수로 분기처리 함
 export function profileClientSchema(mode: "create" | "update") {
   // 프로필 생성
   const create = z.object({
@@ -78,7 +78,6 @@ export function profileClientSchema(mode: "create" | "update") {
   return mode === "create" ? create : update;
 }
 
-// ✅ DTO 만듦
 export const clientProfileCreateSchema = profileClientSchema("create");
 export const clientProfileUpdateSchema = profileClientSchema("update");
 

@@ -1,59 +1,45 @@
 import { NextFunction, Request, Response } from "express";
-import reviewService from "../services/review.service";
-import { CreateReviewDto, UpdateReviewDto } from "../dtos/review.dto";
 import { Review } from "@prisma/client";
+import reviewService from "@/services/review.service";
+import { CreateReviewDto, UpdateReviewDto } from "@/dtos/review.dto";
 
-// 내가 작성한 리뷰 목록
-async function getMyReviews(req: Request, res: Response, next: NextFunction) {
-  try {
-    const clientId = req.auth!.userId;
-
-    const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 6;
-
-    const result = await reviewService.getMyReviews(clientId, page, limit);
-    res.status(200).json({ message: "리뷰 목록 조회 성공", data: result });
-  } catch (error) {
-    next(error);
-  }
+// 공통 페이징 헬퍼 함수
+function getPaginationParams(req: Request) {
+  const page = Number(req.query.page) || 1;
+  const limit = Number(req.query.limit) || 6;
+  return { page, limit };
 }
 
-// 기사님에게 달린 리뷰 목록 조회
-async function getMoverReviews(req: Request, res: Response, next: NextFunction) {
-  try {
-    const moverId = req.auth!.userId;
-
-    const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 6;
-
-    const result = await reviewService.getMoverReviews(moverId, page, limit);
-    res.status(200).json({
-      message: "기사님 리뷰 목록 조회 성공",
-      data: result,
-    });
-  } catch (error) {
-    next(error);
-  }
-}
-
-// 특정 기사님에게 달린 리뷰 목록 조회 (공개용)
-async function getMoverReviewsById(req: Request, res: Response, next: NextFunction) {
+// 리뷰 목록 조회 (내 리뷰 + 기사님 리뷰)
+async function getReviews(req: Request, res: Response, next: NextFunction) {
   try {
     const { moverId } = req.params;
-    
-    const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 6;
-    
-    const result = await reviewService.getMoverReviews(moverId, page, limit);
-    res.status(200).json({
-      message: "기사님 리뷰 목록 조회 성공",
-      data: result,
-    });
+    const { page, limit } = getPaginationParams(req);
+
+    let result;
+    let message;
+
+    if (moverId) {
+      // 특정 기사님 리뷰 조회 (공개용)
+      result = await reviewService.getMoverReviews(moverId, page, limit);
+      message = "기사님 리뷰 목록 조회 성공";
+    } else if (req.query.type === "mover") {
+      // 기사님 본인 리뷰 조회
+      const userId = req.auth!.userId;
+      result = await reviewService.getMoverReviews(userId, page, limit);
+      message = "기사님 리뷰 목록 조회 성공";
+    } else {
+      // 내가 작성한 리뷰 조회 (기본값)
+      const clientId = req.auth!.userId;
+      result = await reviewService.getMyReviews(clientId, page, limit);
+      message = "리뷰 목록 조회 성공";
+    }
+
+    res.status(200).json({ message, data: result });
   } catch (error) {
     next(error);
   }
 }
-
 // 리뷰 작성
 async function createReview(
   req: Request<{}, {}, CreateReviewDto>,
@@ -132,11 +118,9 @@ async function getWritableReviews(req: Request, res: Response, next: NextFunctio
 }
 
 export default {
-  getMyReviews,
-  getMoverReviews,
+  getReviews,
   createReview,
   updateReview,
   deleteReview,
   getWritableReviews,
-  getMoverReviewsById,
 };

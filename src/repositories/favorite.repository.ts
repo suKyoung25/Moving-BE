@@ -1,6 +1,6 @@
+import prisma from "@/configs/prisma.config";
+import { ServerError } from "@/types";
 import { Client } from "@prisma/client";
-import prisma from "../configs/prisma.config";
-import { ServerError } from "../types/errors";
 
 // 찜한 기사님 목록
 async function findFavoriteMoverByClientId(

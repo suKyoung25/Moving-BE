@@ -1,6 +1,6 @@
+import favoriteRepository from "@/repositories/favorite.repository";
+import { BadRequestError } from "@/types";
 import { Client } from "@prisma/client";
-import favoriteRepository from "../repositories/favorite.repository";
-import { BadRequestError } from "../types/errors";
 
 // 찜한 기사님 목록
 async function getFavoriteMovers(clientId: Client["id"], page: number = 1, limit: number = 6) {

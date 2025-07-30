@@ -1,25 +1,24 @@
+import { ErrorMessage } from "@/constants/ErrorMessage";
+import authClientRepository from "@/repositories/authClient.repository";
+import clientRepository from "@/repositories/client.repository";
+import { ClientProfileRegister, ClientProfileUpdate, ConflictError, NotFoundError } from "@/types";
+import { hashPassword, verifyPassword } from "@/utils/auth.util";
+import { generateAccessToken, generateRefreshToken } from "@/utils/token.util";
 import { Client } from "@prisma/client";
-import { ClientProfileRegister, ClientProfileUpdate } from "../types";
-import profileClientRepository from "../repositories/client.repository";
-import { ConflictError, NotFoundError } from "../types/errors";
-import { ErrorMessage } from "../constants/ErrorMessage";
-import { generateAccessToken, generateRefreshToken } from "../utils/token.util";
-import authClientRepository from "../repositories/authClient.repository";
-import { hashPassword, verifyPassword } from "../utils/auth.util";
 
 async function update(userId: Client["id"], profile: ClientProfileRegister | ClientProfileUpdate) {
-  // ✅ 기존 프로필 등록했는지 확인 + 사용자 식별
-  const existingProfile = await profileClientRepository.findById(userId);
+  // 기존 프로필 등록했는지 확인 + 사용자 식별
+  const existingProfile = await clientRepository.findById(userId);
 
   // 등록 여부를 따져서
   const isRegistered = existingProfile.isProfileCompleted === true;
   let clientProfile;
 
-  // ✅ 등록 안 했으면 "등록"
+  // 등록 안 했으면 "등록"
   if (!isRegistered) {
     const newProfile = profile as ClientProfileRegister;
 
-    // 나중에 미들웨어로 뺄게요.... 바쁘니까 일단 구현....
+    // TODO: 나중에 미들웨어로 뺄게요.... 바쁘니까 일단 구현....
     if (!newProfile.serviceType || newProfile.serviceType.length === 0) {
       throw new ConflictError(ErrorMessage.NO_SERVICE_TYPE);
     }
@@ -29,12 +28,12 @@ async function update(userId: Client["id"], profile: ClientProfileRegister | Cli
     }
 
     // 반환
-    clientProfile = await profileClientRepository.create(userId, newProfile);
+    clientProfile = await clientRepository.create(userId, newProfile);
   } else {
-    // ✅ 등록한 경우는 "수정"
+    // 등록한 경우는 "수정"
     const newProfile = profile as ClientProfileUpdate;
 
-    // ✅ 유효성 검사 시작 ✔️
+    // 유효성 검사 시작
     const fieldErrors: Record<string, string> = {};
 
     // 1. 이메일 중복 검사
@@ -53,7 +52,7 @@ async function update(userId: Client["id"], profile: ClientProfileRegister | Cli
       }
     }
 
-    // 3. 새 비밀번호 설정 시 현재 비밀번호 검증 ✔️
+    // 3. 새 비밀번호 설정 시 현재 비밀번호 검증
     if (newProfile.newPassword && newProfile.password) {
       try {
         // 사용자 정보 가져오고
@@ -69,7 +68,7 @@ async function update(userId: Client["id"], profile: ClientProfileRegister | Cli
       }
     }
 
-    // 4. 오류 투척 ✔️
+    // 4. 오류 투척
     if (Object.keys(fieldErrors).length > 0) {
       throw new ConflictError("프로필 수정 유효성 검사 실패", fieldErrors);
     }
@@ -88,8 +87,7 @@ async function update(userId: Client["id"], profile: ClientProfileRegister | Cli
       newPasswordConfirmation: undefined, // DB에 저장하지 않음
     };
 
-    // ✔️
-    clientProfile = await profileClientRepository.update(userId, newData);
+    clientProfile = await clientRepository.update(userId, newData);
   }
 
   // 토큰 생성
@@ -111,8 +109,6 @@ async function update(userId: Client["id"], profile: ClientProfileRegister | Cli
   return { ...clientProfile, accessToken, refreshToken };
 }
 
-const profileClientService = {
+export default {
   update,
 };
-
-export default profileClientService;

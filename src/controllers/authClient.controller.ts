@@ -1,9 +1,9 @@
+import { SignInRequestDto, SignUpRequestDto } from "@/dtos/auth.dto";
+import authClientService from "@/services/authClient.service";
 import { Request, Response, NextFunction } from "express";
-import authClientService from "../services/authClient.service";
-import { SignInRequestDTO, SignUpRequestDTO } from "../dtos/auth.dto";
 
-// ✅ 일반 회원가입
-async function signUp(req: Request<{}, {}, SignUpRequestDTO>, res: Response, next: NextFunction) {
+// 일반 회원가입
+async function signUp(req: Request<{}, {}, SignUpRequestDto>, res: Response, next: NextFunction) {
   try {
     const client = await authClientService.create(req.body);
 
@@ -13,8 +13,8 @@ async function signUp(req: Request<{}, {}, SignUpRequestDTO>, res: Response, nex
   }
 }
 
-// ✅ 일반 로그인
-async function login(req: Request<{}, {}, SignInRequestDTO>, res: Response, next: NextFunction) {
+// 일반 로그인
+async function login(req: Request<{}, {}, SignInRequestDto>, res: Response, next: NextFunction) {
   try {
     const { email, password } = req.body;
 

@@ -1,4 +1,4 @@
-import { Client, Provider } from "@prisma/client";
+import { Provider } from "@prisma/client";
 
 // 일반 회원가입 자료 구조 : DB에 저장
 export interface SignUpDataLocal {
@@ -30,7 +30,7 @@ export interface SignInDataSocial {
   user: SignUpDataSocial & { userType: string };
 }
 
-//기사님 회원가입할 때 필요한 값 (컨트롤러, 서비스 단)
+// 기사님 회원가입할 때 필요한 값 (컨트롤러, 서비스 단)
 export type CreateMoverInput = {
   name: string;
   email: string;
@@ -38,7 +38,7 @@ export type CreateMoverInput = {
   password: string;
 };
 
-//기사님 회원가입할 때 필요한 값 (레포지토리 단)
+// 기사님 회원가입할 때 필요한 값 (레포지토리 단)
 export type CreateMoverInputwithHash = {
   name: string;
   email: string;
@@ -47,8 +47,24 @@ export type CreateMoverInputwithHash = {
   hashedPassword: string;
 };
 
-//기사님 로그인할 때 필요한 값 (컨트롤러, 서비스 단)
+// 기사님 로그인할 때 필요한 값 (컨트롤러, 서비스 단)
 export type GetMoverInput = {
   email: string;
   password: string;
+};
+
+// string <-> enum 변환
+export const providerMap: Record<string, Provider> = {
+  google: Provider.GOOGLE,
+  kakao: Provider.KAKAO,
+  naver: Provider.NAVER,
+};
+
+// 토큰 생성 시 필요
+export type CreatedToken = {
+  userId: string;
+  email: string;
+  name: string | null;
+  userType: string;
+  isProfileCompleted?: boolean;
 };

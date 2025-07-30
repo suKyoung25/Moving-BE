@@ -1,12 +1,17 @@
-import { ErrorMessage } from "../constants/ErrorMessage";
-import authRepository from "../repositories/auth.repository";
-import authClientRepository from "../repositories/authClient.repository";
-import { LoginDataLocal, SignUpDataLocal, SignUpDataSocial } from "../types";
-import { BadRequestError, NotFoundError } from "../types/errors";
-import { filterSensitiveUserData, hashPassword, verifyPassword } from "../utils/auth.util";
-import { generateAccessToken, generateRefreshToken } from "../utils/token.util";
+import { ErrorMessage } from "@/constants/ErrorMessage";
+import authRepository from "@/repositories/auth.repository";
+import authClientRepository from "@/repositories/authClient.repository";
+import {
+  BadRequestError,
+  LoginDataLocal,
+  NotFoundError,
+  SignUpDataLocal,
+  SignUpDataSocial,
+} from "@/types";
+import { filterSensitiveUserData, hashPassword, verifyPassword } from "@/utils/auth.util";
+import { generateAccessToken, generateRefreshToken } from "@/utils/token.util";
 
-// ✅ 회원가입 - Local
+// 회원가입 - Local
 async function create(client: SignUpDataLocal) {
   // 비밀번호 해시
   const hashedPassword = await hashPassword(client.password);
@@ -37,7 +42,7 @@ async function create(client: SignUpDataLocal) {
   return { accessToken, refreshToken, user };
 }
 
-// ✅ 로그인 - Local
+// 로그인 - Local
 async function loginWithLocal({ email, hashedPassword }: LoginDataLocal) {
   const client = await authClientRepository.findByEmail(email);
 
@@ -70,7 +75,7 @@ async function loginWithLocal({ email, hashedPassword }: LoginDataLocal) {
   return { accessToken, refreshToken, user };
 }
 
-// ✅ 소셜 로그인
+//  소셜 로그인
 async function oAuthCreateOrUpdate(data: SignUpDataSocial) {
   // 1. 이메일로 사용자가 있는지 찾음
   const { email, ...rest } = data;
@@ -93,6 +98,8 @@ async function oAuthCreateOrUpdate(data: SignUpDataSocial) {
   return filterSensitiveUserData(user);
 }
 
-const authClientService = { create, loginWithLocal, oAuthCreateOrUpdate };
-
-export default authClientService;
+export default {
+  create,
+  loginWithLocal,
+  oAuthCreateOrUpdate,
+};
