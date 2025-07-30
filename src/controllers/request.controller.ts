@@ -62,13 +62,13 @@ async function createRequest(
 async function getReceivedRequests(req: Request, res: Response, next: NextFunction) {
   try {
     const moverId = req.auth!.userId;
-    const { result, nextCursor } = await requestService.getReceivedRequests({
+    const { result, nextCursor, totalCount } = await requestService.getReceivedRequests({
       ...req.query,
       moverId,
     });
     res.json({
       message: "받은 요청 조회 성공",
-      totalCount: result.length,
+      totalCount,
       nextCursor,
       requests: result,
     });
