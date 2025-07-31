@@ -24,6 +24,13 @@ async function createRequest({
   request: CreateRequestDto;
   clientId: string;
 }) {
+  // 활성된 견적 요청 있는지 확인
+  const existing = await requestRepository.findPendingRequestById(clientId);
+
+  if (existing) {
+    throw new BadRequestError(ErrorMessage.ALREADY_EXIST_REQUEST);
+  }
+
   const newRequest = await requestRepository.createEstimateRequest(request, clientId);
 
   // 견적 요청한 유저 이름 조회
@@ -67,10 +74,10 @@ async function getReceivedRequests(query: GetReceivedRequestsQuery) {
   });
 }
 
-// 활성 견적 요청 조회 (일반)
-async function getClientActiveRequests(clientId: string) {
+// 활성 견적 요청 조회 (일반 유저)
+async function getClientActiveRequest(clientId: string) {
   if (!clientId) throw new BadRequestError("clientId가 필요합니다.");
-  return requestRepository.fetchClientActiveRequests(clientId);
+  return requestRepository.findPendingRequestById(clientId);
 }
 
 // 기사 지정
@@ -87,6 +94,6 @@ export default {
   saveDraft,
   createRequest,
   getReceivedRequests,
-  getClientActiveRequests,
+  getClientActiveRequest,
   designateMover,
 };
