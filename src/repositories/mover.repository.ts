@@ -60,7 +60,6 @@ async function fetchMovers(
         orderBy = { averageReviewRating: "desc" };
         break;
       case "highExperience":
-        // NULL 값을 마지막으로 보내고, 숫자값만 내림차순 정렬
         orderBy = [{ career: { sort: "desc", nulls: "last" } }];
         break;
       case "mostBooked":
@@ -73,21 +72,73 @@ async function fetchMovers(
     // 전체 개수 조회
     const total = await prisma.mover.count({ where: whereCondition });
 
-    // 데이터 조회
+    // 수정: 지정견적 정보 포함하여 데이터 조회
     const movers = await prisma.mover.findMany({
       where: whereCondition,
       include: {
         favorites: clientId ? { where: { clientId }, select: { id: true } } : false,
+        // 추가: 지정견적 요청 정보
+        designatedRequests: clientId
+          ? {
+              where: {
+                request: {
+                  clientId: clientId,
+                  isPending: true,
+                },
+              },
+              include: {
+                request: {
+                  include: {
+                    estimate: {
+                      where: {
+                        moverId: undefined, // 이건 나중에 각 mover에 대해 동적으로 설정
+                      },
+                      select: {
+                        moverStatus: true,
+                      },
+                    },
+                  },
+                },
+              },
+            }
+          : false,
       },
       orderBy,
       skip,
       take: limit,
     });
 
-    const simplifiedMovers: SimplifiedMover[] = movers.map(({ favorites, ...mover }) => ({
-      ...mover,
-      isFavorite: Boolean(favorites?.length),
-    }));
+    // 수정: 지정견적 정보 포함한 SimplifiedMover 생성
+    const simplifiedMovers: SimplifiedMover[] = await Promise.all(
+      movers.map(async ({ favorites, designatedRequests, ...mover }) => {
+        let hasDesignatedRequest = false;
+        let designatedEstimateStatus = null;
+
+        if (clientId && designatedRequests && designatedRequests.length > 0) {
+          hasDesignatedRequest = true;
+
+          // 해당 기사의 견적서 상태 확인
+          const estimate = await prisma.estimate.findFirst({
+            where: {
+              requestId: designatedRequests[0].requestId,
+              moverId: mover.id,
+            },
+            select: {
+              moverStatus: true,
+            },
+          });
+
+          designatedEstimateStatus = estimate?.moverStatus || null;
+        }
+
+        return {
+          ...mover,
+          isFavorite: Boolean(favorites?.length),
+          hasDesignatedRequest,
+          designatedEstimateStatus,
+        };
+      }),
+    );
 
     const hasMore = skip + limit < total;
 
@@ -103,7 +154,7 @@ async function fetchMovers(
   }
 }
 
-// 기사님 상세 조회
+// 기사님 상세 조회 - 지정견적 정보 포함
 async function fetchMoverDetail(moverId: string, clientId?: string): Promise<MoverDetail> {
   try {
     const mover = await prisma.mover.findUnique({
@@ -116,13 +167,50 @@ async function fetchMoverDetail(moverId: string, clientId?: string): Promise<Mov
 
     if (!mover) throw new NotFoundError("기사님을 찾을 수 없습니다.");
 
+    // 추가: 지정견적 정보 조회
+    let hasDesignatedRequest = false;
+    let designatedEstimateStatus = null;
+
+    if (clientId) {
+      const designatedRequest = await prisma.designatedRequest.findFirst({
+        where: {
+          moverId: moverId,
+          request: {
+            clientId: clientId,
+            isPending: true,
+          },
+        },
+        include: {
+          request: true,
+        },
+      });
+
+      if (designatedRequest) {
+        hasDesignatedRequest = true;
+
+        const estimate = await prisma.estimate.findFirst({
+          where: {
+            requestId: designatedRequest.requestId,
+            moverId: moverId,
+          },
+          select: {
+            moverStatus: true,
+          },
+        });
+
+        designatedEstimateStatus = estimate?.moverStatus || null;
+      }
+    }
+
     return {
       ...mover,
       name: mover.name || "",
       phone: mover.phone || "",
-      serviceArea: mover.serviceArea.map((r) => r.regionName), // Region 객체 → 문자열 배열
-      favoriteCount: mover.favoriteCount || 0, // null → 0
-      isFavorite: Boolean(mover.favorites?.length), // 찜 여부만 계산
+      serviceArea: mover.serviceArea.map((r) => r.regionName),
+      favoriteCount: mover.favoriteCount || 0,
+      isFavorite: Boolean(mover.favorites?.length),
+      hasDesignatedRequest,
+      designatedEstimateStatus,
     };
   } catch (error) {
     throw new ServerError("기사님 상세 조회 중 오류 발생", error);

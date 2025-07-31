@@ -13,24 +13,18 @@ export type SimplifiedMover = {
   profileImage: string | null;
   favoriteCount: number;
   isFavorite: boolean;
+  hasDesignatedRequest?: boolean;
+  designatedEstimateStatus?: "CONFIRMED" | "REJECTED" | null;
 };
 
-export type MoverDetail = {
-  id: string;
-  nickName: string | null;
+export interface MoverDetail extends SimplifiedMover {
   name: string;
   phone: string;
-  profileImage: string | null;
-  career: number | null;
-  serviceType: string[]; // 혹은 MoveType[]
-  serviceArea: string[]; // regionName 목록
   description: string | null;
-  averageReviewRating: number;
-  reviewCount: number;
-  estimateCount: number;
-  favoriteCount: number;
-  isFavorite: boolean;
-};
+  serviceArea: string[];
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 // 기사님 기본정보 수정 시 필요한 타입 (컨트롤러, 서비스 단)
 export type EditMoverAccount = {
