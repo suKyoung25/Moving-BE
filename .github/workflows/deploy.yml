@@ -1,0 +1,44 @@
+name: Deploy To EC2
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  Deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 깃헙 레포지토리 불러오기
+        uses: actions/checkout@v4
+      - name: Node 설치
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: 의존성 설치
+        run: npm ci
+      - name: .env 파일 생성
+        run: |
+          echo "${{ secrets.ENV }}" > .env
+      - name: 테스트 코드 실행
+        run: npm run test
+      - name: SSH로 EC2에 접속해서 Express 서버 배포하기
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          ENV: ${{ secrets.ENV }}
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          envs: ENV
+          script_stop: true
+          script: |
+            cd /home/ec2-user/6th-Moving-4Team-BE 
+            rm -rf .env
+            git pull origin dev
+            echo "$ENV" > .env
+            npm ci
+            npm run build
+            pm2 kill
+            pm2 start dist/app.js
+            echo "✓ Successfully deployed"

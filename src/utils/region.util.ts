@@ -1,24 +1,4 @@
-import { Response } from "express";
-
-const user = new Map<string, Response>();
-
-export function addUser(userId: string, res: Response) {
-  user.set(userId, res);
-}
-
-export function removeUser(userId: string) {
-  user.delete(userId);
-}
-
-export function sendNotificationTo(userId: string, payload: any) {
-  const res = user.get(userId);
-  if (!res) return;
-
-  const data = `data: ${JSON.stringify(payload)}\n\n`;
-  res.write(data);
-}
-
-const MoveTypeMap: Record<string, string> = {
+export const MoveTypeMap: Record<string, string> = {
   SMALL: "소형이사",
   HOME: "가정이사",
   OFFICE: "사무실이사",
@@ -33,8 +13,11 @@ export function parseRegion(address: string): string {
   if (!address) return "";
 
   const parts = address.split(" ");
-  const sido = parts[0].replace("시", ""); // "서울시" -> "서울"
-  const sigungu = parts.find((p) => /[시군구]/.test(p)) || "";
+  const sidoRaw = parts[0] || "";
+  const sido = sidoRaw.replace(/(특별시|광역시|시|도)/g, ""); // 서울시 → 서울, 경기도 → 경기
+
+  // 두 번째나 세 번째 단어에서 '시', '군', '구'가 포함된 것을 찾음
+  const sigungu = parts.find((p, i) => i > 0 && /[시군구]/.test(p)) || "";
 
   return `${sido}(${sigungu})`;
 }
