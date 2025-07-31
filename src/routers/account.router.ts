@@ -1,7 +1,7 @@
 import accountMoverController from "../controllers/accountMover.controller";
 import { editAccountMoverSchema } from "../dtos/mover.dto";
 import { validateReq } from "../middlewares/auth.middleware";
-import { checkMoverProfileInfo } from "../middlewares/profile.middleware";
+import { checkMoverAccountInfo } from "../middlewares/account.middleware";
 import express from "express";
 
 const accountRouter = express.Router();
@@ -10,7 +10,7 @@ const accountRouter = express.Router();
 accountRouter.patch(
   "/edit/mover",
   validateReq(editAccountMoverSchema),
-  checkMoverProfileInfo,
+  checkMoverAccountInfo,
   accountMoverController.editAccountMover,
 );
 
