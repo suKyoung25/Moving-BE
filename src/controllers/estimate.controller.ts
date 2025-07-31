@@ -176,10 +176,14 @@ async function getReceivedEstimates(req: Request, res: Response, next: NextFunct
   try {
     const clientId = req.auth!.userId;
     const category = (req.query.category as "all" | "confirmed") || "all";
-    const data = await estimateService.getReceivedEstimates(clientId, category);
+    const offset = parseInt(req.query.offset as string) || 0;
+    const limit = parseInt(req.query.limit as string) || 6;
+
+    const data = await estimateService.getReceivedEstimates(clientId, category, offset, limit);
+
     return res.status(200).json({
       message: "받은 견적 조회 성공",
-      data: data,
+      data,
     });
   } catch (e) {
     next(e);
