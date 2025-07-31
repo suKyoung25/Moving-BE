@@ -32,7 +32,7 @@ async function modifyMoverProfile(user: MoverProfile) {
     };
   }
 
-  const mover = await authMoverRepository.findMoverById(user.userId);
+  const mover = await authMoverRepository.getMoverById(user.userId);
 
   if (!mover) return null;
 

@@ -46,8 +46,21 @@ async function findMoverByEmailExcludingSelf(email: string, selfId: string) {
   return !!mover;
 }
 
+// 본인을 제외한 데이터가 있는지 확인 (닉네임)
+async function findMoverByNickNameExcludingSelf(nickName: string, selfId: string) {
+  const mover = await prisma.mover.findFirst({
+    where: {
+      nickName,
+      NOT: { id: selfId },
+    },
+  });
+
+  return !!mover;
+}
+
 export default {
   patchMoverAccount,
   findMoverByPhoneExcludingSelf,
   findMoverByEmailExcludingSelf,
+  findMoverByNickNameExcludingSelf,
 };

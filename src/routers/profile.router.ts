@@ -3,6 +3,7 @@ import profileMoverController from "../controllers/profileMover.controller";
 import { MoverProfileSchema } from "../dtos/mover.dto";
 import { validateReq, verifyAccessToken } from "../middlewares/auth.middleware";
 import express from "express";
+import { checkMoverProfileInfo } from "../middlewares/profile.middleware";
 
 const profileRouter = express.Router();
 
@@ -11,6 +12,7 @@ profileRouter.patch(
   "/mover",
   verifyAccessToken,
   validateReq(MoverProfileSchema),
+  checkMoverProfileInfo,
   profileMoverController.moverPatchProfile,
 );
 
