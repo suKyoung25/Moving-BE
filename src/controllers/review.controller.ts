@@ -10,7 +10,7 @@ function getPaginationParams(req: Request) {
   return { page, limit };
 }
 
-// 리뷰 목록 조회 (내 리뷰 + 기사님 리뷰)
+// 리뷰 목록 조회 (내가 작성한 리뷰 + 특정 기사님 리뷰)
 async function getReviews(req: Request, res: Response, next: NextFunction) {
   try {
     const { moverId } = req.params;
@@ -27,7 +27,7 @@ async function getReviews(req: Request, res: Response, next: NextFunction) {
       // 내가 작성한 리뷰 조회 (기본값)
       const clientId = req.auth!.userId;
       result = await reviewService.getMyReviews(clientId, page, limit);
-      message = "리뷰 목록 조회 성공";
+      message = "내가 작성한 리뷰 목록 조회 성공";
     }
 
     res.status(200).json({ message, data: result });
@@ -36,22 +36,21 @@ async function getReviews(req: Request, res: Response, next: NextFunction) {
   }
 }
 
-// 기사님 본인 리뷰 조회 전용 함수
+// 기사님 본인에게 달린 리뷰 조회 전용 함수
 async function getMoverOwnReviews(req: Request, res: Response, next: NextFunction) {
   try {
-    const userId = req.auth!.userId;
+    const moverId = req.auth!.userId; // 기사님 본인의 ID
     const { page, limit } = getPaginationParams(req);
 
-    const result = await reviewService.getMoverReviews(userId, page, limit);
+    const result = await reviewService.getMoverReviews(moverId, page, limit);
     res.status(200).json({
-      message: "기사님 리뷰 목록 조회 성공",
+      message: "기사님에게 달린 리뷰 목록 조회 성공",
       data: result,
     });
   } catch (error) {
     next(error);
   }
 }
-
 // 리뷰 작성
 async function createReview(
   req: Request<{}, {}, CreateReviewDto>,
