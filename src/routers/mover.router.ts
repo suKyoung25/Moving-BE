@@ -1,5 +1,5 @@
-import moverController from "@/controllers/mover.controller";
-import { optionalAuth, verifyAccessToken } from "@/middlewares/auth.middleware";
+import moverController from "../controllers/mover.controller";
+import { optionalAuth, verifyAccessToken } from "../middlewares/auth.middleware";
 import express from "express";
 
 const { getMovers, getMoverDetail, toggleFavoriteMover, getMoverProfile } = moverController;

@@ -1,5 +1,5 @@
-import prisma from "@/configs/prisma.config";
-import { SignUpDataLocal, SignUpDataSocial } from "@/types";
+import prisma from "../configs/prisma.config";
+import { SignUpDataLocal, SignUpDataSocial } from "../types";
 import { Client } from "@prisma/client";
 
 async function findById(id: Client["id"]) {

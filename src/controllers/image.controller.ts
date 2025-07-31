@@ -1,4 +1,4 @@
-import imageService from "@/services/image.service";
+import imageService from "../services/image.service";
 import { NextFunction, Request, Response } from "express";
 
 async function uploadImage(req: Request, res: Response, next: NextFunction) {

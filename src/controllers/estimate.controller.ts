@@ -1,4 +1,4 @@
-import estimateService from "@/services/estimate.service";
+import estimateService from "../services/estimate.service";
 import { NextFunction, Request, Response } from "express";
 
 // 대기 중인 견적 조회

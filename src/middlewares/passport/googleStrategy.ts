@@ -1,8 +1,8 @@
 import { Strategy as GoogleStrategy, Profile } from "passport-google-oauth20";
 import { Request } from "express";
-import { NotFoundError, providerMap } from "@/types";
-import authClientService from "@/services/authClient.service";
-import authMoverService from "@/services/authMover.service";
+import { NotFoundError, providerMap } from "../../types";
+import authClientService from "../../services/authClient.service";
+import authMoverService from "../../services/authMover.service";
 
 const googleStrategyOptions = {
   clientID: process.env.GOOGLE_CLIENT_ID!,

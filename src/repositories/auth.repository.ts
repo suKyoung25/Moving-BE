@@ -1,4 +1,4 @@
-import prisma from "@/configs/prisma.config";
+import prisma from "../configs/prisma.config";
 import { Client } from "@prisma/client";
 
 // 그냥 이메일 찾기

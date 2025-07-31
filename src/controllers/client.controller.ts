@@ -2,9 +2,9 @@ import {
   ClientProfileRegisterDto,
   ClientProfileUpdateDto,
   profileClientSchema,
-} from "@/dtos/client.dto";
-import profileClientRepository from "@/repositories/client.repository";
-import profileClientService from "@/services/client.service";
+} from "../dtos/client.dto";
+import profileClientRepository from "../repositories/client.repository";
+import profileClientService from "../services/client.service";
 import { Request, Response, NextFunction } from "express";
 
 async function update(

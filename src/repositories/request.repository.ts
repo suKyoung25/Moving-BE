@@ -1,12 +1,12 @@
-import prisma from "@/configs/prisma.config";
-import { CreateRequestDto } from "@/dtos/request.dto";
+import prisma from "../configs/prisma.config";
+import { CreateRequestDto } from "../dtos/request.dto";
 import {
   BadRequestError,
   ConflictError,
   GetFilteredRequestsInput,
   NotFoundError,
   ServerError,
-} from "@/types";
+} from "../types";
 import { Prisma, RequestDraft } from "@prisma/client";
 
 const now = new Date();
@@ -164,6 +164,8 @@ async function getFilteredRequests({
       ? { moveDate: "desc" }
       : { moveDate: "asc" };
 
+  const totalCount = await prisma.request.count({ where });
+
   const args = {
     where,
     orderBy,
@@ -197,6 +199,7 @@ async function getFilteredRequests({
   return {
     result,
     nextCursor,
+    totalCount,
   };
 }
 

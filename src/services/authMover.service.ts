@@ -1,14 +1,14 @@
-import { ErrorMessage } from "@/constants/ErrorMessage";
-import authMoverRepository from "@/repositories/authMover.repository";
+import { ErrorMessage } from "../constants/ErrorMessage";
+import authMoverRepository from "../repositories/authMover.repository";
 import {
   BadRequestError,
   CreateMoverInput,
   GetMoverInput,
   NotFoundError,
   SignUpDataSocial,
-} from "@/types";
-import { filterSensitiveUserData, hashPassword } from "@/utils/auth.util";
-import { generateAccessToken, generateRefreshToken } from "@/utils/token.util";
+} from "../types";
+import { filterSensitiveUserData, hashPassword } from "../utils/auth.util";
+import { generateAccessToken, generateRefreshToken } from "../utils/token.util";
 
 // 기사님 생성
 async function createMover(user: CreateMoverInput) {

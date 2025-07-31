@@ -1,4 +1,4 @@
-import { ErrorMessage } from "@/constants/ErrorMessage";
+import { ErrorMessage } from "../constants/ErrorMessage";
 import { MoveType } from "@prisma/client";
 import z from "zod";
 

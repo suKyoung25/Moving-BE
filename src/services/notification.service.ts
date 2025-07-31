@@ -1,7 +1,7 @@
-import { ErrorMessage } from "@/constants/ErrorMessage";
-import { NotificationTemplate } from "@/constants/NotificationTemplate";
-import moverRepository from "@/repositories/mover.repository";
-import notificationRepository from "@/repositories/notification.repository";
+import { ErrorMessage } from "../constants/ErrorMessage";
+import { NotificationTemplate } from "../constants/NotificationTemplate";
+import moverRepository from "../repositories/mover.repository";
+import notificationRepository from "../repositories/notification.repository";
 import {
   ForbiddenError,
   NotFoundError,
@@ -9,8 +9,9 @@ import {
   NotifyConfirmEstimate,
   NotifyNewEstimate,
   NotifyNewRequest,
-} from "@/types";
-import { parseRegionKeywords, sendNotificationTo } from "@/utils/sse.util";
+} from "../types";
+import { parseRegionKeywords } from "../utils/region.util";
+import { sendNotificationTo } from "../utils/sse.helper";
 import { Estimate, NotificationType } from "@prisma/client";
 
 // 알림 전송 + 저장 함수

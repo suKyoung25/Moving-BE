@@ -1,9 +1,9 @@
-import { ErrorMessage } from "@/constants/ErrorMessage";
-import authClientRepository from "@/repositories/authClient.repository";
-import clientRepository from "@/repositories/client.repository";
-import { ClientProfileRegister, ClientProfileUpdate, ConflictError, NotFoundError } from "@/types";
-import { hashPassword, verifyPassword } from "@/utils/auth.util";
-import { generateAccessToken, generateRefreshToken } from "@/utils/token.util";
+import { ErrorMessage } from "../constants/ErrorMessage";
+import authClientRepository from "../repositories/authClient.repository";
+import clientRepository from "../repositories/client.repository";
+import { ClientProfileRegister, ClientProfileUpdate, ConflictError, NotFoundError } from "../types";
+import { hashPassword, verifyPassword } from "../utils/auth.util";
+import { generateAccessToken, generateRefreshToken } from "../utils/token.util";
 import { Client } from "@prisma/client";
 
 async function update(userId: Client["id"], profile: ClientProfileRegister | ClientProfileUpdate) {

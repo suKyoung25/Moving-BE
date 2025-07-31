@@ -2,11 +2,11 @@ import { expressjwt } from "express-jwt";
 import { ZodSchema } from "zod";
 import { Request, Response, NextFunction } from "express";
 import bcrypt from "bcrypt";
-import { BadRequestError, ConflictError } from "@/types";
-import { ErrorMessage } from "@/constants/ErrorMessage";
-import authMoverRepository from "@/repositories/authMover.repository";
-import authRepository from "@/repositories/auth.repository";
-import authClientRepository from "@/repositories/authClient.repository";
+import { BadRequestError, ConflictError } from "../types";
+import { ErrorMessage } from "../constants/ErrorMessage";
+import authMoverRepository from "../repositories/authMover.repository";
+import authRepository from "../repositories/auth.repository";
+import authClientRepository from "../repositories/authClient.repository";
 
 const secretKey = process.env.JWT_SECRET;
 

@@ -1,5 +1,5 @@
-import prisma from "@/configs/prisma.config";
-import { ServerError } from "@/types";
+import prisma from "../configs/prisma.config";
+import { ServerError } from "../types";
 import { Client } from "@prisma/client";
 
 // 찜한 기사님 목록
