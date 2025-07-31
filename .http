@@ -1,0 +1,11 @@
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4OWEyM2VkNC02NDM5LTRiZWYtOTk5Yi0zZDlkNzY0YjQ2ZDciLCJlbWFpbCI6InRlc3Q5OUBnYW1pbC5jb20iLCJuYW1lIjoi7Y6Y7J207KeAIiwidXNlclR5cGUiOiJjbGllbnQiLCJpc1Byb2ZpbGVDb21wbGV0ZWQiOnRydWUsImlhdCI6MTc1MzkyNDc5MywiZXhwIjoxNzUzOTI4MzkzfQ.spNZmrCd0cRSivWV-cbrj7aa-3qR09XkfJ9vBqv0djo
+
+### 대기 중인 견적 조회
+GET http://localhost:4000/estimates/pending?offset=1&limit=6
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### 받은 견적 조회
+GET http://localhost:4000/estimates/received
+Content-Type: application/json
+Authorization: Bearer {{token}}

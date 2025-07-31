@@ -6,7 +6,10 @@ async function getPendingEstimates(req: Request, res: Response, next: NextFuncti
   try {
     const clientId = req.auth!.userId;
 
-    const data = await estimateService.getPendingEstimates(clientId);
+    const offset = parseInt(req.query.offset as string) || 0;
+    const limit = parseInt(req.query.limit as string) || 6;
+
+    const data = await estimateService.getPendingEstimates(clientId, offset, limit);
 
     return res.status(200).json({
       message: "대기 중인 견적 조회 성공",
@@ -168,7 +171,7 @@ async function getRejectedEstimates(
   }
 }
 
-// 대기중연 견적 조회
+// 받은 견적 조회
 async function getReceivedEstimates(req: Request, res: Response, next: NextFunction) {
   try {
     const clientId = req.auth!.userId;
