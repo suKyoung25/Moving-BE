@@ -30,7 +30,7 @@ async function verify(
 
   // 이메일 없으면 오류 처리
   if (!email) {
-    return done(new NotFoundError("카카오 이메일 x"));
+    return done(new NotFoundError("이메일을 받지 못해 카카오 로그인에 실패했습니다."));
   }
 
   let userInfo;
@@ -50,7 +50,7 @@ async function verify(
       name: "카카오",
     });
   } else {
-    throw new NotFoundError("소셜 로그인해야 하는데 userType 없음");
+    throw new NotFoundError("소셜 로그인: userType을 식별하지 못했습니다.");
   }
 
   done(null, userInfo); // req.user = user;

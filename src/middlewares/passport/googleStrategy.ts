@@ -25,7 +25,7 @@ async function verify(
 
   // 이메일 없으면 오류 처리
   if (!profile.emails || profile.emails.length === 0) {
-    return done(new NotFoundError("구글 이메일 x"));
+    return done(new NotFoundError("이메일을 받지 못해 구글 로그인에 실패했습니다."));
   }
 
   // 사용자 데이터
@@ -46,7 +46,7 @@ async function verify(
       name: profile.displayName,
     });
   } else {
-    throw new NotFoundError("소셜 로그인 해야 하는데 userType을 못 받아옴");
+    throw new NotFoundError("소셜 로그인: userType을 식별하지 못했습니다.");
   }
 
   done(null, userInfo); // req.user = user;

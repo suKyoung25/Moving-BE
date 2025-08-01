@@ -1,4 +1,3 @@
-import { text } from "figlet";
 import mock from "../constants/client.mock";
 
 // mock 함수 만듦
@@ -236,7 +235,7 @@ describe("DB에 소셜 로그인 자료 넣는 것 검증", () => {
   });
 });
 
-describe.only("DB에 소셜 로그인 자료 넣는 것 검증", () => {
+describe("DB에 소셜 로그인 자료 넣는 것 검증", () => {
   // 0. 준비
   beforeEach(() => {
     jest.clearAllMocks();
