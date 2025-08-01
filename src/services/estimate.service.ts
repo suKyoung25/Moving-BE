@@ -108,42 +108,8 @@ async function rejectEstimate({ comment, moverId, clientId, requestId }: Estimat
 }
 
 // 보낸 견적 조회
-async function findEstimatesByMoverId(moverId: string) {
-  return prisma.estimate.findMany({
-    where: {
-      moverId,
-      moverStatus: "CONFIRMED",
-    },
-    select: {
-      id: true,
-      price: true,
-      comment: true,
-      createdAt: true,
-      isClientConfirmed: true,
-      moverId: true,
-      request: {
-        select: {
-          moveDate: true,
-          fromAddress: true,
-          toAddress: true,
-          moveType: true,
-          client: {
-            select: {
-              name: true,
-            },
-          },
-          designatedRequest: {
-            select: {
-              moverId: true,
-            },
-          },
-        },
-      },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+async function getPaginatedSentEstimates(moverId: string, page: number) {
+  return estimateRepository.getPaginatedSentEstimates(moverId, page);
 }
 
 // 보낸 견적 상세 조회
@@ -183,42 +149,8 @@ async function findSentEstimateById(moverId: string, estimateId: string) {
 }
 
 // 반려한 견적 조회
-async function getEstimatesByStatus(moverId: string) {
-  return prisma.estimate.findMany({
-    where: {
-      moverId,
-      moverStatus: "REJECTED",
-    },
-    select: {
-      id: true,
-      price: true,
-      comment: true,
-      createdAt: true,
-      isClientConfirmed: true,
-      moverId: true,
-      request: {
-        select: {
-          moveDate: true,
-          fromAddress: true,
-          toAddress: true,
-          moveType: true,
-          client: {
-            select: {
-              name: true,
-            },
-          },
-          designatedRequest: {
-            select: {
-              moverId: true,
-            },
-          },
-        },
-      },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+async function getRejectedEstimates(moverId: string, page: number) {
+  return await estimateRepository.getRejectedEstimates(moverId, page);
 }
 
 // client 받은 견적 조회
@@ -354,8 +286,8 @@ export default {
   createEstimate,
   findSentEstimateById,
   rejectEstimate,
-  findEstimatesByMoverId,
-  getEstimatesByStatus,
+  getPaginatedSentEstimates,
+  getRejectedEstimates,
   getReceivedEstimates,
   confirmEstimate,
   getEstimateDetail,
