@@ -285,6 +285,112 @@ async function findConfirmedEstimate(requestId: string) {
   });
 }
 
+// 반려한 견적 조회
+const PAGE_SIZE = 6;
+
+async function getRejectedEstimates(moverId: string, page: number) {
+  const skip = (page - 1) * PAGE_SIZE;
+
+  const [totalCount, estimates] = await Promise.all([
+    prisma.estimate.count({
+      where: {
+        moverId,
+        moverStatus: "REJECTED",
+      },
+    }),
+    prisma.estimate.findMany({
+      where: {
+        moverId,
+        moverStatus: "REJECTED",
+      },
+      select: {
+        id: true,
+        price: true,
+        comment: true,
+        createdAt: true,
+        isClientConfirmed: true,
+        moverId: true,
+        request: {
+          select: {
+            moveDate: true,
+            fromAddress: true,
+            toAddress: true,
+            moveType: true,
+            client: {
+              select: { name: true },
+            },
+            designatedRequest: {
+              select: { moverId: true },
+            },
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      skip,
+      take: PAGE_SIZE,
+    }),
+  ]);
+
+  return {
+    totalCount,
+    totalPages: Math.ceil(totalCount / PAGE_SIZE),
+    estimates,
+  };
+}
+
+// 보낸 견적 조회
+async function getPaginatedSentEstimates(moverId: string, page: number) {
+  const skip = (page - 1) * PAGE_SIZE;
+
+  const [totalCount, estimates] = await Promise.all([
+    prisma.estimate.count({
+      where: {
+        moverId,
+        moverStatus: "CONFIRMED",
+      },
+    }),
+    prisma.estimate.findMany({
+      where: {
+        moverId,
+        moverStatus: "CONFIRMED",
+      },
+      select: {
+        id: true,
+        price: true,
+        comment: true,
+        createdAt: true,
+        isClientConfirmed: true,
+        moverId: true,
+        request: {
+          select: {
+            moveDate: true,
+            fromAddress: true,
+            toAddress: true,
+            moveType: true,
+            client: {
+              select: { name: true },
+            },
+            designatedRequest: {
+              select: { moverId: true },
+            },
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+      skip,
+      take: PAGE_SIZE,
+    }),
+  ]);
+
+  return {
+    totalCount,
+    totalPages: Math.ceil(totalCount / PAGE_SIZE),
+    estimates,
+  };
+}
+
 export default {
   findWritableEstimatesByClientId,
   findPendingEstimatesByClientId,
@@ -298,4 +404,6 @@ export default {
   findEstimateDetailById,
   findConfirmedEstimate,
   updateRequestPendingFalse,
+  getRejectedEstimates,
+  getPaginatedSentEstimates,
 };
