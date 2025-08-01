@@ -1,3 +1,4 @@
+import { startOfToday } from "date-fns";
 import prisma from "../configs/prisma.config";
 import { CreateRequestDto } from "../dtos/request.dto";
 import {
@@ -204,13 +205,21 @@ async function getFilteredRequests({
 }
 
 // 활성 견적 요청 조회
-async function fetchClientActiveRequests(clientId: string) {
-  return prisma.request.findMany({
+async function findPendingRequestById(clientId: string) {
+  const today = startOfToday();
+
+  return prisma.request.findFirst({
     where: {
       clientId,
-      isPending: true,
+      OR: [
+        { isPending: true },
+        {
+          moveDate: {
+            gte: today,
+          },
+        },
+      ],
     },
-    orderBy: { requestedAt: "desc" },
   });
 }
 
@@ -308,6 +317,6 @@ export default {
   saveRequestDraft,
   createEstimateRequest,
   getFilteredRequests,
-  fetchClientActiveRequests,
+  findPendingRequestById,
   designateMover,
 };
