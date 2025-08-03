@@ -89,7 +89,7 @@ describe("authClientService에서 일반 로그인 logic 검사", () => {
 });
 
 // 소셜 로그인
-describe.only("Client의 소셜 로그인 logic 검사", () => {
+describe("Client의 소셜 로그인 logic 검사", () => {
   // 0. 준비
   beforeEach(() => {
     jest.clearAllMocks();
