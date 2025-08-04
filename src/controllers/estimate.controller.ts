@@ -124,20 +124,25 @@ async function rejectEstimate(req: Request, res: Response, next: NextFunction): 
 }
 
 // 보낸 견적 조회
-async function getSentEstimates(req: Request, res: Response, next: NextFunction): Promise<void> {
+async function getSentEstimates(req: Request, res: Response, next: NextFunction) {
   try {
-    const moverId = req.auth!.userId;
+    const moverId = req.auth?.userId;
+    const page = parseInt(req.query.page as string) || 1;
 
     if (!moverId) {
-      res.status(401).json({ message: "moverId (사용자 인증 정보)가 필요합니다." });
-      return;
+      return res.status(401).json({ message: "인증 필요" });
     }
 
-    const sentEstimates = await estimateService.findEstimatesByMoverId(moverId);
+    const { totalCount, totalPages, estimates } = await estimateService.getPaginatedSentEstimates(
+      moverId,
+      page,
+    );
 
     res.status(200).json({
       message: "보낸 견적 조회 성공",
-      data: sentEstimates,
+      totalCount,
+      totalPages,
+      data: estimates,
     });
   } catch (error) {
     console.error("보낸 견적 조회 실패:", error);
@@ -146,27 +151,28 @@ async function getSentEstimates(req: Request, res: Response, next: NextFunction)
 }
 
 // 반려한 견적 조회
-async function getRejectedEstimates(
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> {
+async function getRejectedEstimates(req: Request, res: Response, next: NextFunction) {
   try {
-    const moverId = req.auth!.userId;
+    const moverId = req.auth?.userId;
+    const page = parseInt(req.query.page as string) || 1;
 
     if (!moverId) {
-      res.status(401).json({ message: "moverId (사용자 인증 정보)가 필요합니다." });
-      return;
+      return res.status(401).json({ message: "로그인 된 사용자가 없습니다." });
     }
 
-    const sentEstimates = await estimateService.getEstimatesByStatus(moverId);
+    const { totalCount, totalPages, estimates } = await estimateService.getRejectedEstimates(
+      moverId,
+      page,
+    );
 
     res.status(200).json({
-      message: "반려한 견적 조회 성공",
-      data: sentEstimates,
+      message: "반려된 견적 조회 성공",
+      totalCount,
+      totalPages,
+      data: estimates,
     });
   } catch (error) {
-    console.error("반려한 견적 조회 실패:", error);
+    console.error("반려 견적 조회 실패:", error);
     next(error);
   }
 }

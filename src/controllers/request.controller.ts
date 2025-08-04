@@ -77,14 +77,14 @@ async function getReceivedRequests(req: Request, res: Response, next: NextFuncti
   }
 }
 
-// 활성 요청 목록 조회 (일반)
-async function getClientActiveRequests(req: Request, res: Response, next: NextFunction) {
+// 활성 요청 조회 (일반 유저)
+async function getClientActiveRequest(req: Request, res: Response, next: NextFunction) {
   try {
-    const requests = await requestService.getClientActiveRequests(req.auth!.userId);
+    const request = await requestService.getClientActiveRequest(req.auth!.userId);
 
     res.status(200).json({
-      message: "활성 요청 목록 조회 성공",
-      requests,
+      message: "활성 요청 조회 성공",
+      request,
     });
   } catch (error) {
     console.error("활성 요청 조회 오류:", error);
@@ -107,6 +107,6 @@ export default {
   saveDraft,
   createRequest,
   getReceivedRequests,
-  getClientActiveRequests,
+  getClientActiveRequest,
   designateMover,
 };
