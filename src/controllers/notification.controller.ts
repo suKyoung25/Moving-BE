@@ -7,16 +7,12 @@ async function getNotifications(req: Request, res: Response, next: NextFunction)
   try {
     const userId = req.auth!.userId;
     const { cursor, limit } = req.query as { cursor?: string; limit?: string };
-    const { list, hasUnread } = await notificationService.getNotifications(
-      userId,
-      cursor,
-      Number(limit),
-    );
+    const list = await notificationService.getNotifications(userId, cursor, Number(limit));
 
     res.json({
       message: "알림 조회 성공",
-      hasUnread,
       nextCursor: list.nextCursor,
+      unreadCount: list.unreadCount,
       notifications: list.notifications,
     });
   } catch (error) {
@@ -30,6 +26,17 @@ async function readNotification(req: Request, res: Response, next: NextFunction)
 
     const notification = await notificationService.readNotification(req.params.id, userId);
     res.json({ message: "알림 읽기 성공", notification });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function readAllNotifications(req: Request, res: Response, next: NextFunction) {
+  try {
+    const userId = req.auth!.userId;
+
+    const result = await notificationService.readAllNotifications(userId);
+    res.json({ message: "알림 읽기 성공", updatedCount: result });
   } catch (error) {
     next(error);
   }
@@ -70,5 +77,6 @@ function sendNotification(req: Request, res: Response, next: NextFunction) {
 export default {
   getNotifications,
   readNotification,
+  readAllNotifications,
   sendNotification,
 };

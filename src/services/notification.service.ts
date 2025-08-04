@@ -29,12 +29,7 @@ async function sendAndSaveNotification({
 
 // 알림 목록 조회
 async function getNotifications(userId: string, cursor?: string, limit?: number) {
-  const [list, hasUnread] = await Promise.all([
-    notificationRepository.getNotifications({ userId, cursor, limit }),
-    notificationRepository.hasUnreadNotifications(userId),
-  ]);
-
-  return { list, hasUnread };
+  return await notificationRepository.getNotifications({ userId, cursor, limit });
 }
 
 // 알림 읽기
@@ -49,6 +44,11 @@ async function readNotification(notificationId: string, userId: string) {
   }
 
   return await notificationRepository.updateNotification(notificationId);
+}
+
+// 모든 알림 읽기
+async function readAllNotifications(userId: string) {
+  return await notificationRepository.updateAll(userId);
 }
 
 // 새로운 견적 알림
@@ -124,6 +124,21 @@ async function notifyEstimateConfirmed({
   await sendAndSaveNotification({ userId, content, type, targetId, targetUrl });
 }
 
+// 견적 반려 알림
+async function notifyEstimateRejcted({
+  userId,
+  moverName,
+  type,
+  targetId,
+  targetUrl,
+}: NotifyConfirmEstimate) {
+  const content = NotificationTemplate.ESTIMATE_REJECTED.client(moverName!);
+
+  if (!content) return;
+
+  await sendAndSaveNotification({ userId, content, type, targetId, targetUrl });
+}
+
 // 이사 알림
 async function notifyMovingDay(estimate: Estimate, content: string) {
   const client = sendAndSaveNotification({
@@ -149,8 +164,10 @@ export default {
   sendAndSaveNotification,
   getNotifications,
   readNotification,
+  readAllNotifications,
   notifyEstimate,
   notifyEstimateRequest,
   notifyEstimateConfirmed,
+  notifyEstimateRejcted,
   notifyMovingDay,
 };

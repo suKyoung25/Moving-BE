@@ -20,40 +20,43 @@ async function getNotifications({
 }) {
   const take = Number(limit) || 6;
 
-  const items = await prisma.notification.findMany({
-    where: { userId },
-    orderBy: { createdAt: "desc" },
-    take: take + 1,
-    ...(cursor && {
-      skip: 1,
-      cursor: { id: cursor },
+  const [unreadCount, items] = await Promise.all([
+    prisma.notification.count({
+      where: {
+        userId,
+        isRead: false,
+      },
     }),
-  });
+    prisma.notification.findMany({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+      take: take + 1,
+      ...(cursor && {
+        skip: 1,
+        cursor: { id: cursor },
+      }),
+    }),
+  ]);
 
   const hasNext = items.length > take;
   const notifications = items.slice(0, take);
   const nextCursor = hasNext ? notifications[notifications.length - 1].id : null;
 
-  return { notifications, nextCursor };
-}
-
-// 읽지 않은 알림 여부
-async function hasUnreadNotifications(userId: string) {
-  const unread = await prisma.notification.findFirst({
-    where: {
-      userId,
-      isRead: false,
-    },
-    select: { id: true },
-  });
-
-  return !!unread;
+  return { notifications, nextCursor, unreadCount };
 }
 
 // 알림 상태 업데이트
 async function updateNotification(notificationId: string) {
   return await prisma.notification.update({
     where: { id: notificationId },
+    data: { isRead: true },
+  });
+}
+
+// 모든 알림 읽기
+async function updateAll(userId: string) {
+  return await prisma.notification.updateMany({
+    where: { userId, isRead: false },
     data: { isRead: true },
   });
 }
@@ -71,8 +74,8 @@ async function createMany(data: NotificationPayload[]) {
 export default {
   getNotification,
   getNotifications,
-  hasUnreadNotifications,
   updateNotification,
+  updateAll,
   createNotification,
   createMany,
 };

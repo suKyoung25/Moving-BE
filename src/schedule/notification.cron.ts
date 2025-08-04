@@ -1,11 +1,13 @@
 import cron from "node-cron";
-import { addDays, startOfDay } from "date-fns";
+import { addDays, format, startOfDay } from "date-fns";
 import estimateRepository from "../repositories/estimate.repository";
 import { NotificationTemplate } from "../constants/NotificationTemplate";
 import notificationService from "../services/notification.service";
 
 cron.schedule("0 0 * * *", async () => {
-  console.log("🕖 Running moving day notification at 9AM");
+  console.log(
+    `🕖 Running moving day notification at ${format(new Date(), "yy.MM.dd eee hh:mm a")}`,
+  );
   const now = new Date();
   const today = startOfDay(now); // UTC 기준 오늘 00:00:00
   const tomorrow = addDays(today, 1);
