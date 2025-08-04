@@ -11,7 +11,7 @@ async function getPendingEstimates(req: Request, res: Response, next: NextFuncti
 
     const data = await estimateService.getPendingEstimates(clientId, offset, limit);
 
-    return res.status(200).json({
+    res.status(200).json({
       message: "대기 중인 견적 조회 성공",
       ...data,
     });
@@ -192,7 +192,7 @@ async function getReceivedEstimates(req: Request, res: Response, next: NextFunct
       category,
     );
 
-    return res.status(200).json({
+    res.status(200).json({
       message: "받은 견적 조회 성공",
       data,
       totalCount,
