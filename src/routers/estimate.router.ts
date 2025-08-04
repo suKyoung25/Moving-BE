@@ -30,4 +30,7 @@ estimateRouter.post("/confirmed", estimateController.confirmEstimate);
 // 견적 상세 조회
 estimateRouter.get("/:estimateId", estimateController.getEstimateDetail);
 
+// 견적 거절 및 요청 취소
+estimateRouter.delete("/:id", estimateController.deleteEstimate);
+
 export default estimateRouter;

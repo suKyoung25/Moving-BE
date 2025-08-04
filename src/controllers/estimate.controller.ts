@@ -244,6 +244,29 @@ async function getEstimateDetail(req: Request, res: Response, next: NextFunction
   }
 }
 
+// 견적 취소하기
+async function deleteEstimate(req: Request, res: Response, next: NextFunction) {
+  try {
+    const moverId = req.auth?.userId;
+    const { id: estimateId } = req.params;
+
+    if (!moverId || !estimateId) {
+      return res.status(400).json({ message: "필수 정보가 누락되었습니다." });
+    }
+
+    const deleted = await estimateService.deleteEstimate(estimateId, moverId);
+
+    if (!deleted) {
+      return res.status(404).json({ message: "삭제할 견적이 없거나 권한이 없습니다." });
+    }
+
+    res.status(200).json({ message: "견적 삭제 성공", data: deleted });
+  } catch (error) {
+    console.error("견적 삭제 실패:", error);
+    next(error);
+  }
+}
+
 export default {
   getPendingEstimates,
   sendEstimateToRequest,
@@ -254,4 +277,5 @@ export default {
   getReceivedEstimates,
   confirmEstimate,
   getEstimateDetail,
+  deleteEstimate,
 };
