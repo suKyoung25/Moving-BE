@@ -1,5 +1,4 @@
 import { ErrorMessage } from "../constants/ErrorMessage";
-import authRepository from "../repositories/auth.repository";
 import authClientRepository from "../repositories/authClient.repository";
 import {
   BadRequestError,
@@ -79,7 +78,7 @@ async function loginWithLocal({ email, hashedPassword }: LoginDataLocal) {
 async function oAuthCreateOrUpdate(data: SignUpDataSocial) {
   // 1. 이메일로 사용자가 있는지 찾음
   const { email, ...rest } = data;
-  const existingUser = await authRepository.findByEmailRaw(email);
+  const existingUser = await authClientRepository.findByEmailRaw(email);
 
   // 2. 이미 존재하는 사용자면 없는 정보 추가: email 넘기는지 여부 확인 필요
   let user;
