@@ -102,6 +102,23 @@ async function designateMover(req: Request, res: Response, next: NextFunction) {
   }
 }
 
+// 받은 요청 상세 조회(기사님)
+async function getReceivedRequestDetail(req: Request, res: Response) {
+  const { id } = req.params;
+  const moverId = req.auth!.userId; // 로그인된 무버 ID
+
+  try {
+    const requestDetail = await requestService.getReceivedRequestDetail(id, moverId);
+    if (!requestDetail) {
+      return res.status(404).json({ message: "요청 정보를 찾을 수 없습니다." });
+    }
+    return res.status(200).json({ request: requestDetail });
+  } catch (error) {
+    console.error("getReceivedRequestDetail error:", error);
+    return res.status(500).json({ message: "서버 오류가 발생했습니다." });
+  }
+}
+
 export default {
   getDraft,
   saveDraft,
@@ -109,4 +126,5 @@ export default {
   getReceivedRequests,
   getClientActiveRequest,
   designateMover,
+  getReceivedRequestDetail,
 };

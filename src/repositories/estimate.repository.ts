@@ -406,6 +406,25 @@ async function getPaginatedSentEstimates(moverId: string, page: number) {
   };
 }
 
+// 견적 취소하기
+async function findById(id: string) {
+  return prisma.estimate.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      moverId: true,
+      moverStatus: true,
+      isClientConfirmed: true,
+    },
+  });
+}
+
+async function deleteById(id: string) {
+  return prisma.estimate.delete({
+    where: { id },
+  });
+}
+
 export default {
   findWritableEstimatesByClientId,
   findPendingEstimatesByClientId,
@@ -421,4 +440,6 @@ export default {
   updateRequestPendingFalse,
   getRejectedEstimates,
   getPaginatedSentEstimates,
+  findById,
+  deleteById,
 };

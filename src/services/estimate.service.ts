@@ -295,6 +295,27 @@ async function getEstimateDetail(estimateId: string, clientId: string) {
   };
 }
 
+// 견적 취소하기
+async function deleteEstimate(estimateId: string, moverId: string) {
+  const estimate = await estimateRepository.findById(estimateId);
+
+  if (!estimate || estimate.moverId !== moverId) {
+    return null;
+  }
+
+  // 확정된 견적은 삭제 불가
+  if (estimate.isClientConfirmed) {
+    return null;
+  }
+
+  // 상태가 CONFIRMED 또는 REJECTED인 경우만 삭제 허용
+  if (!["CONFIRMED", "REJECTED"].includes(estimate.moverStatus)) {
+    return null;
+  }
+
+  return await estimateRepository.deleteById(estimateId);
+}
+
 export default {
   getPendingEstimates,
   createEstimate,
@@ -305,4 +326,5 @@ export default {
   getReceivedEstimates,
   confirmEstimate,
   getEstimateDetail,
+  deleteEstimate,
 };
