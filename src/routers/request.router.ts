@@ -21,4 +21,7 @@ requestRouter.get("/client/active", requestController.getClientActiveRequest);
 // 기사님 지정 요청 (일반 > 기사)
 requestRouter.patch("/movers/:moverId", requestController.designateMover);
 
+// 받은 요청 상세 조회(기사님)
+requestRouter.get("/detail/:id", requestController.getReceivedRequestDetail);
+
 export default requestRouter;

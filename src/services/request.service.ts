@@ -89,6 +89,11 @@ async function designateMover(clientId: string, requestId: string, moverId: stri
   return requestRepository.designateMover(requestId, moverId, clientId);
 }
 
+// 받은 요청 상세 조회(기사님)
+async function getReceivedRequestDetail(id: string, moverId: string) {
+  return await requestRepository.findRequestDetailById(id, moverId);
+}
+
 export default {
   getDraft,
   saveDraft,
@@ -96,4 +101,5 @@ export default {
   getReceivedRequests,
   getClientActiveRequest,
   designateMover,
+  getReceivedRequestDetail,
 };

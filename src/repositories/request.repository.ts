@@ -312,6 +312,34 @@ async function designateMover(requestId: string, moverId: string, clientId?: str
   }
 }
 
+// 받은 요청 상세 조회(기사님)
+async function findRequestDetailById(id: string, currentMoverId: string) {
+  const request = await prisma.request.findUnique({
+    where: { id },
+    include: {
+      client: {
+        select: {
+          name: true,
+        },
+      },
+      designatedRequest: {
+        select: {
+          moverId: true,
+        },
+      },
+    },
+  });
+
+  if (!request) return null;
+
+  const isDesignated = request.designatedRequest.some((dr) => dr.moverId === currentMoverId);
+
+  const { designatedRequest, ...rest } = request;
+  return {
+    ...rest,
+    isDesignated,
+  };
+}
 export default {
   getRequestDraftById,
   saveRequestDraft,
@@ -319,4 +347,5 @@ export default {
   getFilteredRequests,
   findPendingRequestById,
   designateMover,
+  findRequestDetailById,
 };
