@@ -1,4 +1,3 @@
-import { startOfToday } from "date-fns";
 import prisma from "../configs/prisma.config";
 import { CreateRequestDto } from "../dtos/request.dto";
 import {
@@ -31,6 +30,17 @@ async function saveRequestDraft(clientId: string, data: Partial<RequestDraft>) {
       clientId,
       ...data,
     },
+  });
+}
+
+// 보낸 견적 요청 목록 조회 (일반 유저)
+async function getRequestsByClientId(clientId: string) {
+  return await prisma.request.findMany({
+    where: { clientId },
+    include: {
+      estimates: true,
+    },
+    orderBy: { requestedAt: "desc" },
   });
 }
 
@@ -79,14 +89,14 @@ async function getFilteredRequests({
   const notCondition: Prisma.RequestWhereInput = {
     OR: [
       {
-        estimate: {
+        estimates: {
           some: {
             moverId,
           },
         },
       },
       {
-        estimate: {
+        estimates: {
           some: {
             isClientConfirmed: true,
           },
@@ -105,7 +115,7 @@ async function getFilteredRequests({
       moveType: {
         in: moveType,
       },
-      designatedRequest: {
+      designatedRequests: {
         some: {
           moverId,
         },
@@ -176,7 +186,7 @@ async function getFilteredRequests({
       cursor: { id: cursor },
     }),
     include: {
-      designatedRequest: true,
+      designatedRequests: true,
       client: {
         select: {
           name: true,
@@ -189,9 +199,9 @@ async function getFilteredRequests({
 
   const requests: RequestWithIncludes[] = await prisma.request.findMany(args);
 
-  const result = requests.map(({ designatedRequest, client, ...rest }) => ({
+  const result = requests.map(({ designatedRequests, client, ...rest }) => ({
     ...rest,
-    isDesignated: designatedRequest.map((dr) => dr.moverId).includes(moverId),
+    isDesignated: designatedRequests.map((dr) => dr.moverId).includes(moverId),
     clientName: client.name,
   }));
 
@@ -206,19 +216,12 @@ async function getFilteredRequests({
 
 // 활성 견적 요청 조회
 async function findPendingRequestById(clientId: string) {
-  const today = startOfToday();
-
-  return prisma.request.findFirst({
+  return await prisma.request.findFirst({
     where: {
       clientId,
-      OR: [
-        { isPending: true },
-        {
-          moveDate: {
-            gte: today,
-          },
-        },
-      ],
+      moveDate: {
+        gte: new Date(),
+      },
     },
   });
 }
@@ -322,7 +325,7 @@ async function findRequestDetailById(id: string, currentMoverId: string) {
           name: true,
         },
       },
-      designatedRequest: {
+      designatedRequests: {
         select: {
           moverId: true,
         },
@@ -332,9 +335,9 @@ async function findRequestDetailById(id: string, currentMoverId: string) {
 
   if (!request) return null;
 
-  const isDesignated = request.designatedRequest.some((dr) => dr.moverId === currentMoverId);
+  const isDesignated = request.designatedRequests.some((dr) => dr.moverId === currentMoverId);
 
-  const { designatedRequest, ...rest } = request;
+  const { designatedRequests, ...rest } = request;
   return {
     ...rest,
     isDesignated,
@@ -343,6 +346,7 @@ async function findRequestDetailById(id: string, currentMoverId: string) {
 export default {
   getRequestDraftById,
   saveRequestDraft,
+  getRequestsByClientId,
   createEstimateRequest,
   getFilteredRequests,
   findPendingRequestById,

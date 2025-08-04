@@ -89,7 +89,7 @@ async function fetchMovers(
               include: {
                 request: {
                   include: {
-                    estimate: {
+                    estimates: {
                       where: {
                         moverId: undefined, // 이건 나중에 각 mover에 대해 동적으로 설정
                       },
