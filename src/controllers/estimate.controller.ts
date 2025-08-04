@@ -13,7 +13,7 @@ async function getPendingEstimates(req: Request, res: Response, next: NextFuncti
 
     return res.status(200).json({
       message: "대기 중인 견적 조회 성공",
-      data,
+      ...data,
     });
   } catch (e) {
     next(e);
@@ -176,14 +176,20 @@ async function getReceivedEstimates(req: Request, res: Response, next: NextFunct
   try {
     const clientId = req.auth!.userId;
     const category = (req.query.category as "all" | "confirmed") || "all";
-    const offset = parseInt(req.query.offset as string) || 0;
-    const limit = parseInt(req.query.limit as string) || 6;
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
 
-    const data = await estimateService.getReceivedEstimates(clientId, category, offset, limit);
+    const { data, totalCount } = await estimateService.getReceivedEstimates(
+      clientId,
+      page,
+      limit,
+      category,
+    );
 
     return res.status(200).json({
       message: "받은 견적 조회 성공",
       data,
+      totalCount,
     });
   } catch (e) {
     next(e);
