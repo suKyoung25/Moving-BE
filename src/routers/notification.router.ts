@@ -12,4 +12,7 @@ notificationRouter.get("/", notificationController.getNotifications);
 // 알림 읽기
 notificationRouter.patch("/:id", notificationController.readNotification);
 
+// 모든 알림 읽기
+notificationRouter.patch("/", notificationController.readAllNotifications);
+
 export default notificationRouter;

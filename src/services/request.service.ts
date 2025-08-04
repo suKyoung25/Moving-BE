@@ -16,6 +16,11 @@ async function saveDraft(clientId: string, data: Partial<RequestDraft>) {
   return await requestRepository.saveRequestDraft(clientId, data);
 }
 
+// 보낸 견적 요청 조회 (일반 유저) {
+async function getRequests(clientId: string) {
+  return await requestRepository.getRequestsByClientId(clientId);
+}
+
 // 견적 요청 (일반 유저)
 async function createRequest({
   request,
@@ -44,7 +49,7 @@ async function createRequest({
     moveType: request.moveType,
     type: "NEW_ESTIMATE",
     targetId: newRequest.id,
-    targetUrl: `/my-quotes/mover/${newRequest.id}`,
+    targetUrl: `/received-requests/${newRequest.id}`,
   });
 
   return newRequest;
@@ -89,11 +94,18 @@ async function designateMover(clientId: string, requestId: string, moverId: stri
   return requestRepository.designateMover(requestId, moverId, clientId);
 }
 
+// 받은 요청 상세 조회(기사님)
+async function getReceivedRequestDetail(id: string, moverId: string) {
+  return await requestRepository.findRequestDetailById(id, moverId);
+}
+
 export default {
   getDraft,
   saveDraft,
+  getRequests,
   createRequest,
   getReceivedRequests,
   getClientActiveRequest,
   designateMover,
+  getReceivedRequestDetail,
 };

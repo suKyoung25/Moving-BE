@@ -24,7 +24,7 @@ async function findWritableEstimatesByClientId(
           select: {
             moveType: true,
             moveDate: true,
-            designatedRequest: {
+            designatedRequests: {
               select: { moverId: true },
             },
           },
@@ -98,7 +98,7 @@ async function findPendingEstimatesByClientId(clientId: Client["id"], offset = 0
           fromAddress: true,
           toAddress: true,
           moveType: true,
-          designatedRequest: {
+          designatedRequests: {
             select: {
               moverId: true,
             },
@@ -160,7 +160,7 @@ async function findReceivedEstimatesByClientId(clientId: string, page: number, l
         mover: true,
         request: {
           include: {
-            designatedRequest: true,
+            designatedRequests: true,
           },
         },
       },
@@ -264,7 +264,7 @@ async function findEstimateDetailById(estimateId: string, clientId: string) {
             fromAddress: true,
             toAddress: true,
             requestedAt: true,
-            designatedRequest: true,
+            designatedRequests: true,
           },
         },
         mover: {
@@ -334,7 +334,7 @@ async function getRejectedEstimates(moverId: string, page: number) {
             client: {
               select: { name: true },
             },
-            designatedRequest: {
+            designatedRequests: {
               select: { moverId: true },
             },
           },
@@ -387,7 +387,7 @@ async function getPaginatedSentEstimates(moverId: string, page: number) {
             client: {
               select: { name: true },
             },
-            designatedRequest: {
+            designatedRequests: {
               select: { moverId: true },
             },
           },
@@ -406,6 +406,25 @@ async function getPaginatedSentEstimates(moverId: string, page: number) {
   };
 }
 
+// 견적 취소하기
+async function findById(id: string) {
+  return prisma.estimate.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      moverId: true,
+      moverStatus: true,
+      isClientConfirmed: true,
+    },
+  });
+}
+
+async function deleteById(id: string) {
+  return prisma.estimate.delete({
+    where: { id },
+  });
+}
+
 export default {
   findWritableEstimatesByClientId,
   findPendingEstimatesByClientId,
@@ -421,4 +440,6 @@ export default {
   updateRequestPendingFalse,
   getRejectedEstimates,
   getPaginatedSentEstimates,
+  findById,
+  deleteById,
 };

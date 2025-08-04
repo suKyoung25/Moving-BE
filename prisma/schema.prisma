@@ -26,7 +26,7 @@ model Client {
   estimates    Estimate[]
   reviews      Review[]
   favorites    Favorite[]
-  requestDraft RequestDraft[]
+  requestDraft RequestDraft?
 
   @@unique([provider, providerId])
 }
@@ -72,9 +72,9 @@ model Request {
   isPending   Boolean  @default(true)
   requestedAt DateTime @default(now())
 
-  client            Client              @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  estimate          Estimate[]
-  designatedRequest DesignatedRequest[]
+  client             Client              @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  estimates          Estimate[]
+  designatedRequests DesignatedRequest[]
 }
 
 model RequestDraft {

@@ -20,7 +20,7 @@ async function findReviewsByClientId(clientId: Client["id"], offset: number, lim
               select: {
                 moveType: true,
                 moveDate: true,
-                designatedRequest: { select: { moverId: true } },
+                designatedRequests: { select: { moverId: true } },
               },
             },
           },
@@ -58,7 +58,7 @@ async function findReviewsByMoverId(moverId: string, offset: number, limit: numb
               select: {
                 moveType: true,
                 moveDate: true,
-                designatedRequest: { select: { moverId: true } },
+                designatedRequests: { select: { moverId: true } },
               },
             },
           },
