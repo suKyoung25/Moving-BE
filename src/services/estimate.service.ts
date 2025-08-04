@@ -175,7 +175,7 @@ async function getReceivedEstimates(
     if (category === "confirmed") {
       return e.moverStatus === "CONFIRMED" && e.isClientConfirmed;
     }
-    return true; // 전체
+    return true;
   });
 
   const data = await Promise.all(
@@ -213,7 +213,7 @@ async function getReceivedEstimates(
     }),
   );
 
-  return { data, totalCount };
+  return { data, totalCount: category === "all" ? totalCount : filtered.length };
 }
 
 // client 견적 확정
