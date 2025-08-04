@@ -2,7 +2,7 @@ import { expressjwt } from "express-jwt";
 import { ZodSchema } from "zod";
 import { Request, Response, NextFunction } from "express";
 import bcrypt from "bcrypt";
-import { BadRequestError, ConflictError } from "../types";
+import { ConflictError } from "../types";
 import { ErrorMessage } from "../constants/ErrorMessage";
 import authMoverRepository from "../repositories/authMover.repository";
 import authRepository from "../repositories/auth.repository";
@@ -27,11 +27,18 @@ export const validateReq =
     try {
       const result = schema.safeParse(req.body);
 
+      const fieldErrors: Record<string, string> = {};
+
       if (!result.success) {
-        throw new BadRequestError(ErrorMessage.INVALID_INPUT);
+        fieldErrors.existedPassword = ErrorMessage.PASSWORD_REGEX;
       }
 
-      req.body = result.data; // 주석: parse된 req.body로 덮어씌움
+      req.body = result.data; // parse된 req.body로 덮어씌움
+
+      if (Object.keys(fieldErrors).length > 0) {
+        throw new ConflictError("중복 정보로 인한 회원가입 실패", fieldErrors);
+      }
+
       next();
     } catch (error) {
       next(error);
@@ -45,8 +52,14 @@ export async function checkMoverSignUpInfo(req: Request, res: Response, next: Ne
 
     const fieldErrors: Record<string, string> = {};
 
-    const existedEmail = await authMoverRepository.getMoverByEmail(email);
-    if (existedEmail) {
+    const existedMover = await authMoverRepository.getMoverByEmail(email);
+
+    // 소셜 회원가입한 이메일로는 로컬 회원가입 할 수 없음
+    if (existedMover?.provider !== "LOCAL") {
+      fieldErrors.email = ErrorMessage.ALREADY_EXIST_WITH_SOCIAL;
+    }
+
+    if (existedMover?.email === email) {
       fieldErrors.email = ErrorMessage.ALREADY_EXIST_EMAIL;
     }
 
