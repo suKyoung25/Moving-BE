@@ -16,6 +16,11 @@ async function saveDraft(clientId: string, data: Partial<RequestDraft>) {
   return await requestRepository.saveRequestDraft(clientId, data);
 }
 
+// 보낸 견적 요청 조회 (일반 유저) {
+async function getRequests(clientId: string) {
+  return await requestRepository.getRequestsByClientId(clientId);
+}
+
 // 견적 요청 (일반 유저)
 async function createRequest({
   request,
@@ -44,7 +49,7 @@ async function createRequest({
     moveType: request.moveType,
     type: "NEW_ESTIMATE",
     targetId: newRequest.id,
-    targetUrl: `/my-quotes/mover/${newRequest.id}`,
+    targetUrl: `/received-requests/${newRequest.id}`,
   });
 
   return newRequest;
@@ -97,6 +102,7 @@ async function getReceivedRequestDetail(id: string, moverId: string) {
 export default {
   getDraft,
   saveDraft,
+  getRequests,
   createRequest,
   getReceivedRequests,
   getClientActiveRequest,

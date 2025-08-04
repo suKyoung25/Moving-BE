@@ -9,7 +9,7 @@ const options = {
       title: "Moving API",
       version: "1.0.0",
       description:
-        "Swagger Docs for Codeit Team4 Moving Project<br/>Website URL: [https://www.moving-web.site/](https://www.moving-web.site/)",
+        "Swagger Docs for Codeit Team4 Moving Project<br/>Website URL: [https://moving-web.site/](https://moving-web.site/)",
     },
     components: {
       securitySchemes: {
