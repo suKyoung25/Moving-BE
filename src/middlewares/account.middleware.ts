@@ -27,21 +27,12 @@ export async function checkMoverAccountInfo(req: Request, res: Response, next: N
       }
     }
 
-    // 내 이메일을 제외하고 존재하는 이메일인지 확인
-    const isExistedEmail = await accountMoverRepository.findMoverByEmailExcludingSelf(
-      req.body.email,
-      moverId,
-    );
-
     // 내 폰번호를 제외하고 존재하는 폰번호인지 확인
     const isExistedPhone = await accountMoverRepository.findMoverByPhoneExcludingSelf(
       req.body.phone,
       moverId,
     );
 
-    if (isExistedEmail) {
-      fieldErrors.email = ErrorMessage.ALREADY_EXIST_EMAIL;
-    }
     if (isExistedPhone) {
       fieldErrors.phone = ErrorMessage.ALREADY_EXIST_PHONE;
     }
