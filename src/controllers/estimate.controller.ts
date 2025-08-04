@@ -6,11 +6,14 @@ async function getPendingEstimates(req: Request, res: Response, next: NextFuncti
   try {
     const clientId = req.auth!.userId;
 
-    const data = await estimateService.getPendingEstimates(clientId);
+    const offset = parseInt(req.query.offset as string) || 0;
+    const limit = parseInt(req.query.limit as string) || 6;
 
-    return res.status(200).json({
+    const data = await estimateService.getPendingEstimates(clientId, offset, limit);
+
+    res.status(200).json({
       message: "대기 중인 견적 조회 성공",
-      data,
+      ...data,
     });
   } catch (e) {
     next(e);
@@ -174,15 +177,25 @@ async function getRejectedEstimates(req: Request, res: Response, next: NextFunct
   }
 }
 
-// 대기중연 견적 조회
+// 받은 견적 조회
 async function getReceivedEstimates(req: Request, res: Response, next: NextFunction) {
   try {
     const clientId = req.auth!.userId;
     const category = (req.query.category as "all" | "confirmed") || "all";
-    const data = await estimateService.getReceivedEstimates(clientId, category);
-    return res.status(200).json({
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+
+    const { data, totalCount } = await estimateService.getReceivedEstimates(
+      clientId,
+      page,
+      limit,
+      category,
+    );
+
+    res.status(200).json({
       message: "받은 견적 조회 성공",
-      data: data,
+      data,
+      totalCount,
     });
   } catch (e) {
     next(e);
