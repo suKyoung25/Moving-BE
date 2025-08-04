@@ -24,7 +24,7 @@ async function findWritableEstimatesByClientId(
           select: {
             moveType: true,
             moveDate: true,
-            designatedRequest: {
+            designatedRequests: {
               select: { moverId: true },
             },
           },
@@ -67,59 +67,64 @@ async function getEstimateMoverId(estimateId: Estimate["id"]) {
 }
 
 // 대기 중인 견적서 조회
-async function findPendingEstimatesByClientId(clientId: Client["id"]) {
-  try {
-    const confirmedRequestIds = await prisma.estimate.findMany({
-      where: {
-        isClientConfirmed: true,
-      },
-      select: { requestId: true },
-    });
-
-    const excludedRequestIds = confirmedRequestIds.map((e) => e.requestId);
-
-    const estimates = await prisma.request.findMany({
-      where: {
+async function findPendingEstimatesByClientId(clientId: Client["id"], offset = 0, limit = 6) {
+  const estimates = await prisma.estimate.findMany({
+    where: {
+      moverStatus: "CONFIRMED",
+      isClientConfirmed: false,
+      request: {
         clientId,
         isPending: true,
-        id: { notIn: excludedRequestIds },
-        estimate: {
-          some: {
-            moverStatus: "CONFIRMED",
-            isClientConfirmed: false,
-          },
+      },
+    },
+    include: {
+      mover: {
+        select: {
+          id: true,
+          name: true,
+          nickName: true,
+          profileImage: true,
+          averageReviewRating: true,
+          reviewCount: true,
+          favoriteCount: true,
+          estimateCount: true,
+          career: true,
         },
       },
-      include: {
-        estimate: {
-          where: {
-            moverStatus: "CONFIRMED",
-            isClientConfirmed: false,
-          },
-          include: {
-            mover: {
-              select: {
-                id: true,
-                name: true,
-                nickName: true,
-                profileImage: true,
-                averageReviewRating: true,
-                reviewCount: true,
-                favoriteCount: true,
-                estimateCount: true,
-                career: true,
-              },
+      request: {
+        select: {
+          id: true,
+          moveDate: true,
+          fromAddress: true,
+          toAddress: true,
+          moveType: true,
+          designatedRequests: {
+            select: {
+              moverId: true,
             },
           },
         },
-        designatedRequest: true,
       },
-    });
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    skip: offset,
+    take: limit,
+  });
 
-    return estimates;
-  } catch (error) {
-    throw new ServerError("대기 중인 견적 조회 중 오류 발생", error);
-  }
+  const totalCount = await prisma.estimate.count({
+    where: {
+      moverStatus: "CONFIRMED",
+      isClientConfirmed: false,
+      request: {
+        clientId,
+        isPending: true,
+      },
+    },
+  });
+
+  return { estimates, totalCount };
 }
 
 // 찜한 기사님 조회
@@ -141,31 +146,41 @@ async function isFavoriteMover(clientId: Client["id"], moverId: Mover["id"]) {
 }
 
 // 받은 견적 조회
-async function findReceivedEstimatesByClientId(clientId: Client["id"]) {
-  try {
-    const estimates = prisma.request.findMany({
+async function findReceivedEstimatesByClientId(clientId: string, page: number, limit: number) {
+  const skip = (page - 1) * limit;
+
+  const [estimates, totalCount] = await Promise.all([
+    prisma.estimate.findMany({
       where: {
-        clientId,
-        estimate: {
-          some: {
-            moverStatus: "CONFIRMED",
-            isClientConfirmed: true,
-          },
+        request: {
+          clientId,
         },
       },
       include: {
-        estimate: {
-          include: { mover: true },
+        mover: true,
+        request: {
+          include: {
+            designatedRequests: true,
+          },
         },
-        designatedRequest: true,
       },
-    });
+      skip,
+      take: limit,
+      orderBy: {
+        createdAt: "desc",
+      },
+    }),
 
-    const result = await estimates;
-    return result;
-  } catch (e) {
-    throw new ServerError("받은 견적서 조회 중 서버 오류가 발생했습니다.", e);
-  }
+    prisma.estimate.count({
+      where: {
+        request: {
+          clientId,
+        },
+      },
+    }),
+  ]);
+
+  return { estimates, totalCount };
 }
 
 // 이사날에 해당하는 견적 찾기 (알림)
@@ -249,7 +264,7 @@ async function findEstimateDetailById(estimateId: string, clientId: string) {
             fromAddress: true,
             toAddress: true,
             requestedAt: true,
-            designatedRequest: true,
+            designatedRequests: true,
           },
         },
         mover: {
@@ -319,7 +334,7 @@ async function getRejectedEstimates(moverId: string, page: number) {
             client: {
               select: { name: true },
             },
-            designatedRequest: {
+            designatedRequests: {
               select: { moverId: true },
             },
           },
@@ -372,7 +387,7 @@ async function getPaginatedSentEstimates(moverId: string, page: number) {
             client: {
               select: { name: true },
             },
-            designatedRequest: {
+            designatedRequests: {
               select: { moverId: true },
             },
           },
@@ -391,6 +406,25 @@ async function getPaginatedSentEstimates(moverId: string, page: number) {
   };
 }
 
+// 견적 취소하기
+async function findById(id: string) {
+  return prisma.estimate.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      moverId: true,
+      moverStatus: true,
+      isClientConfirmed: true,
+    },
+  });
+}
+
+async function deleteById(id: string) {
+  return prisma.estimate.delete({
+    where: { id },
+  });
+}
+
 export default {
   findWritableEstimatesByClientId,
   findPendingEstimatesByClientId,
@@ -406,4 +440,6 @@ export default {
   updateRequestPendingFalse,
   getRejectedEstimates,
   getPaginatedSentEstimates,
+  findById,
+  deleteById,
 };

@@ -5,7 +5,6 @@ import bcrypt from "bcrypt";
 import { ConflictError } from "../types";
 import { ErrorMessage } from "../constants/ErrorMessage";
 import authMoverRepository from "../repositories/authMover.repository";
-import authRepository from "../repositories/auth.repository";
 import authClientRepository from "../repositories/authClient.repository";
 
 const secretKey = process.env.JWT_SECRET;
@@ -109,7 +108,7 @@ export async function checkClientSignUpInfo(req: Request, res: Response, next: N
     const { email, phone } = req.body; //주석: zod 통과한 req.body
 
     // 이미 사용한 정보 확인
-    const existingEmail = await authRepository.findByEmailRaw(email);
+    const existingEmail = await authClientRepository.findByEmailRaw(email);
     const existingPhone = await authClientRepository.findByPhone(phone);
 
     const fieldErrors: Record<string, string> = {};

@@ -1,6 +1,6 @@
 import estimateRepository from "../repositories/estimate.repository";
 import moverRepository from "../repositories/mover.repository";
-import { Client, PrismaClient, EstimateStatus } from "@prisma/client";
+import { PrismaClient, EstimateStatus } from "@prisma/client";
 import notificationService from "./notification.service";
 import { BadRequestError, ServerError } from "../types";
 import authClientRepository from "../repositories/authClient.repository";
@@ -16,48 +16,53 @@ interface EstimateInput {
 const prisma = new PrismaClient();
 
 // client 대기 중인 견적서 조회
-async function getPendingEstimates(clientId: Client["id"]) {
-  const requests = await estimateRepository.findPendingEstimatesByClientId(clientId);
+async function getPendingEstimates(clientId: string, offset = 0, limit = 6) {
+  const { estimates, totalCount } = await estimateRepository.findPendingEstimatesByClientId(
+    clientId,
+    offset,
+    limit,
+  );
 
-  return Promise.all(
-    requests.map(async (req) => {
-      const designatedMoverIds = req.designatedRequest.map((d) => d.moverId);
+  const results = await Promise.all(
+    estimates.map(async (e) => {
+      const designatedMoverIds = e.request.designatedRequests.map((d) => d.moverId);
 
-      const estimates = await Promise.all(
-        req.estimate.map(async (e) => {
-          const isDesignated = designatedMoverIds.includes(e.moverId);
-          const isFavorited = await estimateRepository.isFavoriteMover(clientId, e.moverId);
-
-          return {
-            estimateId: e.id,
-            moverId: e.mover.id,
-            moverName: e.mover.name,
-            moverNickName: e.mover.nickName,
-            profileImage: e.mover.profileImage,
-            comment: e.comment,
-            price: e.price,
-            created: e.createdAt,
-            reviewRating: e.mover.averageReviewRating,
-            reviewCount: e.mover.reviewCount,
-            career: e.mover.career,
-            estimateCount: e.mover.estimateCount,
-            favoriteCount: e.mover.favoriteCount,
-            isDesignated,
-            isFavorited,
-          };
-        }),
-      );
+      const isDesignated = designatedMoverIds.includes(e.moverId);
+      const isFavorited = await estimateRepository.isFavoriteMover(clientId, e.moverId);
 
       return {
-        requestId: req.id,
-        moveDate: req.moveDate,
-        fromAddress: req.fromAddress,
-        toAddress: req.toAddress,
-        moveType: req.moveType,
-        estimates,
+        estimate: {
+          estimateId: e.id,
+          moverId: e.mover.id,
+          moverName: e.mover.name,
+          moverNickName: e.mover.nickName,
+          profileImage: e.mover.profileImage,
+          comment: e.comment,
+          price: e.price,
+          created: e.createdAt,
+          reviewRating: e.mover.averageReviewRating,
+          reviewCount: e.mover.reviewCount,
+          career: e.mover.career,
+          estimateCount: e.mover.estimateCount,
+          favoriteCount: e.mover.favoriteCount,
+          isDesignated,
+          isFavorited,
+        },
+        request: {
+          requestId: e.request.id,
+          moveDate: e.request.moveDate,
+          fromAddress: e.request.fromAddress,
+          toAddress: e.request.toAddress,
+          moveType: e.request.moveType,
+        },
       };
     }),
   );
+
+  return {
+    data: results,
+    totalCount,
+  };
 }
 
 // 견적 보내기 (기사)
@@ -104,6 +109,18 @@ async function rejectEstimate({ comment, moverId, clientId, requestId }: Estimat
     },
   });
 
+  // 견적 보낸 기사 조회
+  const mover = await moverRepository.fetchMoverDetail(moverId);
+
+  // 견적 반려 알림 (to 유저)
+  await notificationService.notifyEstimateRejcted({
+    userId: clientId,
+    moverName: mover.nickName!,
+    type: "ESTIMATE_REJECTED",
+    targetId: newEstimate.id,
+    targetUrl: `/my-quotes/client/${newEstimate.id}`,
+  });
+
   return newEstimate;
 }
 
@@ -137,7 +154,7 @@ async function findSentEstimateById(moverId: string, estimateId: string) {
               name: true,
             },
           },
-          designatedRequest: {
+          designatedRequests: {
             select: {
               moverId: true,
             },
@@ -154,52 +171,64 @@ async function getRejectedEstimates(moverId: string, page: number) {
 }
 
 // client 받은 견적 조회
-async function getReceivedEstimates(clientId: Client["id"], category: "all" | "confirmed" = "all") {
-  const requests = await estimateRepository.findReceivedEstimatesByClientId(clientId);
+async function getReceivedEstimates(
+  clientId: string,
+  page: number,
+  limit: number,
+  category: "all" | "confirmed",
+) {
+  const { estimates, totalCount } = await estimateRepository.findReceivedEstimatesByClientId(
+    clientId,
+    page,
+    limit,
+  );
 
-  return await Promise.all(
-    requests.map(async (req) => {
+  const filtered = estimates.filter((e) => {
+    const hasConfirmed = estimates.some(
+      (item) =>
+        item.request.id === e.request.id &&
+        item.moverStatus === "CONFIRMED" &&
+        item.isClientConfirmed === true,
+    );
+    return hasConfirmed;
+  });
+
+  const data = await Promise.all(
+    filtered.map(async (e) => {
+      const isFavorited = await estimateRepository.isFavoriteMover(clientId, e.mover.id);
+
       return {
-        requestId: req.id,
-        moveDate: req.moveDate,
-        fromAddress: req.fromAddress,
-        toAddress: req.toAddress,
-        moveType: req.moveType,
-        requestedAt: req.requestedAt,
-        designatedRequest: req.designatedRequest,
-        estimates: await Promise.all(
-          req.estimate
-            .filter((e) => {
-              if (category === "confirmed") {
-                return e.moverStatus === "CONFIRMED" && e.isClientConfirmed === true;
-              }
-              return true;
-            })
-            .map(async (e) => {
-              const isFavorited = await estimateRepository.isFavoriteMover(clientId, e.mover.id);
-
-              return {
-                estimateId: e.id,
-                moverId: e.mover.id,
-                moverName: e.mover.name,
-                moverNickName: e.mover.nickName,
-                profileImage: e.mover.profileImage,
-                comment: e.comment,
-                price: e.price,
-                created: e.createdAt,
-                reviewRating: e.mover.averageReviewRating,
-                reviewCount: e.mover.reviewCount,
-                career: e.mover.career,
-                estimateCount: e.mover.estimateCount,
-                favoriteCount: e.mover.favoriteCount,
-                isConfirmed: e.moverStatus === "CONFIRMED" && e.isClientConfirmed === true,
-                isFavorited,
-              };
-            }),
-        ),
+        estimate: {
+          estimateId: e.id,
+          comment: e.comment,
+          price: e.price,
+          created: e.createdAt,
+          moverId: e.mover.id,
+          moverName: e.mover.name,
+          moverNickName: e.mover.nickName,
+          profileImage: e.mover.profileImage,
+          reviewRating: e.mover.averageReviewRating,
+          reviewCount: e.mover.reviewCount,
+          career: e.mover.career,
+          estimateCount: e.mover.estimateCount,
+          favoriteCount: e.mover.favoriteCount,
+          isConfirmed: e.moverStatus === "CONFIRMED" && e.isClientConfirmed,
+          isFavorited,
+        },
+        request: {
+          requestId: e.request.id,
+          moveDate: e.request.moveDate,
+          fromAddress: e.request.fromAddress,
+          toAddress: e.request.toAddress,
+          moveType: e.request.moveType,
+          requestedAt: e.request.requestedAt,
+          designatedRequest: e.request.designatedRequests,
+        },
       };
     }),
   );
+
+  return { data, totalCount: category === "all" ? totalCount : filtered.length };
 }
 
 // client 견적 확정
@@ -281,6 +310,27 @@ async function getEstimateDetail(estimateId: string, clientId: string) {
   };
 }
 
+// 견적 취소하기
+async function deleteEstimate(estimateId: string, moverId: string) {
+  const estimate = await estimateRepository.findById(estimateId);
+
+  if (!estimate || estimate.moverId !== moverId) {
+    return null;
+  }
+
+  // 확정된 견적은 삭제 불가
+  if (estimate.isClientConfirmed) {
+    return null;
+  }
+
+  // 상태가 CONFIRMED 또는 REJECTED인 경우만 삭제 허용
+  if (!["CONFIRMED", "REJECTED"].includes(estimate.moverStatus)) {
+    return null;
+  }
+
+  return await estimateRepository.deleteById(estimateId);
+}
+
 export default {
   getPendingEstimates,
   createEstimate,
@@ -291,4 +341,5 @@ export default {
   getReceivedEstimates,
   confirmEstimate,
   getEstimateDetail,
+  deleteEstimate,
 };

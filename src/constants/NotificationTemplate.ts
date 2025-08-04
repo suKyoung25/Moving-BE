@@ -17,6 +17,10 @@ export const NotificationTemplate = {
     mover: (clientName: string) =>
       `${clientName} 님의 견적이 <span style="color: #1B92FF;">확정</span>되었어요.`,
   },
+  ESTIMATE_REJECTED: {
+    client: (moverName: string) =>
+      `${moverName} 기사님의 견적이 <span style="color: #1B92FF;">반려</span>되었어요.`,
+  },
   MOVING_DAY: (fromAddress: string, toAddress: string, dayOffset: number) => {
     const prefix = dayOffset === 0 ? "오늘은" : dayOffset === 1 ? "내일은" : `${dayOffset}일 후는`;
     const from = parseRegion(fromAddress);
