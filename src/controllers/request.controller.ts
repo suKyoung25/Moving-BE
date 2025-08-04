@@ -42,7 +42,7 @@ async function getRequests(req: Request, res: Response, next: NextFunction) {
   try {
     const clientId = req.auth!.userId;
     const requests = await requestService.getRequests(clientId);
-    res.status(200).json({ message: "보낸 견적 요청 목록 조회 성공", requests });
+    res.status(200).json({ message: "보낸 견적 요청 목록 조회 성공", data: requests });
   } catch (err) {
     next(err);
   }
@@ -95,7 +95,7 @@ async function getClientActiveRequest(req: Request, res: Response, next: NextFun
 
     res.status(200).json({
       message: "활성 요청 조회 성공",
-      request,
+      data: request,
     });
   } catch (error) {
     console.error("활성 요청 조회 오류:", error);
