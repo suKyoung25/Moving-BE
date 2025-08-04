@@ -17,6 +17,12 @@ async function findByEmail(email: Client["email"]) {
   return { ...client, userType: "client" };
 }
 
+async function findByEmailRaw(email: Client["email"]) {
+  return await prisma.client.findUnique({
+    where: { email },
+  });
+}
+
 async function findByPhone(phone: Client["phone"]) {
   if (!phone) return null;
   return await prisma.client.findUnique({
@@ -69,4 +75,5 @@ export default {
   create,
   save,
   update,
+  findByEmailRaw,
 };
