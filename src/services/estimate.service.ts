@@ -184,10 +184,13 @@ async function getReceivedEstimates(
   );
 
   const filtered = estimates.filter((e) => {
-    if (category === "confirmed") {
-      return e.moverStatus === "CONFIRMED" && e.isClientConfirmed;
-    }
-    return true;
+    const hasConfirmed = estimates.some(
+      (item) =>
+        item.request.id === e.request.id &&
+        item.moverStatus === "CONFIRMED" &&
+        item.isClientConfirmed === true,
+    );
+    return hasConfirmed;
   });
 
   const data = await Promise.all(
