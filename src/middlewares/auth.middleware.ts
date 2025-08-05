@@ -162,7 +162,7 @@ export async function checkClientSignUpInfo(req: Request, res: Response, next: N
   }
 }
 
-// (소셜) 로그인 유효성 검사는 미들웨어로 빼는 게 코드 낭비라서 서비스에서 담당함
+// 로그인 유효성 검사는 미들웨어로 빼는 게 코드 낭비라서 서비스에서 담당함
 
 // 선택적 인증 미들웨어 (토큰이 있으면 인증, 없어도 계속 진행)
 export const optionalAuth = (req: Request, res: Response, next: NextFunction) => {

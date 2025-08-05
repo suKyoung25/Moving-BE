@@ -81,11 +81,11 @@ async function oAuthCreateOrUpdate(data: SignUpDataSocial) {
   const existingUser = await authClientRepository.findByEmailRaw(email);
 
   // 2. 이미 가입된 이메일로 또 가입하려 할 때 오류 뱉음 = 소셜끼리
-  // ex. 카카오 회원가입 시 네이버 이메일을 쓴 경우
+  // ex. 카카오 회원가입 시 네이버 이메일을 썼는데 네이버로 가입하려는 경우
   let user;
   if (existingUser) {
     if (existingUser.provider !== data.provider)
-      throw new BadRequestError(`이미 ${existingUser.provider}로 가입된 이메일입니다.`);
+      throw new BadRequestError(`이미 ${existingUser.provider} 가입 시 사용된 이메일입니다.`);
 
     // + 사용자가 이름을 수정할 수 있게 덮어쓰기 하지 않음
     const { name, ...dataWithoutName } = rest;

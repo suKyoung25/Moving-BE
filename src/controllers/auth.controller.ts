@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { ConflictError, NotFoundError, UnauthorizedError } from "../types";
+import { BadRequestError, ConflictError, NotFoundError, UnauthorizedError } from "../types";
 import { ErrorMessage } from "../constants/ErrorMessage";
 import { generateAccessToken, generateRefreshToken } from "../utils/token.util";
 import profileClientRepository from "../repositories/client.repository";
@@ -80,9 +80,8 @@ async function signInEasily(req: Request, res: Response, next: NextFunction) {
     const refreshToken = generateRefreshToken(tokenPayload);
 
     // 데이터 받자마자 FE로 넘김 - accessToken은 쿼리로
-    const redirectUrl = new URL(
-      `${process.env.FRONTEND_URL}/api/auth/callback?token=${accessToken}`,
-    );
+    const redirectUrl = new URL(`${process.env.FRONTEND_URL}/api/auth/callback`);
+    redirectUrl.searchParams.set("token", accessToken);
 
     // 데이터 받자마자 FE로 넘김 - refreshToken은 쿠키로
     res.cookie("refreshToken", refreshToken, {

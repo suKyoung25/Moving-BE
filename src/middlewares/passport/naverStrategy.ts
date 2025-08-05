@@ -35,15 +35,15 @@ async function verify(
       provider: providerEnumValue,
       providerId: profile.id,
       email: profile._json.email,
-      name: profile.displayName,
+      name: "네이버",
       phone: (profile._json as any).mobile, // 타입 오류 수정
     });
   } else if (userType === "mover") {
-    const userInfo = await authMoverService.oAuthCreateOrUpdate({
+    userInfo = await authMoverService.oAuthCreateOrUpdate({
       provider: providerEnumValue,
       providerId: profile.id,
       email: profile._json.email,
-      name: profile.displayName,
+      name: "네이버",
       phone: (profile._json as any).mobile,
     });
   } else {

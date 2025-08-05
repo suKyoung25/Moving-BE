@@ -12,6 +12,7 @@ import {
 } from "../middlewares/auth.middleware";
 import express from "express";
 import passport from "passport";
+import { createSocialAuthMiddleware } from "../middlewares/passport/passport.middleware";
 
 const authRouter = express.Router();
 
@@ -66,7 +67,7 @@ authRouter.get("/google", (req, res, next) => {
 
 authRouter.get(
   "/google/callback",
-  passport.authenticate("google", { session: false }),
+  createSocialAuthMiddleware("google"),
   authController.signInEasily,
 );
 
@@ -79,11 +80,7 @@ authRouter.get("/kakao", (req, res, next) => {
   })(req, res, next);
 });
 
-authRouter.get(
-  "/kakao/callback",
-  passport.authenticate("kakao", { session: false }),
-  authController.signInEasily,
-);
+authRouter.get("/kakao/callback", createSocialAuthMiddleware("kakao"), authController.signInEasily);
 
 // 네이버 로그인
 authRouter.get("/naver", (req, res, next) => {
@@ -94,10 +91,6 @@ authRouter.get("/naver", (req, res, next) => {
   })(req, res, next);
 });
 
-authRouter.get(
-  "/naver/callback",
-  passport.authenticate("naver", { session: false }),
-  authController.signInEasily,
-);
+authRouter.get("/naver/callback", createSocialAuthMiddleware("naver"), authController.signInEasily);
 
 export default authRouter;
