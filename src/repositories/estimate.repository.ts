@@ -1,6 +1,6 @@
 import prisma from "../configs/prisma.config";
 import { ServerError } from "../types";
-import { Client, Estimate, Mover, Prisma } from "@prisma/client";
+import { Client, Estimate, EstimateStatus, Mover, Prisma } from "@prisma/client";
 
 // 작성 가능한 리뷰 목록
 async function findWritableEstimatesByClientId(
@@ -146,16 +146,35 @@ async function isFavoriteMover(clientId: Client["id"], moverId: Mover["id"]) {
 }
 
 // 받은 견적 조회
-async function findReceivedEstimatesByClientId(clientId: string, page: number, limit: number) {
+async function findReceivedEstimatesByClientId(
+  clientId: string,
+  page: number,
+  limit: number,
+  category: "all" | "confirmed",
+) {
   const skip = (page - 1) * limit;
+
+  const whereClause =
+    category === "confirmed"
+      ? {
+          clientId,
+          moverStatus: EstimateStatus.CONFIRMED,
+          isClientConfirmed: true,
+          request: {
+            isPending: false,
+          },
+        }
+      : {
+          clientId,
+          moverStatus: EstimateStatus.CONFIRMED,
+          request: {
+            isPending: false,
+          },
+        };
 
   const [estimates, totalCount] = await Promise.all([
     prisma.estimate.findMany({
-      where: {
-        request: {
-          clientId,
-        },
-      },
+      where: whereClause,
       include: {
         mover: true,
         request: {
@@ -170,13 +189,8 @@ async function findReceivedEstimatesByClientId(clientId: string, page: number, l
         createdAt: "desc",
       },
     }),
-
     prisma.estimate.count({
-      where: {
-        request: {
-          clientId,
-        },
-      },
+      where: whereClause,
     }),
   ]);
 
