@@ -181,17 +181,11 @@ async function getReceivedEstimates(
     clientId,
     page,
     limit,
+    category,
   );
 
-
-  const filtered =
-    category === "confirmed"
-      ? estimates.filter((e) => e.moverStatus === "CONFIRMED" && e.isClientConfirmed === true)
-      : estimates;
-
-
   const data = await Promise.all(
-    filtered.map(async (e) => {
+    estimates.map(async (e) => {
       const isFavorited = await estimateRepository.isFavoriteMover(clientId, e.mover.id);
 
       return {
@@ -225,7 +219,7 @@ async function getReceivedEstimates(
     }),
   );
 
-  return { data, totalCount: category === "all" ? totalCount : filtered.length };
+  return { data, totalCount };
 }
 
 // client 견적 확정
