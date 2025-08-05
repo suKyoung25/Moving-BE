@@ -4,7 +4,7 @@ import { ConflictError, NotFoundError, UnauthorizedError } from "../types";
 import { ErrorMessage } from "../constants/ErrorMessage";
 import { generateAccessToken, generateRefreshToken } from "../utils/token.util";
 import profileClientRepository from "../repositories/client.repository";
-import profileMoverRespository from "../repositories/profileMover.respository";
+import profileMoverRespository from "../repositories/profileMover.repository";
 
 // refreshToken Api
 async function setRefreshToken(req: Request, res: Response, next: NextFunction) {

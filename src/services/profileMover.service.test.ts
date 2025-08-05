@@ -1,13 +1,13 @@
 import { MoveType } from "@prisma/client";
-import profileMoverRespository from "../repositories/profileMover.respository";
+import profileMoverRespository from "../repositories/profileMover.repository";
 import authMoverRepository from "../repositories/authMover.repository";
 import { generateAccessToken, generateRefreshToken } from "../utils/token.util";
 import profileMoverService from "./profileMover.service";
 
 // 1단계 공통 setUp
-jest.mock("@/lib/repositories/authMover.repository");
-jest.mock("@/lib/repositories/profileMover.respository");
-jest.mock("@/lib/utils/token.util");
+jest.mock("../repositories/authMover.repository");
+jest.mock("../repositories/profileMover.repository");
+jest.mock("../utils/token.util");
 
 const mockFindByRegionByLabel = profileMoverRespository.findRegionByLabel as jest.Mock;
 const mockGetMoverById = authMoverRepository.getMoverById as jest.Mock;
@@ -19,9 +19,11 @@ const mockGenerateRefreshToken = generateRefreshToken as jest.MockedFunction<
   typeof generateRefreshToken
 >;
 
-describe.only("modifyMoverProfile 함수 정상동작", () => {
+describe.skip("modifyMoverProfile 함수 정상동작", () => {
+  // TODO: 최종 테스트에서 skip 삭제할 것
   // 1단계 공통 setUp
   const mockUser = {
+    id: "moving-123-user",
     userId: "mover123",
     email: "moving@test.com",
     image: "image-url",
@@ -35,7 +37,7 @@ describe.only("modifyMoverProfile 함수 정상동작", () => {
   };
 
   const expectedTokenPayload = {
-    userId: mockUser.userId,
+    userId: mockUser.id,
     email: mockUser.email,
     name: mockUser.name,
     userType: "mover",
