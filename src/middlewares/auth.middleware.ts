@@ -53,13 +53,12 @@ export async function checkMoverSignUpInfo(req: Request, res: Response, next: Ne
 
     const existedMover = await authMoverRepository.getMoverByEmail(email);
 
-    // 소셜 회원가입한 이메일로는 로컬 회원가입 할 수 없음
-    if (existedMover?.provider !== "LOCAL") {
-      fieldErrors.email = ErrorMessage.ALREADY_EXIST_WITH_SOCIAL;
-    }
-
-    if (existedMover?.email === email) {
-      fieldErrors.email = ErrorMessage.ALREADY_EXIST_EMAIL;
+    if (existedMover) {
+      if (existedMover.provider !== "LOCAL") {
+        fieldErrors.email = ErrorMessage.ALREADY_EXIST_WITH_SOCIAL;
+      } else {
+        fieldErrors.email = ErrorMessage.ALREADY_EXIST_EMAIL;
+      }
     }
 
     const existedPhone = await authMoverRepository.getMoverByPhone(phone);
