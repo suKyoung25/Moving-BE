@@ -41,8 +41,15 @@ async function saveDraft(req: Request<{}, {}, RequestDraftDto>, res: Response, n
 async function getRequests(req: Request, res: Response, next: NextFunction) {
   try {
     const clientId = req.auth!.userId;
-    const requests = await requestService.getRequests(clientId);
-    res.status(200).json({ message: "보낸 견적 요청 목록 조회 성공", data: requests });
+    const { limit, cursor, sort } = req.query;
+
+    const data = await requestService.getRequests({
+      clientId,
+      limit: Number(limit),
+      cursor: cursor as string,
+      sort: sort as "asc" | "desc",
+    });
+    res.status(200).json({ message: "보낸 견적 요청 목록 조회 성공", ...data });
   } catch (err) {
     next(err);
   }

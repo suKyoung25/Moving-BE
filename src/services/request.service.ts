@@ -3,7 +3,7 @@ import authClientRepository from "../repositories/authClient.repository";
 import requestRepository from "../repositories/request.repository";
 import { MoveType, RequestDraft } from "@prisma/client";
 import notificationService from "./notification.service";
-import { BadRequestError, GetReceivedRequestsQuery } from "../types";
+import { BadRequestError, GetClientRequestsInput, GetReceivedRequestsQuery } from "../types";
 import { ErrorMessage } from "../constants/ErrorMessage";
 
 // 견적 요청 중간 상태 조회
@@ -17,8 +17,8 @@ async function saveDraft(clientId: string, data: Partial<RequestDraft>) {
 }
 
 // 보낸 견적 요청 조회 (일반 유저) {
-async function getRequests(clientId: string) {
-  return await requestRepository.getRequestsByClientId(clientId);
+async function getRequests({ clientId, limit, cursor, sort }: GetClientRequestsInput) {
+  return await requestRepository.getRequestsByClientId({ clientId, limit, cursor, sort });
 }
 
 // 견적 요청 (일반 유저)

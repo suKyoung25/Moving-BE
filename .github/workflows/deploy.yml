@@ -40,4 +40,4 @@ jobs:
             npm ci
             npm run build
             pm2 kill
-            pm2 start dist/app.js
+            pm2 start dist/server.js

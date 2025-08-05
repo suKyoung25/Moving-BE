@@ -21,3 +21,10 @@ export interface GetFilteredRequestsInput {
   cursor?: string;
   moverId: string;
 }
+
+export interface GetClientRequestsInput {
+  clientId: string;
+  limit?: number;
+  cursor?: string;
+  sort?: "asc" | "desc";
+}

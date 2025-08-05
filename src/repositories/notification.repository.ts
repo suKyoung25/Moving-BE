@@ -12,7 +12,7 @@ async function getNotification(notificationId: string) {
 async function getNotifications({
   userId,
   cursor,
-  limit = 6,
+  limit,
 }: {
   userId: string;
   cursor?: string;
