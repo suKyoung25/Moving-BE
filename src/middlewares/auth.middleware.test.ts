@@ -10,14 +10,12 @@ import {
 import { ErrorMessage } from "../constants/ErrorMessage";
 import authMoverRepository from "../repositories/authMover.repository";
 import bcrypt from "bcrypt";
-import authRepository from "../repositories/auth.repository";
 import authClientRepository from "../repositories/authClient.repository";
 import jwt from "jsonwebtoken";
 
 // 1단계 공통 setUp - 테스트 환경 설정 (각 describe에서 모두 필요해서 최상단에 모아서 작성함)
 jest.mock("../repositories/authMover.repository");
 jest.mock("../repositories/authClient.repository");
-jest.mock("../repositories/auth.repository");
 jest.mock("bcrypt");
 jest.mock("jsonwebtoken");
 
@@ -38,8 +36,8 @@ const mockGetMoverByEmail = authMoverRepository.getMoverByEmail as jest.MockedFu
 const mockGetMoverByPhone = authMoverRepository.getMoverByPhone as jest.MockedFunction<
   typeof authMoverRepository.getMoverByPhone
 >;
-const mockFindByEmailRaw = authRepository.findByEmailRaw as jest.MockedFunction<
-  typeof authRepository.findByEmailRaw
+const mockFindByEmailRaw = authClientRepository.findByEmailRaw as jest.MockedFunction<
+  typeof authClientRepository.findByEmailRaw
 >;
 const mockFindByPhone = authClientRepository.findByPhone as jest.MockedFunction<
   typeof authClientRepository.findByPhone
@@ -66,30 +64,30 @@ describe("auth.middleware.tes.ts 파일을 테스트한다", () => {
       next = jest.fn();
     });
 
-    test("validateReq, 유효한 요청이면 다음 미들웨어를 실행한다", () => {
+    test("유효한 요청이면 다음 미들웨어를 실행한다", () => {
       //  1단계 setUp - 테스트 준비
-      req.body = { name: "홍길동" }; // 유효한 요청
+      req.body = { name: "김무빙" }; // 유효한 요청
 
       // 2단계 exercise - 테스트 실행
       middleware(req, res, next);
 
       //3단계 assertion - 결과 검증
-      expect(req.body).toEqual({ name: "홍길동" });
+      expect(req.body).toEqual({ name: "김무빙" });
       expect(next).toHaveBeenCalled();
       expect(next).toHaveBeenCalledWith(); // 에러 없이 호출되는지 확인
 
       //4단계 teardown - 테스트 정리 (외부 자원을 사용하지 않아서 생략함)
     });
 
-    test("validateReq, 잘못된 요청이면 에러와 에러 메세지를 전달한다", () => {
+    test("잘못된 요청이면 에러와 에러 메세지를 전달한다", () => {
       req.body = { name: "a" }; // 잘못된 요청
 
       middleware(req, res, next);
 
       expect(next).toHaveBeenCalled();
       const error = next.mock.calls[0][0];
-      expect(error).toBeInstanceOf(BadRequestError);
-      expect(error.message).toBe(ErrorMessage.INVALID_INPUT);
+      expect(error).toBeInstanceOf(ConflictError);
+      expect(error.message).toBe("중복 정보로 인한 회원가입 실패");
     });
   });
 
