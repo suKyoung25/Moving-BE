@@ -126,7 +126,7 @@ export async function checkMoverWithdrawInfo(req: Request, res: Response, next: 
   }
 }
 
-// [Client] 서비스 쪽에서 하던 중복 검사를 미들웨어에서 처리
+// [Client/회원가입] 서비스 쪽에서 하던 중복 검사를 미들웨어에서 처리
 export async function checkClientSignUpInfo(req: Request, res: Response, next: NextFunction) {
   try {
     const { email, phone } = req.body; //주석: zod 통과한 req.body
