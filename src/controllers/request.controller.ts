@@ -37,6 +37,17 @@ async function saveDraft(req: Request<{}, {}, RequestDraftDto>, res: Response, n
   }
 }
 
+// 보낸 견적 요청 목록 조회 (일반 유저)
+async function getRequests(req: Request, res: Response, next: NextFunction) {
+  try {
+    const clientId = req.auth!.userId;
+    const requests = await requestService.getRequests(clientId);
+    res.status(200).json({ message: "보낸 견적 요청 목록 조회 성공", data: requests });
+  } catch (err) {
+    next(err);
+  }
+}
+
 // 견적 요청 (일반 유저)
 async function createRequest(
   req: Request<{}, {}, CreateRequestDto>,
@@ -77,14 +88,14 @@ async function getReceivedRequests(req: Request, res: Response, next: NextFuncti
   }
 }
 
-// 활성 요청 목록 조회 (일반)
-async function getClientActiveRequests(req: Request, res: Response, next: NextFunction) {
+// 활성 요청 조회 (일반 유저)
+async function getClientActiveRequest(req: Request, res: Response, next: NextFunction) {
   try {
-    const requests = await requestService.getClientActiveRequests(req.auth!.userId);
+    const request = await requestService.getClientActiveRequest(req.auth!.userId);
 
     res.status(200).json({
-      message: "활성 요청 목록 조회 성공",
-      requests,
+      message: "활성 요청 조회 성공",
+      data: request,
     });
   } catch (error) {
     console.error("활성 요청 조회 오류:", error);
@@ -102,11 +113,30 @@ async function designateMover(req: Request, res: Response, next: NextFunction) {
   }
 }
 
+// 받은 요청 상세 조회(기사님)
+async function getReceivedRequestDetail(req: Request, res: Response) {
+  const { id } = req.params;
+  const moverId = req.auth!.userId; // 로그인된 무버 ID
+
+  try {
+    const requestDetail = await requestService.getReceivedRequestDetail(id, moverId);
+    if (!requestDetail) {
+      return res.status(404).json({ message: "요청 정보를 찾을 수 없습니다." });
+    }
+    return res.status(200).json({ request: requestDetail });
+  } catch (error) {
+    console.error("getReceivedRequestDetail error:", error);
+    return res.status(500).json({ message: "서버 오류가 발생했습니다." });
+  }
+}
+
 export default {
   getDraft,
   saveDraft,
+  getRequests,
   createRequest,
   getReceivedRequests,
-  getClientActiveRequests,
+  getClientActiveRequest,
   designateMover,
+  getReceivedRequestDetail,
 };

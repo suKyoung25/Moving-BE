@@ -16,6 +16,11 @@ async function saveDraft(clientId: string, data: Partial<RequestDraft>) {
   return await requestRepository.saveRequestDraft(clientId, data);
 }
 
+// 보낸 견적 요청 조회 (일반 유저) {
+async function getRequests(clientId: string) {
+  return await requestRepository.getRequestsByClientId(clientId);
+}
+
 // 견적 요청 (일반 유저)
 async function createRequest({
   request,
@@ -24,6 +29,13 @@ async function createRequest({
   request: CreateRequestDto;
   clientId: string;
 }) {
+  // 활성된 견적 요청 있는지 확인
+  const existing = await requestRepository.findPendingRequestById(clientId);
+
+  if (existing) {
+    throw new BadRequestError(ErrorMessage.ALREADY_EXIST_REQUEST);
+  }
+
   const newRequest = await requestRepository.createEstimateRequest(request, clientId);
 
   // 견적 요청한 유저 이름 조회
@@ -37,7 +49,7 @@ async function createRequest({
     moveType: request.moveType,
     type: "NEW_ESTIMATE",
     targetId: newRequest.id,
-    targetUrl: `/my-quotes/mover/${newRequest.id}`,
+    targetUrl: `/received-requests/${newRequest.id}`,
   });
 
   return newRequest;
@@ -67,10 +79,10 @@ async function getReceivedRequests(query: GetReceivedRequestsQuery) {
   });
 }
 
-// 활성 견적 요청 조회 (일반)
-async function getClientActiveRequests(clientId: string) {
+// 활성 견적 요청 조회 (일반 유저)
+async function getClientActiveRequest(clientId: string) {
   if (!clientId) throw new BadRequestError("clientId가 필요합니다.");
-  return requestRepository.fetchClientActiveRequests(clientId);
+  return requestRepository.findPendingRequestById(clientId);
 }
 
 // 기사 지정
@@ -82,11 +94,18 @@ async function designateMover(clientId: string, requestId: string, moverId: stri
   return requestRepository.designateMover(requestId, moverId, clientId);
 }
 
+// 받은 요청 상세 조회(기사님)
+async function getReceivedRequestDetail(id: string, moverId: string) {
+  return await requestRepository.findRequestDetailById(id, moverId);
+}
+
 export default {
   getDraft,
   saveDraft,
+  getRequests,
   createRequest,
   getReceivedRequests,
-  getClientActiveRequests,
+  getClientActiveRequest,
   designateMover,
+  getReceivedRequestDetail,
 };

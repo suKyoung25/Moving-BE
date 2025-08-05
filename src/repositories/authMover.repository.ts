@@ -17,7 +17,7 @@ async function saveMover(user: CreateMoverInputwithHash) {
 }
 
 // 아이디로 기사님 조회
-async function findMoverById(moverId: string) {
+async function getMoverById(moverId: string) {
   return await prisma.mover.findUnique({
     where: { id: moverId },
   });
@@ -70,7 +70,7 @@ async function createOrUpdate(data: SignUpDataSocial) {
 
 export default {
   saveMover,
-  findMoverById,
+  getMoverById,
   getMoverByEmail,
   getMoverByPhone,
   createOrUpdate,

@@ -33,6 +33,17 @@ async function saveRequestDraft(clientId: string, data: Partial<RequestDraft>) {
   });
 }
 
+// 보낸 견적 요청 목록 조회 (일반 유저)
+async function getRequestsByClientId(clientId: string) {
+  return await prisma.request.findMany({
+    where: { clientId },
+    include: {
+      estimates: true,
+    },
+    orderBy: { requestedAt: "desc" },
+  });
+}
+
 // 견적 요청 (일반 유저)
 async function createEstimateRequest(request: CreateRequestDto, clientId: string) {
   const result = await prisma.request.create({
@@ -78,14 +89,14 @@ async function getFilteredRequests({
   const notCondition: Prisma.RequestWhereInput = {
     OR: [
       {
-        estimate: {
+        estimates: {
           some: {
             moverId,
           },
         },
       },
       {
-        estimate: {
+        estimates: {
           some: {
             isClientConfirmed: true,
           },
@@ -104,7 +115,7 @@ async function getFilteredRequests({
       moveType: {
         in: moveType,
       },
-      designatedRequest: {
+      designatedRequests: {
         some: {
           moverId,
         },
@@ -175,7 +186,7 @@ async function getFilteredRequests({
       cursor: { id: cursor },
     }),
     include: {
-      designatedRequest: true,
+      designatedRequests: true,
       client: {
         select: {
           name: true,
@@ -188,9 +199,9 @@ async function getFilteredRequests({
 
   const requests: RequestWithIncludes[] = await prisma.request.findMany(args);
 
-  const result = requests.map(({ designatedRequest, client, ...rest }) => ({
+  const result = requests.map(({ designatedRequests, client, ...rest }) => ({
     ...rest,
-    isDesignated: designatedRequest.map((dr) => dr.moverId).includes(moverId),
+    isDesignated: designatedRequests.map((dr) => dr.moverId).includes(moverId),
     clientName: client.name,
   }));
 
@@ -204,13 +215,14 @@ async function getFilteredRequests({
 }
 
 // 활성 견적 요청 조회
-async function fetchClientActiveRequests(clientId: string) {
-  return prisma.request.findMany({
+async function findPendingRequestById(clientId: string) {
+  return await prisma.request.findFirst({
     where: {
       clientId,
-      isPending: true,
+      moveDate: {
+        gte: new Date(),
+      },
     },
-    orderBy: { requestedAt: "desc" },
   });
 }
 
@@ -303,11 +315,41 @@ async function designateMover(requestId: string, moverId: string, clientId?: str
   }
 }
 
+// 받은 요청 상세 조회(기사님)
+async function findRequestDetailById(id: string, currentMoverId: string) {
+  const request = await prisma.request.findUnique({
+    where: { id },
+    include: {
+      client: {
+        select: {
+          name: true,
+        },
+      },
+      designatedRequests: {
+        select: {
+          moverId: true,
+        },
+      },
+    },
+  });
+
+  if (!request) return null;
+
+  const isDesignated = request.designatedRequests.some((dr) => dr.moverId === currentMoverId);
+
+  const { designatedRequests, ...rest } = request;
+  return {
+    ...rest,
+    isDesignated,
+  };
+}
 export default {
   getRequestDraftById,
   saveRequestDraft,
+  getRequestsByClientId,
   createEstimateRequest,
   getFilteredRequests,
-  fetchClientActiveRequests,
+  findPendingRequestById,
   designateMover,
+  findRequestDetailById,
 };

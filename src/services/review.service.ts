@@ -25,8 +25,8 @@ async function getMyReviews(clientId: Client["id"], page = 1, limit = 6) {
     moveType: e.estimate.request.moveType,
     moveDate: e.estimate.request.moveDate,
     isDesignatedEstimate:
-      Array.isArray(e.estimate.request.designatedRequest) &&
-      e.estimate.request.designatedRequest.some((dr) => dr.moverId === e.moverId),
+      Array.isArray(e.estimate.request.designatedRequests) &&
+      e.estimate.request.designatedRequests.some((dr) => dr.moverId === e.moverId),
   }));
 
   return {
@@ -58,8 +58,8 @@ async function getMoverReviews(moverId: string, page = 1, limit = 6) {
     moveType: e.estimate.request.moveType,
     moveDate: e.estimate.request.moveDate,
     isDesignatedEstimate:
-      Array.isArray(e.estimate.request.designatedRequest) &&
-      e.estimate.request.designatedRequest.some((dr) => dr.moverId === moverId),
+      Array.isArray(e.estimate.request.designatedRequests) &&
+      e.estimate.request.designatedRequests.some((dr) => dr.moverId === moverId),
   }));
 
   return {
@@ -156,8 +156,8 @@ async function getWritableReviews(clientId: Client["id"], page = 1, limit = 6) {
     moveType: e.request.moveType,
     moveDate: e.request.moveDate,
     isDesignatedEstimate:
-      Array.isArray(e.request.designatedRequest) &&
-      e.request.designatedRequest.some((dr) => dr.moverId === e.moverId),
+      Array.isArray(e.request.designatedRequests) &&
+      e.request.designatedRequests.some((dr) => dr.moverId === e.moverId),
     moverProfileImage: e.mover.profileImage,
     moverNickName: e.mover.nickName,
   }));
