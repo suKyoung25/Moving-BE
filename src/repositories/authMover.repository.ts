@@ -16,6 +16,13 @@ async function saveMover(user: CreateMoverInputwithHash) {
   return { ...createdMover, userType: "mover" }; // userType은 FE의 header에서 필요
 }
 
+// 기사님 삭제
+async function deleteMoverById(id: string) {
+  return await prisma.mover.delete({
+    where: { id },
+  });
+}
+
 // 아이디로 기사님 조회
 async function getMoverById(moverId: string) {
   return await prisma.mover.findUnique({
@@ -70,6 +77,7 @@ async function createOrUpdate(data: SignUpDataSocial) {
 
 export default {
   saveMover,
+  deleteMoverById,
   getMoverById,
   getMoverByEmail,
   getMoverByPhone,
