@@ -50,7 +50,7 @@ async function loginWithLocal({ email, hashedPassword }: LoginDataLocal) {
   }
 
   // 비밀번호 확인 유효성 검사
-  await verifyPassword(hashedPassword, client.hashedPassword as string);
+  await verifyPassword(hashedPassword, client.hashedPassword!);
 
   // 토큰 넣음
   const accessToken = generateAccessToken({
@@ -80,7 +80,8 @@ async function oAuthCreateOrUpdate(data: SignUpDataSocial) {
   const { email, ...rest } = data;
   const existingUser = await authClientRepository.findByEmailRaw(email);
 
-  // 2. 이미 존재하는 사용자면 없는 정보 추가: email 넘기는지 여부 확인 필요
+  // 2. 이미 가입된 이메일로 또 가입하려 할 때 오류 뱉음 = 소셜끼리
+  // ex. 카카오 회원가입 시 네이버 이메일을 쓴 경우
   let user;
   if (existingUser) {
     if (existingUser.provider !== data.provider)
