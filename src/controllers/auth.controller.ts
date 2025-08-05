@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { BadRequestError, ConflictError, NotFoundError, UnauthorizedError } from "../types";
+import { ConflictError, NotFoundError, UnauthorizedError } from "../types";
 import { ErrorMessage } from "../constants/ErrorMessage";
 import { generateAccessToken, generateRefreshToken } from "../utils/token.util";
 import profileClientRepository from "../repositories/client.repository";
