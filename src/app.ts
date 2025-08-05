@@ -1,6 +1,4 @@
-import "dotenv/config";
 import express from "express";
-import figlet from "figlet";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import passport from "passport";
@@ -20,14 +18,16 @@ import accountRouter from "./routers/account.router";
 import notificationRouter from "./routers/notification.router";
 import imageRouter from "./routers/image.router";
 import "./schedule/notification.cron";
+import helmet from "helmet";
+import morgan from "morgan";
 
 const app = express();
-const PORT = process.env.PORT;
 
 // trust proxy 설정 (쿠키 보안 관련: production 시 필요)
 app.set("trust proxy", true);
 
 // 미들웨어
+app.use(helmet());
 app.use(
   cors({
     origin: process.env.FRONTEND_URL || "http://localhost:3000",
@@ -38,6 +38,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 app.use(passport.initialize());
+app.use(process.env.NODE_ENV === "production" ? morgan("combined") : morgan("dev"));
 
 // 라우터 등록
 app.use("/", infoRouter);
@@ -56,13 +57,4 @@ app.use("/docs", swaggerUi.serve, swaggerUi.setup(specs));
 // 에러 핸들러
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-  figlet("Team4 Moving", (err, data) => {
-    if (err) {
-      console.log("Something went wrong with figlet");
-      console.dir(err);
-      return;
-    }
-    console.log(data || `Server started at port ${PORT}`);
-  });
-});
+export default app;
