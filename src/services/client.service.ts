@@ -36,15 +36,7 @@ async function update(userId: Client["id"], profile: ClientProfileRegister | Cli
     // 유효성 검사 시작
     const fieldErrors: Record<string, string> = {};
 
-    // 1. 이메일 중복 검사
-    if (newProfile.email && newProfile.email !== existingProfile.email) {
-      const existingEmail = await authClientRepository.findByEmail(newProfile.email);
-      if (existingEmail && existingEmail.id !== userId) {
-        fieldErrors.email = ErrorMessage.ALREADY_EXIST_EMAIL;
-      }
-    }
-
-    // 2. 전화번호 중복 검사
+    // 1. 전화번호 중복 검사
     if (newProfile.phone && newProfile.phone !== existingProfile.phone) {
       const existingPhone = await authClientRepository.findByPhone(newProfile.phone);
       if (existingPhone && existingPhone.id !== userId) {
@@ -52,7 +44,7 @@ async function update(userId: Client["id"], profile: ClientProfileRegister | Cli
       }
     }
 
-    // 3. 새 비밀번호 설정 시 현재 비밀번호 검증
+    // 2. 새 비밀번호 설정 시 현재 비밀번호 검증
     if (newProfile.newPassword && newProfile.password) {
       try {
         // 사용자 정보 가져오고
@@ -68,18 +60,18 @@ async function update(userId: Client["id"], profile: ClientProfileRegister | Cli
       }
     }
 
-    // 4. 오류 투척
+    // 3. 오류 투척
     if (Object.keys(fieldErrors).length > 0) {
       throw new ConflictError("프로필 수정 유효성 검사 실패", fieldErrors);
     }
 
-    // 5. 새 비밀번호 (있으면) 해싱
+    // 4. 새 비밀번호 (있으면) 해싱
     let hashedNewPassword: string | undefined;
     if (newProfile.newPassword) {
       hashedNewPassword = await hashPassword(newProfile.newPassword);
     }
 
-    // 6. 새 비밀번호가 있으면 교체
+    // 5. 새 비밀번호가 있으면 교체
     const newData = {
       ...newProfile,
       password: hashedNewPassword || undefined, // 새 비밀번호가 있으면 해싱된 것으로 교체

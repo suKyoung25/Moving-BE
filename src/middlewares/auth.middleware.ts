@@ -7,6 +7,7 @@ import { ErrorMessage } from "../constants/ErrorMessage";
 import authMoverRepository from "../repositories/authMover.repository";
 import authClientRepository from "../repositories/authClient.repository";
 
+// 토큰 생성
 const secretKey = process.env.JWT_SECRET;
 
 if (!secretKey) {
@@ -101,7 +102,37 @@ export async function checkMoverSignInInfo(req: Request, res: Response, next: Ne
   }
 }
 
-// [Client] 서비스 쪽에서 하던 중복 검사를 미들웨어에서 처리
+// (회원탈퇴) 컨트롤러단 진입 전 DB와 대조하여 에러 띄움
+export async function checkMoverWithdrawInfo(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { userId, password } = req.body; //주석: zod 통과한 req.body
+
+    const fieldErrors: Record<string, string> = {};
+
+    const mover = await authMoverRepository.getMoverById(userId);
+    if (!mover) {
+      fieldErrors.email = ErrorMessage.USER_NOT_FOUND;
+      throw new ConflictError("사용자를 찾을 수 없습니다.", fieldErrors);
+    }
+
+    // 회원가입한 provider가 LOCAL인지 아닌지 (소셜의 경우 password가 없으므로 바로 넘김)
+    if (mover.provider === "LOCAL") {
+      const isPasswordValid = await bcrypt.compare(password, mover.hashedPassword!);
+      if (!isPasswordValid) {
+        fieldErrors.password = ErrorMessage.PASSWORD_NOT_MATCH;
+        throw new ConflictError(ErrorMessage.PASSWORD_NOT_MATCH, fieldErrors);
+      }
+
+      next();
+    } else {
+      next();
+    }
+  } catch (error) {
+    next(error);
+  }
+}
+
+// [Client/회원가입] 서비스 쪽에서 하던 중복 검사를 미들웨어에서 처리
 export async function checkClientSignUpInfo(req: Request, res: Response, next: NextFunction) {
   try {
     const { email, phone } = req.body; //주석: zod 통과한 req.body
@@ -113,8 +144,15 @@ export async function checkClientSignUpInfo(req: Request, res: Response, next: N
     const fieldErrors: Record<string, string> = {};
 
     if (existingEmail) {
-      fieldErrors.email = ErrorMessage.ALREADY_EXIST_EMAIL;
+      const provider = existingEmail.provider;
+
+      if (provider !== "LOCAL") {
+        fieldErrors.email = `이미 ${provider}로 가입된 계정입니다.`;
+      } else {
+        fieldErrors.email = ErrorMessage.ALREADY_EXIST_EMAIL;
+      }
     }
+
     if (existingPhone) {
       fieldErrors.phone = ErrorMessage.ALREADY_EXIST_PHONE;
     }
@@ -128,6 +166,8 @@ export async function checkClientSignUpInfo(req: Request, res: Response, next: N
     next(error);
   }
 }
+
+// 로그인 유효성 검사는 미들웨어로 빼는 게 코드 낭비라서 서비스에서 담당함
 
 // 선택적 인증 미들웨어 (토큰이 있으면 인증, 없어도 계속 진행)
 export const optionalAuth = (req: Request, res: Response, next: NextFunction) => {

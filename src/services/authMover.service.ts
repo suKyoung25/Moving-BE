@@ -10,7 +10,7 @@ import {
 import { filterSensitiveUserData, hashPassword } from "../utils/auth.util";
 import { generateAccessToken, generateRefreshToken } from "../utils/token.util";
 
-// 기사님 생성
+// 기사님 생성(회원가입)
 async function createMover(user: CreateMoverInput) {
   const hashedPassword = await hashPassword(user.password);
   const createdMover = await authMoverRepository.saveMover({
@@ -86,17 +86,19 @@ async function setMoverByEmail(user: GetMoverInput) {
   };
 }
 
+// 기사님 삭제(회원 탈퇴)
+async function deleteMoverById(userId: string) {
+  await authMoverRepository.deleteMoverById(userId);
+}
+
 // 소셜에서 받은 정보가 DB에 없으면 (생성:create) 있으면 (수정:update)하는 함수
 async function oAuthCreateOrUpdate(socialData: SignUpDataSocial) {
   const existingUser = await authMoverRepository.getMoverByEmail(socialData.email);
 
   if (existingUser) {
     // 이메일 있어도, 소셜 종류(provider)가 다르면 에러
-    if (
-      existingUser.provider !== socialData.provider ||
-      existingUser.providerId !== socialData.providerId
-    ) {
-      throw new BadRequestError(ErrorMessage.ALREADY_EXIST_USER);
+    if (existingUser.provider !== socialData.provider) {
+      throw new BadRequestError(`이미 ${existingUser.provider} 가입 시 사용된 이메일입니다.`);
     }
 
     // 유저 있으면 provider, providerId, name, phone, email 업데이트
@@ -126,6 +128,7 @@ async function oAuthCreateOrUpdate(socialData: SignUpDataSocial) {
 
 export default {
   createMover,
+  deleteMoverById,
   setMoverByEmail,
   oAuthCreateOrUpdate,
 };

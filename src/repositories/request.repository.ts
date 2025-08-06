@@ -3,6 +3,7 @@ import { CreateRequestDto } from "../dtos/request.dto";
 import {
   BadRequestError,
   ConflictError,
+  GetClientRequestsInput,
   GetFilteredRequestsInput,
   NotFoundError,
   ServerError,
@@ -34,14 +35,34 @@ async function saveRequestDraft(clientId: string, data: Partial<RequestDraft>) {
 }
 
 // 보낸 견적 요청 목록 조회 (일반 유저)
-async function getRequestsByClientId(clientId: string) {
-  return await prisma.request.findMany({
+async function getRequestsByClientId({
+  clientId,
+  limit,
+  cursor,
+  sort = "desc",
+}: GetClientRequestsInput) {
+  const take = Number(limit) || 6;
+
+  const result = await prisma.request.findMany({
     where: { clientId },
     include: {
       estimates: true,
     },
-    orderBy: { requestedAt: "desc" },
+    take: take + 1,
+    orderBy: { requestedAt: sort },
+    ...(cursor && {
+      cursor: { id: cursor },
+      skip: 1,
+    }),
   });
+
+  const hasNextPage = result.length > take;
+  const requests = hasNextPage ? result.slice(0, take) : result;
+
+  return {
+    requests,
+    nextCursor: hasNextPage ? requests[requests.length - 1].id : null,
+  };
 }
 
 // 견적 요청 (일반 유저)

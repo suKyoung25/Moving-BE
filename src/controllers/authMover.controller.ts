@@ -36,4 +36,21 @@ async function moverSignin(
   }
 }
 
-export { moverSignup, moverSignin };
+// 기사님 회원 탈퇴
+async function moverWithdraw(
+  req: Request<{}, {}, SignInRequestDto>,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const userId = req.auth?.userId!;
+
+    await authMoverService.deleteMoverById(userId);
+
+    res.status(200).json({ message: "Mover 회원 삭제 성공" });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export { moverSignup, moverSignin, moverWithdraw };
