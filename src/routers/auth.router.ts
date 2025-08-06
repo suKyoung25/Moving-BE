@@ -14,7 +14,7 @@ import {
 import express from "express";
 import passport from "passport";
 import { createSocialAuthMiddleware } from "../middlewares/passport/passport.middleware";
-import { loginLimiter } from "../utils/auth.util";
+import { loginLimiter } from "../middlewares/changeIimits.middleware";
 
 const authRouter = express.Router();
 

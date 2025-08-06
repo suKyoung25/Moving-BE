@@ -4,7 +4,7 @@ import { MoverProfileSchema } from "../dtos/mover.dto";
 import { validateReq, verifyAccessToken } from "../middlewares/auth.middleware";
 import express from "express";
 import { checkMoverProfileInfo } from "../middlewares/profile.middleware";
-import { passwordResetLimiter } from "../utils/auth.util";
+import { profileUpdateLimit } from "../middlewares/changeIimits.middleware";
 
 const profileRouter = express.Router();
 
@@ -21,7 +21,7 @@ profileRouter.patch(
 profileRouter.patch(
   "/clients",
   verifyAccessToken,
-  passwordResetLimiter,
+  profileUpdateLimit,
   profileClientController.update,
 );
 

@@ -1,0 +1,19 @@
+POST http://localhost:4000/auth/signin/client
+Content-Type: application/json
+
+{
+  "email": "sky3@naver.com",
+  "password": "asdf1234"
+}
+
+
+### 1
+PATCH http://localhost:4000/profile/clients
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJmNzY0NmU1Ni1lMDQ2LTQ5YzYtOGJmOS02OTMzNWUwMzMxNWIiLCJlbWFpbCI6InNreTNAbmF2ZXIuY29tIiwibmFtZSI6IuyYpOulmOyXhuyngCIsInVzZXJUeXBlIjoiY2xpZW50IiwiaXNQcm9maWxlQ29tcGxldGVkIjp0cnVlLCJpYXQiOjE3NTQ0NzEyNjMsImV4cCI6MTc1NDQ3NDg2M30.7izQV_2FNCZaF7O9zelGmJtG-gnmtXb1-F9VgKM0llQ
+
+{
+  "password": "asdf1235",
+  "newPassword": "asdf1234",
+  "newPasswordConfirmation": "asdf1234"
+}
