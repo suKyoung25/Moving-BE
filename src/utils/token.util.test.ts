@@ -7,8 +7,7 @@ import { ErrorMessage } from "../constants/ErrorMessage";
 jest.mock("jsonwebtoken");
 const mockJwtSign = jwt.sign as unknown as jest.Mock<string, [object, string, jwt.SignOptions]>;
 
-//TODO: 최종 제출 시 skip 삭제
-describe.skip("token.util.tes.ts 파일을 테스트한다", () => {
+describe("token.util.tes.ts 파일을 테스트한다", () => {
   // 1단계 - 공통 setUp
   const mockUser: CreatedToken = {
     userId: "mover-123-user",

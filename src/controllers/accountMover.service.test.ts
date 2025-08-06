@@ -10,8 +10,7 @@ jest.mock("../utils/auth.util");
 const mockPatchMoverAccount = accountMoverRepository.patchMoverAccount as jest.Mock;
 const mockHashPassword = hashPassword as jest.MockedFunction<typeof hashPassword>;
 
-// TODO: 최종 제출 시 skip 삭제
-describe.skip("accountMover.service.test.ts 파일을 테스트한다", () => {
+describe("accountMover.service.test.ts 파일을 테스트한다", () => {
   // 1단계 - 공통 setUp
   const mockEditData: EditMoverAccount = {
     moverId: "mover-123-user",
