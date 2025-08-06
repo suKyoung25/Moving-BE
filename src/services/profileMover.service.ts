@@ -1,5 +1,5 @@
 import authMoverRepository from "../repositories/authMover.repository";
-import profileMoverRespository from "../repositories/profileMover.respository";
+import profileMoverRespository from "../repositories/profileMover.repository";
 import { MoverProfile } from "../types";
 import { generateAccessToken, generateRefreshToken } from "../utils/token.util";
 import { MoveType, Prisma } from "@prisma/client";
