@@ -19,8 +19,7 @@ const mockGenerateRefreshToken = generateRefreshToken as jest.MockedFunction<
   typeof generateRefreshToken
 >;
 
-describe.skip("modifyMoverProfile 함수 정상동작", () => {
-  // TODO: 최종 테스트에서 skip 삭제할 것
+describe("modifyMoverProfile 함수 정상동작", () => {
   // 1단계 공통 setUp
   const mockUser = {
     id: "moving-123-user",
