@@ -2,6 +2,10 @@ import { Router } from "express";
 
 const infoRouter = Router();
 
+infoRouter.get("/status", (req, res) => {
+  res.status(200).json({ message: "Express Server is Running" });
+});
+
 infoRouter.get("/", (req, res) => {
   res.send(`
     <!DOCTYPE html>

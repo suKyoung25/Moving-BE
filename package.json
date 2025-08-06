@@ -11,8 +11,10 @@
     "reset": "ts-node prisma/reset.ts",
     "ssh": "dotenv -- bash -c 'ssh -i \"$SSH_KEY_PATH\" -L 5432:$DB_HOST:5432 $EC2_USER@$EC2_HOST'",
     "postinstall": "prisma generate",
-    "test": "jest",
-    "test:watch": "jest --watchAll",
+    "test": "NODE_ENV=test DATABASE_URL=postgresql://postgres:password@localhost:5432/testdb jest",
+    "test:watch": "NODE_ENV=test jest --watchAll",
+    "test:unit": "NODE_ENV=test DATABASE_URL=postgresql://postgres:password@localhost:5432/testdb jest --testPathIgnorePatterns=src/integration-test",
+    "test:integration": "NODE_ENV=test DATABASE_URL=postgresql://postgres:password@localhost:5432/testdb jest src/integration-test",
     "coverage": "npm test -- --coverage"
   },
   "author": "codeit-4team",
