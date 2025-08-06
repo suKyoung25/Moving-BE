@@ -1,6 +1,6 @@
 import { Strategy as GoogleStrategy, Profile } from "passport-google-oauth20";
 import { Request } from "express";
-import { NotFoundError, providerMap } from "../../types";
+import { BadRequestError, NotFoundError, providerMap } from "../../types";
 import authClientService from "../../services/authClient.service";
 import authMoverService from "../../services/authMover.service";
 
@@ -19,37 +19,45 @@ async function verify(
   profile: Profile,
   done: (error: any, user?: any) => void,
 ) {
-  // enum <-> string 변환
-  const providerEnumValue = providerMap[profile.provider];
-  const userType = req.query.state || "client";
+  try {
+    // enum <-> string 변환
+    const providerEnumValue = providerMap[profile.provider];
+    const userType = req.query.state || "client";
 
-  // 이메일 없으면 오류 처리
-  if (!profile.emails || profile.emails.length === 0) {
-    return done(new NotFoundError("이메일을 받지 못해 구글 로그인에 실패했습니다."));
-  }
+    // 이메일 없으면 오류 처리
+    if (!profile.emails || profile.emails.length === 0) {
+      return done(new BadRequestError("이메일을 받지 못해 구글 로그인에 실패했습니다."));
+    }
 
-  // 사용자 데이터
-  let userInfo;
-  if (userType === "client") {
     // 사용자 데이터
-    userInfo = await authClientService.oAuthCreateOrUpdate({
-      provider: providerEnumValue,
-      providerId: profile.id,
-      email: profile.emails[0].value,
-      name: profile.displayName,
-    });
-  } else if (userType === "mover") {
-    userInfo = await authMoverService.oAuthCreateOrUpdate({
-      provider: providerEnumValue,
-      providerId: profile.id,
-      email: profile.emails[0].value,
-      name: profile.displayName,
-    });
-  } else {
-    throw new NotFoundError("소셜 로그인: userType을 식별하지 못했습니다.");
-  }
+    let userInfo;
+    if (userType === "client") {
+      // 사용자 데이터
+      userInfo = await authClientService.oAuthCreateOrUpdate({
+        provider: providerEnumValue,
+        providerId: profile.id,
+        email: profile.emails[0].value,
+        name: profile.displayName,
+      });
+    } else if (userType === "mover") {
+      userInfo = await authMoverService.oAuthCreateOrUpdate({
+        provider: providerEnumValue,
+        providerId: profile.id,
+        email: profile.emails[0].value,
+        name: profile.displayName,
+      });
+    } else {
+      throw new BadRequestError("소셜 로그인: userType을 식별하지 못했습니다.");
+    }
 
-  done(null, userInfo); // req.user = user;
+    done(null, userInfo); // req.user = user;
+  } catch (error) {
+    if (error instanceof BadRequestError) {
+      done(error);
+    } else {
+      done(new BadRequestError("소셜 로그인 중 오류가 발생했습니다."));
+    }
+  }
 }
 
 const googleStrategy = new GoogleStrategy(googleStrategyOptions, verify);
