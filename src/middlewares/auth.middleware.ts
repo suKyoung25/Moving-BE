@@ -115,13 +115,18 @@ export async function checkMoverWithdrawInfo(req: Request, res: Response, next: 
       throw new ConflictError("사용자를 찾을 수 없습니다.", fieldErrors);
     }
 
-    const isPasswordValid = await bcrypt.compare(password, mover.hashedPassword!);
-    if (!isPasswordValid) {
-      fieldErrors.password = ErrorMessage.PASSWORD_NOT_MATCH;
-      throw new ConflictError(ErrorMessage.PASSWORD_NOT_MATCH, fieldErrors);
-    }
+    // 회원가입한 provider가 LOCAL인지 아닌지 (소셜의 경우 password가 없으므로 바로 넘김)
+    if (mover.provider === "LOCAL") {
+      const isPasswordValid = await bcrypt.compare(password, mover.hashedPassword!);
+      if (!isPasswordValid) {
+        fieldErrors.password = ErrorMessage.PASSWORD_NOT_MATCH;
+        throw new ConflictError(ErrorMessage.PASSWORD_NOT_MATCH, fieldErrors);
+      }
 
-    next();
+      next();
+    } else {
+      next();
+    }
   } catch (error) {
     next(error);
   }
