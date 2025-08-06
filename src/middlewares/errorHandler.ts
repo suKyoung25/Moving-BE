@@ -1,10 +1,9 @@
 import { HttpError, UnauthorizedError } from "../types";
 import { ErrorRequestHandler } from "express";
 
+// 오류 핸들러
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
   const httpError = toHttpError(err);
-  console.log("== errorHandler 실행됨 ==");
-  console.log(err);
   res.status(httpError.status).json({
     message: httpError.message,
     data: httpError.data ?? undefined,
@@ -14,7 +13,6 @@ const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
 // 예외를 HttpError 형태로 변환
 function toHttpError(error: any) {
   if (error instanceof HttpError) return error;
-  console.log("== 예외 형태의 errorHandler 실행됨 ==");
   if (error.name === "UnauthorizedError") {
     return new UnauthorizedError(error.message);
   }
