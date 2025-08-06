@@ -46,15 +46,43 @@ export const signInSchema = z.object({
 });
 
 // 일반 회원 탈퇴 DTO 및 zod 유효성 검사
-export const deleteUserSchema = z.object({
-  userId: z.string().optional(),
+export const deleteUserSchema = z
+  .object({
+    userId: z.string().optional(),
+    password: z.string().optional(), // 기본은 optional로 두고
+  })
+  .superRefine((data, ctx) => {
+    const isLocal = "password" in data;
 
-  password: z
-    .string()
-    .min(8, ErrorMessage.PASSWORD_LENGTH_LIMIT)
-    .regex(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/, ErrorMessage.PASSWORD_REGEX)
-    .nonempty(ErrorMessage.NO_PASSWORD),
-});
+    if (isLocal) {
+      if (!data.password || data.password.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["password"],
+          message: "비밀번호를 입력해주세요.",
+        });
+      } else {
+        const password = data.password;
+        if (password.length < 8) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.too_small,
+            path: ["password"],
+            type: "string",
+            minimum: 8,
+            inclusive: true,
+            message: ErrorMessage.PASSWORD_LENGTH_LIMIT,
+          });
+        }
+        if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(password)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ["password"],
+            message: ErrorMessage.PASSWORD_REGEX,
+          });
+        }
+      }
+    }
+  });
 
 export type SignUpRequestDto = z.infer<typeof signUpSchema>;
 export type SignInRequestDto = z.infer<typeof signInSchema>;
