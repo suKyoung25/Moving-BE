@@ -31,8 +31,8 @@ const mockCreateOrUpdate = authMoverRepository.createOrUpdate as jest.MockedFunc
 >;
 const mockFilterSensitiveUserData = filterSensitiveUserData as jest.Mock;
 
+// TODO: 최종 코드에서는 skip 지울 것
 describe.skip("authMover.service.test.ts 테스트를 실행한다", () => {
-  // TODO: 최종 코드에서는 skip 지울 것
   // createMover 함수
   describe("createMover 정상 동작", () => {
     // 1단계 - 공통 setUp

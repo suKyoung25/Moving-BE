@@ -43,7 +43,7 @@ const mockFindByPhone = authClientRepository.findByPhone as jest.MockedFunction<
   typeof authClientRepository.findByPhone
 >;
 
-describe.skip("auth.middleware.tes.ts 파일을 테스트한다", () => {
+describe("auth.middleware.tes.ts 파일을 테스트한다", () => {
   // TODO: 최종 코드에서는 skip 지울 것
   // validateReq 함수
   describe("프론트의 요청을 검증한다 ", () => {
