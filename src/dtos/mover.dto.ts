@@ -34,14 +34,22 @@ export const editAccountMoverSchema = z
     existedPassword: z
       .string()
       .min(8, ErrorMessage.PASSWORD_LENGTH_LIMIT)
-      .regex(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/, ErrorMessage.PASSWORD_REGEX)
+      .max(16, ErrorMessage.PASSWORD_LENGTH_LIMIT)
+      .regex(
+        /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,16}$/,
+        ErrorMessage.PASSWORD_REGEX,
+      )
       .optional()
       .or(z.literal("")),
 
     newPassword: z
       .string()
       .min(8, ErrorMessage.PASSWORD_LENGTH_LIMIT)
-      .regex(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/, ErrorMessage.PASSWORD_REGEX)
+      .max(16, ErrorMessage.PASSWORD_LENGTH_LIMIT)
+      .regex(
+        /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,16}$/,
+        ErrorMessage.PASSWORD_REGEX,
+      )
       .optional()
       .or(z.literal("")),
 

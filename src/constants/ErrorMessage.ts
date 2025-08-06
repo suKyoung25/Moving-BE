@@ -41,7 +41,7 @@ export const ErrorMessage = {
   NO_PHONE: "전화번호를 입력해 주세요.",
   NO_PASSWORD: "비밀번호를 입력해 주세요.",
   PASSWORD_LENGTH_LIMIT: "비밀번호를 최소 8자 이상 입력해 주세요.",
-  PASSWORD_REGEX: "문자와 숫자를 섞어 비밀번호를 작성해 주세요.",
+  PASSWORD_REGEX: "문자와 숫자, 특수문자를 섞어 비밀번호를 작성해 주세요.",
   NAME_LENGTH_LIMIT: "이름을 4자 이내로 입력해 주세요.",
   PHONE_REGEX: "전화번호는 9~11자 사이의 숫자여야 합니다.",
 
