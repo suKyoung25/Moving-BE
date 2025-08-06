@@ -3,7 +3,13 @@ import authClientRepository from "../repositories/authClient.repository";
 import requestRepository from "../repositories/request.repository";
 import { MoveType, RequestDraft } from "@prisma/client";
 import notificationService from "./notification.service";
-import { BadRequestError, GetClientRequestsInput, GetReceivedRequestsQuery } from "../types";
+import {
+  BadRequestError,
+  ForbiddenError,
+  GetClientRequestsInput,
+  GetReceivedRequestsQuery,
+  NotFoundError,
+} from "../types";
 import { ErrorMessage } from "../constants/ErrorMessage";
 
 // 견적 요청 중간 상태 조회
@@ -14,6 +20,11 @@ async function getDraft(clientId: string) {
 // 견적 요청 중간 상태 저장
 async function saveDraft(clientId: string, data: Partial<RequestDraft>) {
   return await requestRepository.saveRequestDraft(clientId, data);
+}
+
+// 견적 요청 상세 조회
+async function getRequest(requestId: string) {
+  return await requestRepository.findRequest(requestId);
 }
 
 // 보낸 견적 요청 조회 (일반 유저) {
@@ -53,6 +64,21 @@ async function createRequest({
   });
 
   return newRequest;
+}
+
+// 견적 요청 취소 (일반 유저)
+async function cancelRequest(clientId: string, requestId: string) {
+  const request = await requestRepository.findRequestDetailByClientId(clientId, requestId);
+  if (!request) {
+    throw new NotFoundError(ErrorMessage.REQUEST_NOT_FOUND);
+  }
+  if (request.clientId !== clientId) {
+    throw new ForbiddenError(ErrorMessage.FORBIDDEN);
+  }
+  if (!request.isPending) {
+    throw new BadRequestError(ErrorMessage.FALIED_CANCEL_REQUEST);
+  }
+  await requestRepository.deleteEstimateRequest(requestId);
 }
 
 // 받은 요청 조회 (기사님)
@@ -102,8 +128,10 @@ async function getReceivedRequestDetail(id: string, moverId: string) {
 export default {
   getDraft,
   saveDraft,
+  getRequest,
   getRequests,
   createRequest,
+  cancelRequest,
   getReceivedRequests,
   getClientActiveRequest,
   designateMover,
