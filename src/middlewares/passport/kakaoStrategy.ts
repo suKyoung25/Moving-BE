@@ -1,7 +1,7 @@
 import { Strategy as KakaoStrategy, Profile } from "passport-kakao";
 
 import { Request } from "express";
-import { NotFoundError, providerMap } from "../../types";
+import { BadRequestError, providerMap } from "../../types";
 import authClientService from "../../services/authClient.service";
 import authMoverService from "../../services/authMover.service";
 
@@ -20,40 +20,48 @@ async function verify(
   profile: Profile,
   done: (error: any, user?: any) => void,
 ) {
-  // enum <-> string 변환
-  const providerEnumValue = providerMap[profile.provider];
-  const userType = req.query.state || "client";
+  try {
+    // enum <-> string 변환
+    const providerEnumValue = providerMap[profile.provider];
+    const userType = req.query.state || "client";
 
-  // 데이터 형태 변환
-  const kakaoAccount = profile._json?.kakao_account;
-  const email = kakaoAccount?.email;
+    // 데이터 형태 변환
+    const kakaoAccount = profile._json?.kakao_account;
+    const email = kakaoAccount?.email;
 
-  // 이메일 없으면 오류 처리
-  if (!email) {
-    return done(new NotFoundError("이메일을 받지 못해 카카오 로그인에 실패했습니다."));
+    // 이메일 없으면 오류 처리
+    if (!email) {
+      return done(new BadRequestError("이메일을 받지 못해 카카오 로그인에 실패했습니다."));
+    }
+
+    let userInfo;
+    if (userType === "client") {
+      // 사용자 데이터
+      userInfo = await authClientService.oAuthCreateOrUpdate({
+        provider: providerEnumValue,
+        providerId: profile.id.toString(),
+        email: profile._json.kakao_account.email,
+        name: "카카오",
+      });
+    } else if (userType === "mover") {
+      userInfo = await authMoverService.oAuthCreateOrUpdate({
+        provider: providerEnumValue,
+        providerId: profile.id.toString(), //kakao는 숫자로 주기 때문에 문자로 변환 필수
+        email: profile._json.kakao_account.email,
+        name: "카카오",
+      });
+    } else {
+      throw new BadRequestError("소셜 로그인: userType을 식별하지 못했습니다.");
+    }
+
+    done(null, userInfo); // req.user = user;
+  } catch (error) {
+    if (error instanceof BadRequestError) {
+      done(error);
+    } else {
+      done(new BadRequestError("소셜 로그인 중 오류가 발생했습니다."));
+    }
   }
-
-  let userInfo;
-  if (userType === "client") {
-    // 사용자 데이터
-    userInfo = await authClientService.oAuthCreateOrUpdate({
-      provider: providerEnumValue,
-      providerId: profile.id.toString(),
-      email: profile._json.kakao_account.email,
-      name: "카카오",
-    });
-  } else if (userType === "mover") {
-    userInfo = await authMoverService.oAuthCreateOrUpdate({
-      provider: providerEnumValue,
-      providerId: profile.id.toString(), //kakao는 숫자로 주기 때문에 문자로 변환 필수
-      email: profile._json.kakao_account.email,
-      name: "카카오",
-    });
-  } else {
-    throw new NotFoundError("소셜 로그인: userType을 식별하지 못했습니다.");
-  }
-
-  done(null, userInfo); // req.user = user;
 }
 
 const kakaoStrategy = new KakaoStrategy(kakaoStrategyOptions, verify);

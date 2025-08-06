@@ -97,11 +97,8 @@ async function oAuthCreateOrUpdate(socialData: SignUpDataSocial) {
 
   if (existingUser) {
     // 이메일 있어도, 소셜 종류(provider)가 다르면 에러
-    if (
-      existingUser.provider !== socialData.provider ||
-      existingUser.providerId !== socialData.providerId
-    ) {
-      throw new BadRequestError(ErrorMessage.ALREADY_EXIST_USER);
+    if (existingUser.provider !== socialData.provider) {
+      throw new BadRequestError(`이미 ${existingUser.provider} 가입 시 사용된 이메일입니다.`);
     }
 
     // 유저 있으면 provider, providerId, name, phone, email 업데이트

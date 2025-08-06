@@ -30,7 +30,6 @@ export function profileClientSchema(mode: "create" | "update") {
   const update = z
     .object({
       name: nameSchema.optional(),
-      email: emailSchema.optional(),
       phone: phoneSchema.optional(),
       password: basicPasswordSchema,
       newPassword: passwordSchema.optional(),

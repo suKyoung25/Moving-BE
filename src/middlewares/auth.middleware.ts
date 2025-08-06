@@ -7,6 +7,7 @@ import { ErrorMessage } from "../constants/ErrorMessage";
 import authMoverRepository from "../repositories/authMover.repository";
 import authClientRepository from "../repositories/authClient.repository";
 
+// 토큰 생성
 const secretKey = process.env.JWT_SECRET;
 
 if (!secretKey) {
@@ -131,7 +132,7 @@ export async function checkMoverWithdrawInfo(req: Request, res: Response, next: 
   }
 }
 
-// [Client] 서비스 쪽에서 하던 중복 검사를 미들웨어에서 처리
+// [Client/회원가입] 서비스 쪽에서 하던 중복 검사를 미들웨어에서 처리
 export async function checkClientSignUpInfo(req: Request, res: Response, next: NextFunction) {
   try {
     const { email, phone } = req.body; //주석: zod 통과한 req.body
@@ -143,8 +144,15 @@ export async function checkClientSignUpInfo(req: Request, res: Response, next: N
     const fieldErrors: Record<string, string> = {};
 
     if (existingEmail) {
-      fieldErrors.email = ErrorMessage.ALREADY_EXIST_EMAIL;
+      const provider = existingEmail.provider;
+
+      if (provider !== "LOCAL") {
+        fieldErrors.email = `이미 ${provider}로 가입된 계정입니다.`;
+      } else {
+        fieldErrors.email = ErrorMessage.ALREADY_EXIST_EMAIL;
+      }
     }
+
     if (existingPhone) {
       fieldErrors.phone = ErrorMessage.ALREADY_EXIST_PHONE;
     }
@@ -158,6 +166,8 @@ export async function checkClientSignUpInfo(req: Request, res: Response, next: N
     next(error);
   }
 }
+
+// 로그인 유효성 검사는 미들웨어로 빼는 게 코드 낭비라서 서비스에서 담당함
 
 // 선택적 인증 미들웨어 (토큰이 있으면 인증, 없어도 계속 진행)
 export const optionalAuth = (req: Request, res: Response, next: NextFunction) => {
