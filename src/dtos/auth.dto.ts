@@ -45,5 +45,16 @@ export const signInSchema = z.object({
     .nonempty(ErrorMessage.NO_PASSWORD),
 });
 
+// 일반 회원 탈퇴 DTO 및 zod 유효성 검사
+export const deleteUserSchema = z.object({
+  userId: z.string().optional(),
+
+  password: z
+    .string()
+    .min(8, ErrorMessage.PASSWORD_LENGTH_LIMIT)
+    .regex(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/, ErrorMessage.PASSWORD_REGEX)
+    .nonempty(ErrorMessage.NO_PASSWORD),
+});
+
 export type SignUpRequestDto = z.infer<typeof signUpSchema>;
 export type SignInRequestDto = z.infer<typeof signInSchema>;

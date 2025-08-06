@@ -53,6 +53,12 @@ export type GetMoverInput = {
   password: string;
 };
 
+// 기사님 탈퇴할 때 필요한 값
+export type DeleteMoverInput = {
+  userId: string;
+  password: string;
+};
+
 // string <-> enum 변환
 export const providerMap: Record<string, Provider> = {
   google: Provider.GOOGLE,

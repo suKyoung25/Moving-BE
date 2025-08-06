@@ -101,6 +101,31 @@ export async function checkMoverSignInInfo(req: Request, res: Response, next: Ne
   }
 }
 
+// (회원탈퇴) 컨트롤러단 진입 전 DB와 대조하여 에러 띄움
+export async function checkMoverWithdrawInfo(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { userId, password } = req.body; //주석: zod 통과한 req.body
+
+    const fieldErrors: Record<string, string> = {};
+
+    const mover = await authMoverRepository.getMoverById(userId);
+    if (!mover) {
+      fieldErrors.email = ErrorMessage.USER_NOT_FOUND;
+      throw new ConflictError("사용자를 찾을 수 없습니다.", fieldErrors);
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, mover.hashedPassword!);
+    if (!isPasswordValid) {
+      fieldErrors.password = ErrorMessage.PASSWORD_NOT_MATCH;
+      throw new ConflictError(ErrorMessage.PASSWORD_NOT_MATCH, fieldErrors);
+    }
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+}
+
 // [Client] 서비스 쪽에서 하던 중복 검사를 미들웨어에서 처리
 export async function checkClientSignUpInfo(req: Request, res: Response, next: NextFunction) {
   try {
