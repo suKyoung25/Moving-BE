@@ -68,6 +68,13 @@ async function update(id: string, user: Omit<SignUpDataSocial, "email" | "name">
   return { ...newClient, userType: "client" };
 }
 
+// 회원탈퇴
+async function removeLocalAccount(id: string) {
+  return await prisma.client.delete({
+    where: { id },
+  });
+}
+
 export default {
   findById,
   findByEmail,
@@ -76,4 +83,5 @@ export default {
   save,
   update,
   findByEmailRaw,
+  removeLocalAccount,
 };
