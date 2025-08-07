@@ -247,8 +247,6 @@ async function toggleFavoriteMover(clientId: string, moverId: string) {
 
     if (existingFavorite) {
       // 3-a. 이미 찜한 상태 -> 찜 해제
-
-      // TODO: result 사용이 안되는 것 같은데 확인 부탁드립니다
       const result = await prisma.$transaction([
         prisma.favorite.delete({
           where: {
