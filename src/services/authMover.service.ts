@@ -88,7 +88,7 @@ async function setMoverByEmail(user: GetMoverInput) {
 
 // 기사님 삭제(회원 탈퇴)
 async function deleteMoverById(userId: string) {
-  await authMoverRepository.deleteMoverById(userId);
+  return await authMoverRepository.deleteMoverById(userId);
 }
 
 // 소셜에서 받은 정보가 DB에 없으면 (생성:create) 있으면 (수정:update)하는 함수
