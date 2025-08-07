@@ -22,7 +22,7 @@ requestRouter.get("/detail/:id", requestController.getReceivedRequestDetail);
 requestRouter.patch("/movers/:moverId", requestController.designateMover);
 
 // 받은 요청 목록 조회 (기사님)
-requestRouter.get("/mover", requestController.getReceivedRequests);
+requestRouter.get("/", requestController.getReceivedRequests);
 
 // 견적 요청 (일반 유저)
 requestRouter.post("/", requestController.createRequest);
