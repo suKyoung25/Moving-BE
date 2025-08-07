@@ -37,7 +37,7 @@ export const validateReq =
       req.body = result.data; // parse된 req.body로 덮어씌움
 
       if (Object.keys(fieldErrors).length > 0) {
-        throw new ConflictError("중복 정보로 인한 회원가입 실패", fieldErrors);
+        throw new ConflictError("잘못된 정보로 인한 요청 실패", fieldErrors);
       }
 
       next();
