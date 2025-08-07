@@ -2,7 +2,7 @@ import { expressjwt } from "express-jwt";
 import { ZodSchema } from "zod";
 import { Request, Response, NextFunction } from "express";
 import bcrypt from "bcrypt";
-import { ConflictError } from "../types";
+import { ConflictError, NotFoundError } from "../types";
 import { ErrorMessage } from "../constants/ErrorMessage";
 import authMoverRepository from "../repositories/authMover.repository";
 import authClientRepository from "../repositories/authClient.repository";
@@ -106,7 +106,8 @@ export async function checkMoverSignInInfo(req: Request, res: Response, next: Ne
 // (회원탈퇴) 컨트롤러단 진입 전 DB와 대조하여 에러 띄움
 export async function checkMoverWithdrawInfo(req: Request, res: Response, next: NextFunction) {
   try {
-    const { userId, password } = req.body; //주석: zod 통과한 req.body
+    const userId = req.auth!.userId;
+    const password = req.body.password; //주석: zod 통과한 req.body
 
     const fieldErrors: Record<string, string> = {};
 
@@ -173,19 +174,25 @@ export async function checkClientSignUpInfo(req: Request, res: Response, next: N
 // Client 회원탈퇴
 export async function checkClientWithdrawInfo(req: Request, res: Response, next: NextFunction) {
   try {
-    const { userId, password } = req.body;
+    const userId = req.auth!.userId;
+    const password = req.body.password; //주석: zod 통과한 req.body
 
     const fieldErrors: Record<string, string> = {};
 
     const client = await authClientRepository.findById(userId);
     if (!client) {
       fieldErrors.email = ErrorMessage.USER_NOT_FOUND;
-      throw new ConflictError("사용자를 찾을 수 없습니다.");
+      throw new NotFoundError("사용자를 찾을 수 없습니다.", fieldErrors);
     }
 
-    await verifyPassword(password, client.hashedPassword!);
+    // 회원가입한 provider가 LOCAL인지 아닌지 (소셜의 경우 password가 없으므로 바로 넘김)
+    if (client.provider === "LOCAL") {
+      await verifyPassword(password, client.hashedPassword!);
 
-    next();
+      next();
+    } else {
+      next();
+    }
   } catch (error) {
     next(error);
   }
@@ -212,5 +219,3 @@ export const optionalAuth = (req: Request, res: Response, next: NextFunction) =>
     next(error);
   }
 };
-
-//

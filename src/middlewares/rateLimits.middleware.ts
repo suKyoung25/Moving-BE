@@ -1,5 +1,5 @@
 import { Request } from "express";
-import rateLimit from "express-rate-limit";
+import rateLimit, { ipKeyGenerator } from "express-rate-limit";
 
 // 로그인 횟수 제한
 export const loginLimiter = rateLimit({
@@ -38,7 +38,7 @@ export const profileUpdateLimit = rateLimit({
     const prefix = isPasswordChange ? "password" : "profile";
     const key = `${prefix}_by_${req.auth?.userId!}`;
 
-    return key;
+    return ipKeyGenerator(key);
   },
 });
 
