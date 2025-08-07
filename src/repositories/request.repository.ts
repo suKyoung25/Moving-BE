@@ -13,6 +13,7 @@ import { Prisma, RequestDraft } from "@prisma/client";
 const now = new Date();
 const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
 
+// 견적 요청 중간 상태 조회
 async function getRequestDraftById(clientId: string) {
   return await prisma.requestDraft.findUnique({
     where: { clientId },
@@ -30,6 +31,23 @@ async function saveRequestDraft(clientId: string, data: Partial<RequestDraft>) {
     create: {
       clientId,
       ...data,
+    },
+  });
+}
+
+// 견적 요청 상세 조회
+async function findRequest(requestId: string) {
+  return await prisma.request.findUnique({
+    where: { id: requestId },
+  });
+}
+
+// 보낸 견적 요청 상세 조회 (일반 유저)
+async function findRequestDetailByClientId(clientId: string, requestId: string) {
+  return await prisma.request.findUnique({
+    where: {
+      id: requestId,
+      clientId,
     },
   });
 }
@@ -84,6 +102,13 @@ async function createEstimateRequest(request: CreateRequestDto, clientId: string
   });
 
   return result;
+}
+
+// 견적 요청 취소 (일반 유저)
+async function deleteEstimateRequest(requestId: string) {
+  return await prisma.request.delete({
+    where: { id: requestId },
+  });
 }
 
 // 받은 요청 조회 (기사님)
@@ -369,8 +394,11 @@ export default {
   saveRequestDraft,
   getRequestsByClientId,
   createEstimateRequest,
+  deleteEstimateRequest,
   getFilteredRequests,
   findPendingRequestById,
   designateMover,
+  findRequest,
   findRequestDetailById,
+  findRequestDetailByClientId,
 };

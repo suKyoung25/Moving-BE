@@ -6,6 +6,7 @@ import { ConflictError } from "../types";
 import { ErrorMessage } from "../constants/ErrorMessage";
 import authMoverRepository from "../repositories/authMover.repository";
 import authClientRepository from "../repositories/authClient.repository";
+import { verifyPassword } from "../utils/auth.util";
 
 // 토큰 생성
 const secretKey = process.env.JWT_SECRET;
@@ -115,13 +116,18 @@ export async function checkMoverWithdrawInfo(req: Request, res: Response, next: 
       throw new ConflictError("사용자를 찾을 수 없습니다.", fieldErrors);
     }
 
-    const isPasswordValid = await bcrypt.compare(password, mover.hashedPassword!);
-    if (!isPasswordValid) {
-      fieldErrors.password = ErrorMessage.PASSWORD_NOT_MATCH;
-      throw new ConflictError(ErrorMessage.PASSWORD_NOT_MATCH, fieldErrors);
-    }
+    // 회원가입한 provider가 LOCAL인지 아닌지 (소셜의 경우 password가 없으므로 바로 넘김)
+    if (mover.provider === "LOCAL") {
+      const isPasswordValid = await bcrypt.compare(password, mover.hashedPassword!);
+      if (!isPasswordValid) {
+        fieldErrors.password = ErrorMessage.PASSWORD_NOT_MATCH;
+        throw new ConflictError(ErrorMessage.PASSWORD_NOT_MATCH, fieldErrors);
+      }
 
-    next();
+      next();
+    } else {
+      next();
+    }
   } catch (error) {
     next(error);
   }
@@ -164,6 +170,27 @@ export async function checkClientSignUpInfo(req: Request, res: Response, next: N
 
 // 로그인 유효성 검사는 미들웨어로 빼는 게 코드 낭비라서 서비스에서 담당함
 
+// Client 회원탈퇴
+export async function checkClientWithdrawInfo(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { userId, password } = req.body;
+
+    const fieldErrors: Record<string, string> = {};
+
+    const client = await authClientRepository.findById(userId);
+    if (!client) {
+      fieldErrors.email = ErrorMessage.USER_NOT_FOUND;
+      throw new ConflictError("사용자를 찾을 수 없습니다.");
+    }
+
+    await verifyPassword(password, client.hashedPassword!);
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+}
+
 // 선택적 인증 미들웨어 (토큰이 있으면 인증, 없어도 계속 진행)
 export const optionalAuth = (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -185,3 +212,5 @@ export const optionalAuth = (req: Request, res: Response, next: NextFunction) =>
     next(error);
   }
 };
+
+//

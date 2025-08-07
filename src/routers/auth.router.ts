@@ -13,6 +13,7 @@ import {
 import express from "express";
 import passport from "passport";
 import { createSocialAuthMiddleware } from "../middlewares/passport/passport.middleware";
+import { loginLimiter } from "../middlewares/rateLimits.middleware";
 
 const authRouter = express.Router();
 
@@ -26,7 +27,13 @@ authRouter.get("/", verifyAccessToken, authController.getMe);
 authRouter.post("/signup/mover", validateReq(signUpSchema), checkMoverSignUpInfo, moverSignup);
 
 // 기사님 로그인 - Local
-authRouter.post("/signin/mover", validateReq(signInSchema), checkMoverSignInInfo, moverSignin);
+authRouter.post(
+  "/signin/mover",
+  validateReq(signInSchema),
+  loginLimiter,
+  checkMoverSignInInfo,
+  moverSignin,
+);
 
 // 기사님 회원탈퇴 - Local
 authRouter.delete(
@@ -46,14 +53,20 @@ authRouter.post(
 );
 
 // Client 로그인 - Local
-authRouter.post("/signin/client", validateReq(signInSchema), authClientController.login);
+authRouter.post(
+  "/signin/client",
+  validateReq(signInSchema),
+  loginLimiter,
+  authClientController.login,
+);
 
-// Client 회원탈퇴 - Local // TODO: 작성 예정
+// Client 회원탈퇴 - Local
 // authRouter.delete(
 //   "/delete/client",
 //   verifyAccessToken,
 //   validateReq(deleteUserSchema),
-//   checkMoverWithdrawInfo,
+//   checkClientWithdrawInfo,
+//   authClientController.deleteAccount,
 // );
 
 // 구글 로그인

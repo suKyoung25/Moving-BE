@@ -45,14 +45,9 @@ async function moverWithdraw(
   try {
     const userId = req.auth?.userId!;
 
-    const data = {
-      userId,
-      password: req.body.password, // 미들웨어를 통해 유효성 통과된 req.body
-    };
+    await authMoverService.deleteMoverById(userId);
 
-    await authMoverService.deleteMoverById(data);
-
-    res.status(200).json({ message: "Mover 회원 삭제 성공" });
+    res.sendStatus(204);
   } catch (error) {
     next(error);
   }

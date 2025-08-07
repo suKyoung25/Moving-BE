@@ -9,6 +9,7 @@ export const ErrorMessage = {
   JWT_EXPIRES_IN_NOT_FOUND: "jwt 유효기간을 찾을 수 없습니다.",
   PROFILE_NOT_FOUND: "프로필 수정에 실패했습니다.",
   DRAFT_NOT_FOUND: "견적 요청 초안이 존재하지 않습니다.",
+  REQUEST_NOT_FOUND: "견적 요청을 찾을 수 없습니다.",
 
   // Not Match
   PASSWORD_NOT_MATCH: "비밀번호가 일치하지 않습니다.",
@@ -34,6 +35,9 @@ export const ErrorMessage = {
   UNAUTHORIZED: "인증되지 않은 사용자입니다.",
   FORBIDDEN: "요청한 작업을 수행하기 위한 권한이 없습니다.",
   BAD_REQUEST: "잘못된 요청입니다.",
+
+  // Failed
+  FALIED_CANCEL_REQUEST: "확정된 견적은 취소할 수 없습니다.",
 
   // 회원가입 추가
   NO_EMAIL: "이메일을 입력해 주세요.",
