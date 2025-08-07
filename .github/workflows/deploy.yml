@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - dev
+  pull_request:
+    branches:
+      - dev
 
 jobs:
   Deploy:
@@ -21,6 +24,7 @@ jobs:
         run: |
           echo "${{ secrets.ENV }}" > .env
       - name: SSH로 EC2에 접속해서 Express 서버 배포하기
+        if: github.ref == 'refs/heads/dev'
         uses: appleboy/ssh-action@v1.0.3
         env:
           ENV: ${{ secrets.ENV }}

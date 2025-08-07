@@ -37,6 +37,16 @@ async function saveDraft(req: Request<{}, {}, RequestDraftDto>, res: Response, n
   }
 }
 
+// 견적 요청 상세 조회
+async function getRequest(req: Request, res: Response, next: NextFunction) {
+  try {
+    const request = await requestService.getRequest(req.params.id);
+    res.status(200).json({ message: "견적 요청 조회 성공", data: request });
+  } catch (err) {
+    next(err);
+  }
+}
+
 // 보낸 견적 요청 목록 조회 (일반 유저)
 async function getRequests(req: Request, res: Response, next: NextFunction) {
   try {
@@ -71,6 +81,18 @@ async function createRequest(
     }
     const request = await requestService.createRequest({ request: parseResult.data, clientId });
     res.status(201).json({ message: "견적 요청 성공", data: request });
+  } catch (error) {
+    next(error);
+  }
+}
+
+// 견적 요청 취소 (일반 유저)
+async function cancelRequest(req: Request, res: Response, next: NextFunction) {
+  try {
+    const clientId = req.auth!.userId;
+    const requestId = req.params.id;
+    const result = await requestService.cancelRequest(clientId, requestId);
+    res.status(200).json({ message: "견적 요청 취소 성공", data: result });
   } catch (error) {
     next(error);
   }
@@ -140,8 +162,10 @@ async function getReceivedRequestDetail(req: Request, res: Response) {
 export default {
   getDraft,
   saveDraft,
+  getRequest,
   getRequests,
   createRequest,
+  cancelRequest,
   getReceivedRequests,
   getClientActiveRequest,
   designateMover,
