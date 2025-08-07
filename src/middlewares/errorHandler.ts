@@ -1,7 +1,6 @@
 import { HttpError, UnauthorizedError } from "../types";
 import { ErrorRequestHandler } from "express";
 
-// 오류 핸들러
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
   const httpError = toHttpError(err);
   res.status(httpError.status).json({

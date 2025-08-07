@@ -41,7 +41,7 @@ async function deleteAccount(
     const data = { userId, password: req.body.password };
 
     await authClientService.remove(data);
-    res.status(204).json({ message: "Client 회원탈퇴 성공" });
+    res.sendStatus(204);
   } catch (error) {
     next(error);
   }
