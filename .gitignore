@@ -51,3 +51,6 @@ out/
 # jest
 jest-cache/
 jest-output.json
+
+# .http
+.http
