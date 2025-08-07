@@ -37,14 +37,14 @@ async function verify(
         provider: providerEnumValue,
         providerId: profile.id,
         email: profile.emails[0].value,
-        name: profile.displayName,
+        name: "구글", // 구글 이름 안 받음
       });
     } else if (userType === "mover") {
       userInfo = await authMoverService.oAuthCreateOrUpdate({
         provider: providerEnumValue,
         providerId: profile.id,
         email: profile.emails[0].value,
-        name: profile.displayName,
+        name: "구글",
       });
     } else {
       throw new BadRequestError("소셜 로그인: userType을 식별하지 못했습니다.");
