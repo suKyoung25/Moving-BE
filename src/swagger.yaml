@@ -391,6 +391,7 @@ paths:
         "201":
           description: 생성 성공
 
+  /requests/mover:
     get:
       tags: [Request]
       summary: 받은 견적 요청 목록 (기사)

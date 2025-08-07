@@ -21,8 +21,8 @@ requestRouter.get("/detail/:id", requestController.getReceivedRequestDetail);
 // 기사님 지정 요청 (일반 > 기사)
 requestRouter.patch("/movers/:moverId", requestController.designateMover);
 
-// 받은 요청 조회 (기사님)
-requestRouter.get("/", requestController.getReceivedRequests);
+// 받은 요청 목록 조회 (기사님)
+requestRouter.get("/mover", requestController.getReceivedRequests);
 
 // 견적 요청 (일반 유저)
 requestRouter.post("/", requestController.createRequest);
