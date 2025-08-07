@@ -1,7 +1,7 @@
 import * as authUtil from "./auth.util";
 import bcrypt from "bcrypt";
 import { ConflictError } from "../types";
-import mock from "../constants/client.mock";
+import mock from "../mocks/client.mock";
 
 jest.mock("bcrypt");
 

@@ -37,7 +37,6 @@ async function verify(
         providerId: profile.id,
         email: profile._json.email,
         name: "네이버",
-        phone: (profile._json as any).mobile, // 타입 오류 수정
       });
     } else if (userType === "mover") {
       userInfo = await authMoverService.oAuthCreateOrUpdate({
@@ -45,7 +44,6 @@ async function verify(
         providerId: profile.id,
         email: profile._json.email,
         name: "네이버",
-        phone: (profile._json as any).mobile,
       });
     } else {
       throw new BadRequestError("소셜 로그인: userType을 식별하지 못했습니다.");

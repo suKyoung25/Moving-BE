@@ -1,4 +1,4 @@
-import mock from "../constants/client.mock";
+import mock from "../mocks/client.mock";
 
 // 의존성 제거 용도로 mock 함수 만듦
 jest.mock("@prisma/client", () => {
