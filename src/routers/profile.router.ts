@@ -4,6 +4,7 @@ import { MoverProfileSchema } from "../dtos/mover.dto";
 import { validateReq, verifyAccessToken } from "../middlewares/auth.middleware";
 import express from "express";
 import { checkMoverProfileInfo } from "../middlewares/profile.middleware";
+import { profileUpdateLimit } from "../middlewares/rateLimits.middleware";
 
 const profileRouter = express.Router();
 
@@ -17,6 +18,11 @@ profileRouter.patch(
 );
 
 // 일반 회원 프로필 등록 & 수정
-profileRouter.patch("/clients", verifyAccessToken, profileClientController.update);
+profileRouter.patch(
+  "/clients",
+  verifyAccessToken,
+  profileUpdateLimit,
+  profileClientController.update,
+);
 
 export default profileRouter;

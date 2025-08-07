@@ -24,7 +24,7 @@ import morgan from "morgan";
 const app = express();
 
 // trust proxy 설정 (쿠키 보안 관련: production 시 필요)
-app.set("trust proxy", true);
+app.set("trust proxy", 1);
 
 // 미들웨어
 app.use(helmet());

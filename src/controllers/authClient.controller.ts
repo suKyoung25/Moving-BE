@@ -30,6 +30,23 @@ async function login(req: Request<{}, {}, SignInRequestDto>, res: Response, next
   }
 }
 
-const authClientController = { signUp, login };
+// 회원탈퇴
+async function deleteAccount(
+  req: Request<{}, {}, SignInRequestDto>,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const userId = req.auth?.userId!;
+    const data = { userId, password: req.body.password };
+
+    await authClientService.remove(data);
+    res.sendStatus(204);
+  } catch (error) {
+    next(error);
+  }
+}
+
+const authClientController = { signUp, login, deleteAccount };
 
 export default authClientController;
