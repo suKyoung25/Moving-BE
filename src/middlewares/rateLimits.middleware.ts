@@ -12,7 +12,7 @@ export const loginLimiter = rateLimit({
   },
 });
 
-// 비밀번호 재설정 횟수 제한
+// (일반유저-프로필 페이지) 비밀번호 재설정 횟수 제한
 export const profileUpdateLimit = rateLimit({
   windowMs: 60 * 60 * 1000, // 한 시간
 
@@ -36,6 +36,36 @@ export const profileUpdateLimit = rateLimit({
   keyGenerator: (req, res) => {
     const isPasswordChange = req.body.newPassword && req.body.newPassword.trim() !== "";
     const prefix = isPasswordChange ? "password" : "profile";
+    const key = `${prefix}_by_${req.auth?.userId!}`;
+
+    return key;
+  },
+});
+
+// (기사님-기본정보수정 페이지) 비밀번호 재설정 횟수 제한
+export const basicInfoUpdateLimit = rateLimit({
+  windowMs: 60 * 60 * 1000, // 한 시간
+
+  limit: (req: Request) => {
+    // 비밀번호는 1회, 기본정보 수정은 2회까지 허용
+    const isPasswordChange = req.body.newPassword && req.body.newPassword.trim() !== "";
+    const maxCount = isPasswordChange ? 1 : 2;
+
+    return maxCount;
+  },
+
+  message: (req: Request) => {
+    const isPasswordChange = req.body.newPassword && req.body.newPassword.trim() !== "";
+    return {
+      message: isPasswordChange
+        ? "비밀번호 재설정은 한 시간에 1회만 가능합니다."
+        : "기본정보 수정은 한 시간에 2회까지만 가능합니다.",
+    };
+  },
+
+  keyGenerator: (req, res) => {
+    const isPasswordChange = req.body.newPassword && req.body.newPassword.trim() !== "";
+    const prefix = isPasswordChange ? "password" : "basicInfo";
     const key = `${prefix}_by_${req.auth?.userId!}`;
 
     return key;

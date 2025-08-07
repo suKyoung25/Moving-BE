@@ -3,6 +3,7 @@ import { editAccountMoverSchema } from "../dtos/mover.dto";
 import { validateReq } from "../middlewares/auth.middleware";
 import { checkMoverAccountInfo } from "../middlewares/account.middleware";
 import express from "express";
+import { basicInfoUpdateLimit } from "../middlewares/rateLimits.middleware";
 
 const accountRouter = express.Router();
 
@@ -10,6 +11,7 @@ const accountRouter = express.Router();
 accountRouter.patch(
   "/edit/mover",
   validateReq(editAccountMoverSchema),
+  basicInfoUpdateLimit,
   checkMoverAccountInfo,
   accountMoverController.editAccountMover,
 );
