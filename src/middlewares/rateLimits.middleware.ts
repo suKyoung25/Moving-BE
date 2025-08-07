@@ -1,5 +1,5 @@
 import { Request } from "express";
-import rateLimit, { ipKeyGenerator } from "express-rate-limit";
+import rateLimit from "express-rate-limit";
 
 // 로그인 횟수 제한
 export const loginLimiter = rateLimit({
@@ -8,8 +8,10 @@ export const loginLimiter = rateLimit({
   message: { message: "5회 이상 로그인에 실패했습니다. 최소 30분 후에 재시도해 주세요." },
   skipSuccessfulRequests: true,
   keyGenerator: (req, res) => {
-    return req.body.email; // 또는 req.ip -- 막는 조건
+    return `${req.body.email}`;
   },
+
+  // validate: false, // keyGenerator를 만들어 쓰면 IPv6 우회 때문에 검증 오류 발생(하는데 오류 아님). 검증 옵션을 꺼줌.
 });
 
 // (일반유저-프로필 페이지) 비밀번호 재설정 횟수 제한
@@ -19,9 +21,7 @@ export const profileUpdateLimit = rateLimit({
   limit: (req: Request) => {
     // 비밀번호는 1회, 일반 프로필 수정은 5회까지 허용
     const isPasswordChange = req.body.newPassword && req.body.newPassword.trim() !== "";
-    const maxCount = isPasswordChange ? 1 : 5;
-
-    return maxCount;
+    return isPasswordChange ? 1 : 5;
   },
 
   message: (req: Request) => {
@@ -36,9 +36,7 @@ export const profileUpdateLimit = rateLimit({
   keyGenerator: (req, res) => {
     const isPasswordChange = req.body.newPassword && req.body.newPassword.trim() !== "";
     const prefix = isPasswordChange ? "password" : "profile";
-    const key = `${prefix}_by_${req.auth?.userId!}`;
-
-    return ipKeyGenerator(key);
+    return `${prefix}_by_${req.auth?.userId!}`;
   },
 });
 
@@ -49,9 +47,7 @@ export const basicInfoUpdateLimit = rateLimit({
   limit: (req: Request) => {
     // 비밀번호는 1회, 기본정보 수정은 2회까지 허용
     const isPasswordChange = req.body.newPassword && req.body.newPassword.trim() !== "";
-    const maxCount = isPasswordChange ? 1 : 2;
-
-    return maxCount;
+    return isPasswordChange ? 1 : 2;
   },
 
   message: (req: Request) => {
@@ -66,8 +62,6 @@ export const basicInfoUpdateLimit = rateLimit({
   keyGenerator: (req, res) => {
     const isPasswordChange = req.body.newPassword && req.body.newPassword.trim() !== "";
     const prefix = isPasswordChange ? "password" : "basicInfo";
-    const key = `${prefix}_by_${req.auth?.userId!}`;
-
-    return key;
+    return `${prefix}_by_${req.auth?.userId!}`;
   },
 });
