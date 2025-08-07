@@ -7,7 +7,11 @@ export const emailSchema = z.string().email().nonempty(ErrorMessage.NO_EMAIL);
 export const passwordSchema = z
   .string()
   .min(8, ErrorMessage.PASSWORD_LENGTH_LIMIT)
-  .regex(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/, ErrorMessage.PASSWORD_REGEX)
+  .max(16, ErrorMessage.PASSWORD_LENGTH_LIMIT)
+  .regex(
+    /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,16}$/,
+    ErrorMessage.PASSWORD_REGEX,
+  )
   .nonempty(ErrorMessage.NO_PASSWORD);
 
 export const nameSchema = z
@@ -41,7 +45,11 @@ export const signInSchema = z.object({
   password: z
     .string()
     .min(8, ErrorMessage.PASSWORD_LENGTH_LIMIT)
-    .regex(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/, ErrorMessage.PASSWORD_REGEX)
+    .max(16, ErrorMessage.PASSWORD_LENGTH_LIMIT)
+    .regex(
+      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,16}$/,
+      ErrorMessage.PASSWORD_REGEX,
+    )
     .nonempty(ErrorMessage.NO_PASSWORD),
 });
 

@@ -35,7 +35,7 @@ const mockFilterSensitiveUserData = filterSensitiveUserData as jest.Mock;
 describe("createMover 정상 동작", () => {
   // 1단계 - 공통 setUp
   const mockUser = {
-    id: "1", //디버깅
+    id: "1",
     email: "test@test.com",
     name: "홍길동",
     phone: "01012345678",
