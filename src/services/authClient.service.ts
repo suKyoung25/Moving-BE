@@ -2,7 +2,6 @@ import { ErrorMessage } from "../constants/ErrorMessage";
 import authClientRepository from "../repositories/authClient.repository";
 import {
   BadRequestError,
-  DeleteUserInput,
   LoginDataLocal,
   NotFoundError,
   SignUpDataLocal,
@@ -100,13 +99,13 @@ async function oAuthCreateOrUpdate(data: SignUpDataSocial) {
 }
 
 // 회원탈퇴
-async function remove(user: DeleteUserInput) {
-  return await authClientRepository.removeLocalAccount(user.userId);
-}
+// async function remove(user: DeleteUserInput) {
+//   return await authClientRepository.removeLocalAccount(user.userId);
+// }
 
 export default {
   create,
   loginWithLocal,
   oAuthCreateOrUpdate,
-  remove,
+  // remove,
 };
