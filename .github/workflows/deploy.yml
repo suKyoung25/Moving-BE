@@ -65,4 +65,5 @@ jobs:
             rm -rf dist
             tar -xvf project.tar.gz
             rm -f project.tar.gz
-            pm2 start dist/server.js --name app || pm2 restart app
+            pm2 kill
+            pm2 start dist/server.js --name app
