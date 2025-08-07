@@ -4,6 +4,7 @@ import { moverSignin, moverSignup, moverWithdraw } from "../controllers/authMove
 import { deleteUserSchema, signInSchema, signUpSchema } from "../dtos/auth.dto";
 import {
   checkClientSignUpInfo,
+  checkClientWithdrawInfo,
   checkMoverSignInInfo,
   checkMoverSignUpInfo,
   checkMoverWithdrawInfo,
@@ -61,13 +62,13 @@ authRouter.post(
 );
 
 // Client 회원탈퇴 - Local
-// authRouter.delete(
-//   "/delete/client",
-//   verifyAccessToken,
-//   validateReq(deleteUserSchema),
-//   checkClientWithdrawInfo,
-//   authClientController.deleteAccount,
-// );
+authRouter.delete(
+  "/delete/client",
+  verifyAccessToken,
+  validateReq(deleteUserSchema),
+  checkClientWithdrawInfo,
+  authClientController.deleteAccount,
+);
 
 // 구글 로그인
 authRouter.get("/google", (req, res, next) => {
