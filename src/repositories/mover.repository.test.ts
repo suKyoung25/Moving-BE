@@ -4,7 +4,7 @@ import {
   mockMoversResponse,
   mockMoverDetail,
   mockFavoriteToggleResponse,
-} from "../constants/mover.mock";
+} from "../mocks/mover.mock";
 
 // 테스트 파일 맨 위에 추가
 jest.spyOn(console, "error").mockImplementation(() => {});

@@ -3,7 +3,7 @@ import {
   mockMoversResponse,
   mockMoverDetail,
   mockFavoriteToggleResponse,
-} from "../constants/mover.mock";
+} from "../mocks/mover.mock";
 
 import moverService from "./mover.service";
 import moverRepository from "../repositories/mover.repository";
