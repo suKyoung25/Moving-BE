@@ -1,3 +1,4 @@
+import { addDays, startOfDay } from "date-fns";
 import prisma from "../configs/prisma.config";
 import { CreateRequestDto } from "../dtos/request.dto";
 import {
@@ -9,9 +10,6 @@ import {
   ServerError,
 } from "../types";
 import { Prisma, RequestDraft } from "@prisma/client";
-
-const now = new Date();
-const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
 
 // 견적 요청 중간 상태 조회
 async function getRequestDraftById(clientId: string) {
@@ -122,6 +120,9 @@ async function getFilteredRequests({
   cursor,
   moverId,
 }: GetFilteredRequestsInput) {
+  const today = startOfDay(new Date());
+  const tomorrow = addDays(today, 1);
+
   const mover = await prisma.mover.findUnique({
     where: { id: moverId },
     select: {
