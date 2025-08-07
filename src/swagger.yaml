@@ -262,11 +262,11 @@ paths:
         - name: page
           in: query
           schema:
-            type: number
+            type: integer
         - name: limit
           in: query
           schema:
-            type: number
+            type: integer
       responses:
         "200":
           description: 조회 성공
@@ -468,6 +468,19 @@ paths:
       summary: 보낸 견적 요청 목록 조회
       security:
         - bearerAuth: []
+      parameters:
+        - name: cursor
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: sort
+          in: query
+          schema:
+            enum: ["desc", "asc"]
       responses:
         "200":
           description: 조회 성공
@@ -481,6 +494,37 @@ paths:
       responses:
         "200":
           description: 조회 성공
+
+  /requests/{requestId}:
+    get:
+      tags: [Request]
+      summary: 견적 요청 상세 조회
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: requestId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: 요청 조회 성공
+
+    delete:
+      tags: [Request]
+      summary: 견적 요청 취소
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: requestId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: 요청 취소 성공
 
   /reviews/me:
     get:
@@ -502,11 +546,11 @@ paths:
         - name: page
           in: query
           schema:
-            type: number
+            type: integer
         - name: limit
           in: query
           schema:
-            type: number
+            type: integer
       responses:
         "200":
           description: 조회 성공
@@ -608,7 +652,7 @@ components:
         nickName:
           type: string
         career:
-          type: number
+          type: integer
           minimum: 0
         introduction:
           type: string
