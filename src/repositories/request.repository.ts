@@ -236,6 +236,7 @@ async function getFilteredRequests({
       client: {
         select: {
           name: true,
+          profileImage: true,
         },
       },
     },
@@ -249,6 +250,7 @@ async function getFilteredRequests({
     ...rest,
     isDesignated: designatedRequests.map((dr) => dr.moverId).includes(moverId),
     clientName: client.name,
+    clientProfileImage: client.profileImage,
   }));
 
   const nextCursor = requests.length === limit ? requests[requests.length - 1].id : null;
