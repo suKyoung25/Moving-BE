@@ -47,7 +47,7 @@ async function moverWithdraw(
 
     await authMoverService.deleteMoverById(userId);
 
-    res.sendStatus(204);
+    res.status(200).json({ message: "Mover 회원탈퇴 성공" });
   } catch (error) {
     next(error);
   }

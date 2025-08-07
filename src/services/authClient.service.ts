@@ -99,13 +99,13 @@ async function oAuthCreateOrUpdate(data: SignUpDataSocial) {
 }
 
 // 회원탈퇴
-// async function remove(user: DeleteUserInput) {
-//   return await authClientRepository.removeLocalAccount(user.userId);
-// }
+async function remove(userId: string) {
+  return await authClientRepository.removeAccount(userId);
+}
 
 export default {
   create,
   loginWithLocal,
   oAuthCreateOrUpdate,
-  // remove,
+  remove,
 };
