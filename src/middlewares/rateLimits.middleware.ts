@@ -10,8 +10,6 @@ export const loginLimiter = rateLimit({
   keyGenerator: (req, res) => {
     return `${req.body.email}`;
   },
-
-  // validate: false, // keyGenerator를 만들어 쓰면 IPv6 우회 때문에 검증 오류 발생(하는데 오류 아님). 검증 옵션을 꺼줌.
 });
 
 // (일반유저-프로필 페이지) 비밀번호 재설정 횟수 제한
@@ -21,15 +19,15 @@ export const profileUpdateLimit = rateLimit({
   limit: (req: Request) => {
     // 비밀번호는 1회, 일반 프로필 수정은 5회까지 허용
     const isPasswordChange = req.body.newPassword && req.body.newPassword.trim() !== "";
-    return isPasswordChange ? 1 : 5;
+    return isPasswordChange ? 3 : 10;
   },
 
   message: (req: Request) => {
     const isPasswordChange = req.body.newPassword && req.body.newPassword.trim() !== "";
     return {
       message: isPasswordChange
-        ? "비밀번호 재설정은 한 시간에 1회만 가능합니다."
-        : "프로필 수정은 한 시간에 5회까지만 가능합니다.",
+        ? "비밀번호 재설정은 한 시간에 3회만 가능합니다."
+        : "프로필 수정은 한 시간에 10회까지만 가능합니다.",
     };
   },
 
@@ -45,17 +43,17 @@ export const basicInfoUpdateLimit = rateLimit({
   windowMs: 60 * 60 * 1000, // 한 시간
 
   limit: (req: Request) => {
-    // 비밀번호는 1회, 기본정보 수정은 2회까지 허용
+    // 비밀번호는 3회, 기본정보 수정은 10회까지 허용
     const isPasswordChange = req.body.newPassword && req.body.newPassword.trim() !== "";
-    return isPasswordChange ? 1 : 2;
+    return isPasswordChange ? 3 : 10;
   },
 
   message: (req: Request) => {
     const isPasswordChange = req.body.newPassword && req.body.newPassword.trim() !== "";
     return {
       message: isPasswordChange
-        ? "비밀번호 재설정은 한 시간에 1회만 가능합니다."
-        : "기본정보 수정은 한 시간에 2회까지만 가능합니다.",
+        ? "비밀번호 재설정은 한 시간에 3회만 가능합니다."
+        : "기본정보 수정은 한 시간에 10회까지만 가능합니다.",
     };
   },
 
