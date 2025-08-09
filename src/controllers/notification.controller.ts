@@ -54,19 +54,30 @@ function sendNotification(req: Request, res: Response, next: NextFunction) {
       "Content-Type": "text/event-stream",
       "Cache-Control": "no-cache",
       Connection: "keep-alive",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "Authorization, Cache-Control",
     });
     res.flushHeaders(); // 헤더 강제 전송
 
-    // 주기적으로 ping 전송 (30초 간격)
+    // 연결 직후 클라이언트에 초기 이벤트 전송 (연결 확인용)
+    res.write(`event: connected\ndata: ${JSON.stringify({ userId })}\n\n`);
+
+    // 주기적으로 ping 전송 (30초 간격, 클라이언트에서 이벤트로 받을 수 있도록)
     const keepAliveInterval = setInterval(() => {
-      res.write(":\n\n"); // SSE 주석 형식의 빈 메시지 (무시됨)
+      res.write(`event: ping\ndata: ${Date.now()}\n\n`);
     }, 30000);
 
     addUser(userId, res); // 유저 Map에 등록
 
     req.on("close", () => {
       clearInterval(keepAliveInterval);
-      removeUser(userId); // 연결 종료 시 정리
+      removeUser(userId);
+      res.end();
+    });
+
+    req.on("error", () => {
+      clearInterval(keepAliveInterval);
+      removeUser(userId);
       res.end();
     });
   } catch (error) {
