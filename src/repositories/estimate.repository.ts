@@ -439,6 +439,14 @@ async function deleteById(id: string) {
   });
 }
 
+async function findEstimate(estimateId: string) {
+  return await prisma.estimate.findFirst({
+    where: {
+      id: estimateId,
+    },
+  });
+}
+
 export default {
   findWritableEstimatesByClientId,
   findPendingEstimatesByClientId,
@@ -456,4 +464,5 @@ export default {
   getPaginatedSentEstimates,
   findById,
   deleteById,
+  findEstimate,
 };

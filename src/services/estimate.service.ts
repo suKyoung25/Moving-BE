@@ -2,7 +2,7 @@ import estimateRepository from "../repositories/estimate.repository";
 import moverRepository from "../repositories/mover.repository";
 import { PrismaClient, EstimateStatus } from "@prisma/client";
 import notificationService from "./notification.service";
-import { BadRequestError, ServerError } from "../types";
+import { BadRequestError, NotFoundError } from "../types";
 import authClientRepository from "../repositories/authClient.repository";
 
 interface EstimateInput {
@@ -274,7 +274,7 @@ async function getEstimateDetail(estimateId: string, clientId: string) {
   const estimate = await estimateRepository.findEstimateDetailById(estimateId, clientId);
 
   if (!estimate) {
-    throw new ServerError("견적을 찾을 수 없습니다.");
+    throw new NotFoundError("견적을 찾을 수 없습니다.");
   }
 
   const requestId = estimate.request.id;
@@ -322,6 +322,11 @@ async function deleteEstimate(estimateId: string, moverId: string) {
   return await estimateRepository.deleteById(estimateId);
 }
 
+// 견적 상세 조회 (알림용)
+async function getEstimateById(estimateId: string) {
+  return await estimateRepository.findEstimate(estimateId);
+}
+
 export default {
   getPendingEstimates,
   createEstimate,
@@ -330,6 +335,7 @@ export default {
   getPaginatedSentEstimates,
   getRejectedEstimates,
   getReceivedEstimates,
+  getEstimateById,
   confirmEstimate,
   getEstimateDetail,
   deleteEstimate,

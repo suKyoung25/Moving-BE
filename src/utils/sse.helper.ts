@@ -14,6 +14,6 @@ export function sendNotificationTo(userId: string, payload: any) {
   const res = user.get(userId);
   if (!res) return;
 
-  const data = `data: ${JSON.stringify(payload)}\n\n`;
+  const data = `data: ${JSON.stringify({ ...payload, createdAt: new Date().toISOString() })}\n\n`;
   res.write(data);
 }
