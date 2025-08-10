@@ -359,6 +359,38 @@ paths:
         "200":
           description: 조회 성공
 
+  /estimates/client/{estimateId}:
+    get:
+      tags: [Estimate]
+      summary: 견적 상세 조회
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: estimateId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: 조회 성공
+
+  /estimates/{estimateId}:
+    get:
+      tags: [Estimate]
+      summary: 견적 상세 조회 (알림용)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: estimateId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: 조회 성공
+
   /estimates/reject:
     post:
       tags: [Estimate]
