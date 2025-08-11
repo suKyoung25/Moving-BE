@@ -20,6 +20,7 @@ import imageRouter from "./routers/image.router";
 import "./schedule/notification.cron";
 import helmet from "helmet";
 import morgan from "morgan";
+import translationRouter from "./routers/translation.router";
 
 const app = express();
 
@@ -53,6 +54,7 @@ app.use("/requests", verifyAccessToken, requestRouter);
 app.use("/notifications", verifyAccessToken, notificationRouter);
 app.use("/images", verifyAccessToken, imageRouter);
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(specs));
+app.use("/api/translation", translationRouter);
 
 // 에러 핸들러
 app.use(errorHandler);
