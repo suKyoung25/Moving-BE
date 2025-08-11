@@ -2,17 +2,32 @@ import reviewController from "../controllers/review.controller";
 import { CreateReviewSchema, UpdateReviewschema } from "../dtos/review.dto";
 import { validateReq, verifyAccessToken } from "../middlewares/auth.middleware";
 import { Router } from "express";
+import { translationMiddleware } from "../middlewares/translation.middleware";
 
 const reviewRouter = Router();
 
 // 내가 작성한 리뷰 목록
-reviewRouter.get("/me", verifyAccessToken, reviewController.getReviews);
+reviewRouter.get(
+  "/me",
+  verifyAccessToken,
+  translationMiddleware(["data.reviews.content"]),
+  reviewController.getReviews,
+);
 
 // 기사님 본인 리뷰 목록
-reviewRouter.get("/mover", verifyAccessToken, reviewController.getMoverOwnReviews);
+reviewRouter.get(
+  "/mover",
+  verifyAccessToken,
+  translationMiddleware(["data.reviews.content"]),
+  reviewController.getMoverOwnReviews,
+);
 
 // 특정 기사님에게 달린 리뷰 목록 (공개용)
-reviewRouter.get("/mover/:moverId", reviewController.getReviews);
+reviewRouter.get(
+  "/mover/:moverId",
+  translationMiddleware(["data.reviews.content"]),
+  reviewController.getReviews,
+);
 
 // 리뷰 작성
 reviewRouter.post(
