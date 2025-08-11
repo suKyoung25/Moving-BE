@@ -87,7 +87,7 @@ async function createEstimate({ price, comment, moverId, clientId, requestId }: 
   // 새로운 견적 알림 (to 유저)
   await notificationService.notifyEstimate({
     clientId,
-    moverName: mover!.name!,
+    moverName: mover!.nickName!,
     moveType: result.request.moveType,
     type: "NEW_ESTIMATE",
     targetId: result.id,
