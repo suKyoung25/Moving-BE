@@ -64,11 +64,7 @@ estimateRouter.get(
 );
 
 // 견적 상세 조회 (알림용)
-estimateRouter.get(
-  "/:estimateId",
-  translationMiddleware(["data.comment"]),
-  estimateController.getEstimateById,
-);
+estimateRouter.get("/:estimateId", estimateController.getEstimateById);
 
 // 견적 거절 및 요청 취소
 estimateRouter.delete("/:id", estimateController.deleteEstimate);
