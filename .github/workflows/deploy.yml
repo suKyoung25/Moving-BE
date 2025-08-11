@@ -66,4 +66,4 @@ jobs:
             tar -xvf project.tar.gz
             rm -f project.tar.gz
             pm2 kill
-            pm2 start dist/server.js --name app
+            pm2 start dist/server.js
