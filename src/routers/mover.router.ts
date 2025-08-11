@@ -14,7 +14,7 @@ moverRouter.get("/", optionalAuth, translationMiddleware(["movers.introduction"]
 moverRouter.get(
   "/profile",
   verifyAccessToken,
-  translationMiddleware(["introduction", "description"]),
+  translationMiddleware(["data.introduction", "data.description"]),
   getMoverProfile,
 );
 
