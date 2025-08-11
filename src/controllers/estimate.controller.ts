@@ -267,6 +267,17 @@ async function deleteEstimate(req: Request, res: Response, next: NextFunction) {
   }
 }
 
+// 견적 상세 조회 (알림용)
+async function getEstimateById(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { estimateId } = req.params;
+    const estimate = await estimateService.getEstimateById(estimateId);
+    res.status(200).json({ message: "견적 상세 조회 성공", data: estimate });
+  } catch (e) {
+    next(e);
+  }
+}
+
 export default {
   getPendingEstimates,
   sendEstimateToRequest,
@@ -275,6 +286,7 @@ export default {
   getSentEstimates,
   getRejectedEstimates,
   getReceivedEstimates,
+  getEstimateById,
   confirmEstimate,
   getEstimateDetail,
   deleteEstimate,

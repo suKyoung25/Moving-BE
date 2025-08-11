@@ -58,9 +58,16 @@ estimateRouter.post("/confirmed", estimateController.confirmEstimate);
 
 // 견적 상세 조회
 estimateRouter.get(
-  "/:estimateId",
+  "/client/:estimateId",
   translationMiddleware(["data.comment", "data.request.fromAddress", "data.request.toAddress"]),
   estimateController.getEstimateDetail,
+);
+
+// 견적 상세 조회 (알림용)
+estimateRouter.get(
+  "/:estimateId",
+  translationMiddleware(["data.comment"]),
+  estimateController.getEstimateById,
 );
 
 // 견적 거절 및 요청 취소
