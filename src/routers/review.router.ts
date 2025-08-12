@@ -3,7 +3,6 @@ import { CreateReviewSchema, UpdateReviewschema } from "../dtos/review.dto";
 import { validateReq, verifyAccessToken } from "../middlewares/auth.middleware";
 import { Router } from "express";
 import { translationMiddleware } from "../middlewares/translation.middleware";
-import { cacheMiddleware } from "../middlewares/cache.middleware";
 
 const reviewRouter = Router();
 
@@ -12,7 +11,6 @@ reviewRouter.get(
   "/me",
   verifyAccessToken,
   translationMiddleware(["data.reviews.content"]),
-  cacheMiddleware(300),
   reviewController.getReviews,
 );
 
@@ -21,7 +19,6 @@ reviewRouter.get(
   "/mover",
   verifyAccessToken,
   translationMiddleware(["data.reviews.content"]),
-  cacheMiddleware(300),
   reviewController.getMoverOwnReviews,
 );
 
@@ -29,7 +26,6 @@ reviewRouter.get(
 reviewRouter.get(
   "/mover/:moverId",
   translationMiddleware(["data.reviews.content"]),
-  cacheMiddleware(300),
   reviewController.getReviews,
 );
 
@@ -53,11 +49,6 @@ reviewRouter.patch(
 reviewRouter.delete("/:reviewId", verifyAccessToken, reviewController.deleteReview);
 
 // 작성 가능한 리뷰 목록
-reviewRouter.get(
-  "/writable",
-  verifyAccessToken,
-  cacheMiddleware(300),
-  reviewController.getWritableReviews,
-);
+reviewRouter.get("/writable", verifyAccessToken, reviewController.getWritableReviews);
 
 export default reviewRouter;
