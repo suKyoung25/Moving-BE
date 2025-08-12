@@ -20,6 +20,7 @@ import imageRouter from "./routers/image.router";
 import "./schedule/notification.cron";
 import helmet from "helmet";
 import morgan from "morgan";
+import translationRouter from "./routers/translation.router";
 
 const app = express();
 
@@ -34,8 +35,9 @@ app.use(
     credentials: true,
   }),
 );
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+// 파일 업로드 크기 제한 설정
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(cookieParser());
 app.use(passport.initialize());
 app.use(process.env.NODE_ENV === "production" ? morgan("combined") : morgan("dev"));
@@ -53,6 +55,7 @@ app.use("/requests", verifyAccessToken, requestRouter);
 app.use("/notifications", verifyAccessToken, notificationRouter);
 app.use("/images", verifyAccessToken, imageRouter);
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(specs));
+app.use("/api/translation", translationRouter);
 
 // 에러 핸들러
 app.use(errorHandler);

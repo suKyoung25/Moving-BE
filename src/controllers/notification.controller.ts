@@ -54,8 +54,6 @@ function sendNotification(req: Request, res: Response, next: NextFunction) {
       "Content-Type": "text/event-stream",
       "Cache-Control": "no-cache",
       Connection: "keep-alive",
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Headers": "Authorization, Cache-Control",
     });
     res.flushHeaders(); // 헤더 강제 전송
 

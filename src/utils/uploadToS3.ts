@@ -21,4 +21,17 @@ export const upload = multer({
       cb(null, `${folder}${Date.now()}_${file.originalname}`);
     },
   }),
+  // 파일 크기 제한 설정 (10MB)
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB
+  },
+  // 파일 필터링
+  fileFilter: (req, file, cb) => {
+    // 이미지 파일만 허용
+    if (file.mimetype.startsWith("image/")) {
+      cb(null, true);
+    } else {
+      cb(new Error("이미지 파일만 업로드 가능합니다."));
+    }
+  },
 });
