@@ -11,9 +11,9 @@ const moverRouter = express.Router();
 // 전체 기사님 리스트 조회 (비회원도 가능)
 moverRouter.get(
   "/",
-  cacheMiddleware(300),
   optionalAuth,
   translationMiddleware(["movers.introduction"]),
+  cacheMiddleware(300),
   getMovers,
 );
 
@@ -22,6 +22,7 @@ moverRouter.get(
   "/profile",
   verifyAccessToken,
   translationMiddleware(["data.introduction", "data.description"]),
+  cacheMiddleware(300),
   getMoverProfile,
 );
 
@@ -30,6 +31,7 @@ moverRouter.get(
   "/:moverId",
   optionalAuth,
   translationMiddleware(["introduction", "description"]),
+  cacheMiddleware(300),
   getMoverDetail,
 );
 
