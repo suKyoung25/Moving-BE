@@ -1,6 +1,7 @@
 import requestController from "../controllers/request.controller";
 import { Router } from "express";
 import { translationMiddleware } from "../middlewares/translation.middleware";
+import { cacheMiddleware } from "../middlewares/cache.middleware";
 
 const requestRouter = Router();
 
@@ -8,6 +9,7 @@ const requestRouter = Router();
 requestRouter.get(
   "/draft",
   translationMiddleware(["data.fromAddress", "data.toAddress"]),
+  cacheMiddleware(300),
   requestController.getDraft,
 );
 
@@ -18,6 +20,7 @@ requestRouter.patch("/draft", requestController.saveDraft);
 requestRouter.get(
   "/client/active",
   translationMiddleware(["data.fromAddress", "data.toAddress"]),
+  cacheMiddleware(300),
   requestController.getClientActiveRequest,
 );
 
@@ -29,6 +32,7 @@ requestRouter.get(
     "requests.toAddress",
     "requests.estimates.comment",
   ]),
+  cacheMiddleware(300),
   requestController.getRequests,
 );
 
@@ -36,6 +40,7 @@ requestRouter.get(
 requestRouter.get(
   "/detail/:id",
   translationMiddleware(["request.fromAddress", "request.toAddress"]),
+  cacheMiddleware(300),
   requestController.getReceivedRequestDetail,
 );
 
@@ -46,6 +51,7 @@ requestRouter.patch("/movers/:moverId", requestController.designateMover);
 requestRouter.get(
   "/",
   translationMiddleware(["requests.fromAddress", "requests.toAddress"]),
+  cacheMiddleware(300),
   requestController.getReceivedRequests,
 );
 
@@ -56,6 +62,7 @@ requestRouter.post("/", requestController.createRequest);
 requestRouter.get(
   "/:id",
   translationMiddleware(["data.fromAddress", "data.toAddress"]),
+  cacheMiddleware(300),
   requestController.getRequest,
 );
 
