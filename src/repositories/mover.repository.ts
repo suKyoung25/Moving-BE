@@ -1,5 +1,5 @@
 import prisma from "../configs/prisma.config";
-import { ConflictError, MoverDetail, NotFoundError, ServerError, SimplifiedMover } from "../types";
+import { ConflictError, MoverDetail, NotFoundError, HttpError, ServerError, SimplifiedMover } from "../types";
 
 interface GetMoversParams {
   page?: number;
@@ -24,132 +24,33 @@ async function fetchMovers(
   params: GetMoversParams = {},
 ): Promise<GetMoversResponse> {
   try {
-    const { page = 1, limit = 10, search, area, serviceType, sortBy = "mostReviewed" } = params;
-
-    const skip = (page - 1) * limit;
-
-    // 검색 조건 구성
-    const whereCondition: any = {};
-
-    if (search) {
-      whereCondition.OR = [{ nickName: { contains: search, mode: "insensitive" } }];
-    }
-
-    if (area && area !== "all") {
-      whereCondition.serviceArea = {
-        some: {
-          regionName: { contains: area, mode: "insensitive" },
-        },
-      };
-    }
-
-    if (serviceType && serviceType !== "all") {
-      whereCondition.serviceType = {
-        has: serviceType,
-      };
-    }
-
-    // 정렬 조건 구성
-    let orderBy: any = { createdAt: "desc" };
-
-    switch (sortBy) {
-      case "mostReviewed":
-        orderBy = { reviewCount: "desc" };
-        break;
-      case "highRating":
-        orderBy = { averageReviewRating: "desc" };
-        break;
-      case "highExperience":
-        orderBy = [{ career: { sort: "desc", nulls: "last" } }];
-        break;
-      case "mostBooked":
-        orderBy = { estimateCount: "desc" };
-        break;
-      default:
-        orderBy = { reviewCount: "desc" };
-    }
-
-    // 전체 개수 조회
-    const total = await prisma.mover.count({ where: whereCondition });
-
-    // 수정: 지정견적 정보 포함하여 데이터 조회
+    console.log("=== SIMPLE TEST ===");
+    
+    // 가장 간단한 쿼리만 실행
+    const total = await prisma.mover.count();
+    console.log("Total movers:", total);
+    
     const movers = await prisma.mover.findMany({
-      where: whereCondition,
-      include: {
-        favorites: clientId ? { where: { clientId }, select: { id: true } } : false,
-        // 추가: 지정견적 요청 정보
-        designatedRequests: clientId
-          ? {
-              where: {
-                request: {
-                  clientId: clientId,
-                  isPending: true,
-                },
-              },
-              include: {
-                request: {
-                  include: {
-                    estimates: {
-                      where: {
-                        moverId: undefined, // 이건 나중에 각 mover에 대해 동적으로 설정
-                      },
-                      select: {
-                        moverStatus: true,
-                      },
-                    },
-                  },
-                },
-              },
-            }
-          : false,
-      },
-      orderBy,
-      skip,
-      take: limit,
+      take: 5,
+      select: {
+        id: true,
+        nickName: true,
+        email: true,
+      }
     });
-
-    // 수정: 지정견적 정보 포함한 SimplifiedMover 생성
-    const simplifiedMovers: SimplifiedMover[] = await Promise.all(
-      movers.map(async ({ favorites, designatedRequests, ...mover }) => {
-        let hasDesignatedRequest = false;
-        let designatedEstimateStatus = null;
-
-        if (clientId && designatedRequests && designatedRequests.length > 0) {
-          hasDesignatedRequest = true;
-
-          // 해당 기사의 견적서 상태 확인
-          const estimate = await prisma.estimate.findFirst({
-            where: {
-              requestId: designatedRequests[0].requestId,
-              moverId: mover.id,
-            },
-            select: {
-              moverStatus: true,
-            },
-          });
-
-          designatedEstimateStatus = estimate?.moverStatus || null;
-        }
-
-        return {
-          ...mover,
-          isFavorite: Boolean(favorites?.length),
-          hasDesignatedRequest,
-          designatedEstimateStatus,
-        };
-      }),
-    );
-
-    const hasMore = skip + limit < total;
-
+    console.log("Simple movers:", movers);
+    
+    // 임시 응답 반환
     return {
-      movers: simplifiedMovers,
-      total,
-      page,
-      limit,
-      hasMore,
+      movers: [],
+      total: total,
+      page: 1,
+      limit: 10,
+      hasMore: false,
     };
+    
   } catch (error) {
+    console.error("=== SIMPLE TEST ERROR ===", error);
     throw new ServerError("기사님 리스트 조회 중 오류 발생", error);
   }
 }
@@ -213,6 +114,10 @@ async function fetchMoverDetail(moverId: string, clientId?: string): Promise<Mov
       designatedEstimateStatus,
     };
   } catch (error) {
+    // 이미 HttpError 계열이면 그대로 던진다.
+    if (error instanceof HttpError) {
+      throw error;
+    }
     throw new ServerError("기사님 상세 조회 중 오류 발생", error);
   }
 }
