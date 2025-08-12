@@ -1,5 +1,5 @@
 import { ErrorMessage } from "../constants/ErrorMessage";
-import { ConflictError, CreatedToken } from "../types";
+import { ConflictError, CreatedToken, UnauthorizedError } from "../types";
 import jwt from "jsonwebtoken";
 
 export function generateAccessToken(user: CreatedToken): string {
@@ -46,4 +46,34 @@ export function generateRefreshToken(user: CreatedToken): string {
   } as jwt.SignOptions);
 
   return refreshToken;
+}
+
+/**
+ * @description 이메일 인증 요청 시 사용할 토큰 (만료 시간 15분)
+ * @param email - 인증할 사용자의 이메일
+ */
+export function generateEmailVerificationToken(email: string) {
+  const payload = { email, type: "email-verification" };
+  return jwt.sign(payload, process.env.JWT_SECRET!, { expiresIn: "15m" });
+}
+
+/**
+ * @description 이메일 인증 완료 후, 실제 회원가입 폼에서 사용할 토큰 (만료 시간 10분)
+ * @param email - 인증된 사용자의 이메일
+ */
+export function generateSignupReadyToken(email: string) {
+  const payload = { email, type: "signup-ready" };
+  return jwt.sign(payload, process.env.JWT_SECRET!, { expiresIn: "10m" });
+}
+
+/**
+ * @description 토큰을 검증하고 payload를 반환하는 범용 함수
+ * @param token - 검증할 JWT
+ */
+export function verifyToken(token: string): any {
+  try {
+    return jwt.verify(token, process.env.JWT_SECRET!);
+  } catch (error) {
+    throw new UnauthorizedError("토큰이 만료되었습니다.");
+  }
 }
