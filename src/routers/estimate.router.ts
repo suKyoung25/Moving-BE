@@ -1,6 +1,7 @@
 import estimateController from "../controllers/estimate.controller";
 import { Router, RequestHandler } from "express";
 import { translationMiddleware } from "../middlewares/translation.middleware";
+import { cacheMiddleware } from "../middlewares/cache.middleware";
 
 const estimateRouter = Router();
 
@@ -12,6 +13,7 @@ estimateRouter.get(
     "data.request.fromAddress",
     "data.request.toAddress",
   ]),
+  cacheMiddleware(300),
   estimateController.getPendingEstimates as RequestHandler,
 );
 
@@ -22,6 +24,7 @@ estimateRouter.post("/create", estimateController.sendEstimateToRequest);
 estimateRouter.get(
   "/sented/:id",
   translationMiddleware(["data.request.fromAddress", "data.request.toAddress"]),
+  cacheMiddleware(300),
   estimateController.getSentEstimateDetail,
 );
 
@@ -32,6 +35,7 @@ estimateRouter.post("/reject", estimateController.rejectEstimate);
 estimateRouter.get(
   "/sent",
   translationMiddleware(["data.comment", "data.request.fromAddress", "data.request.toAddress"]),
+  cacheMiddleware(300),
   estimateController.getSentEstimates,
 );
 
@@ -39,6 +43,7 @@ estimateRouter.get(
 estimateRouter.get(
   "/rejected",
   translationMiddleware(["data.comment", "data.request.fromAddress", "data.request.toAddress"]),
+  cacheMiddleware(300),
   estimateController.getRejectedEstimates,
 );
 
@@ -50,6 +55,7 @@ estimateRouter.get(
     "data.request.fromAddress",
     "data.request.toAddress",
   ]),
+  cacheMiddleware(300),
   estimateController.getReceivedEstimates as RequestHandler,
 );
 
@@ -60,11 +66,12 @@ estimateRouter.post("/confirmed", estimateController.confirmEstimate);
 estimateRouter.get(
   "/client/:estimateId",
   translationMiddleware(["data.comment", "data.request.fromAddress", "data.request.toAddress"]),
+  cacheMiddleware(300),
   estimateController.getEstimateDetail,
 );
 
 // 견적 상세 조회 (알림용)
-estimateRouter.get("/:estimateId", estimateController.getEstimateById);
+estimateRouter.get("/:estimateId", cacheMiddleware(300), estimateController.getEstimateById);
 
 // 견적 거절 및 요청 취소
 estimateRouter.delete("/:id", estimateController.deleteEstimate);
