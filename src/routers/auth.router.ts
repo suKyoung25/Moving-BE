@@ -23,7 +23,7 @@ const authRouter = express.Router();
 authRouter.post("/refresh-token", authController.setRefreshToken);
 
 // 사용자 불러오기
-authRouter.get("/", verifyAccessToken, cacheMiddleware(300), authController.getMe);
+authRouter.get("/", verifyAccessToken, authController.getMe);
 
 // 기사님 회원가입 - Local
 authRouter.post("/signup/mover", validateReq(signUpSchema), checkMoverSignUpInfo, moverSignup);
