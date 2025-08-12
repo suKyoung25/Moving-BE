@@ -2,6 +2,7 @@ import { Response, Request, NextFunction } from "express";
 import accountMoverRepository from "../repositories/accountMover.repository";
 import { ErrorMessage } from "../constants/ErrorMessage";
 import { ConflictError } from "../types";
+import { upload } from "../utils/uploadToS3";
 
 // (프로필) 컨트롤러단 진입 전 DB와 대조하여 에러 띄움
 export async function checkMoverProfileInfo(req: Request, res: Response, next: NextFunction) {
@@ -29,4 +30,27 @@ export async function checkMoverProfileInfo(req: Request, res: Response, next: N
   } catch (error) {
     next(error);
   }
+}
+
+// (프로필 이미지 등록 시) 컨트롤러단 진입 전 크기 확인
+export async function checkProfileImageSize(req: Request, res: Response, next: NextFunction) {
+  //디버깅
+  console.log("이미지 라우터 실행 중");
+
+  upload.single("image")(req, res, (err) => {
+    //디버깅
+    console.log("업로드 싱글 함수", err);
+
+    if (err) {
+      if (err.code === "LIMIT_FILE_SIZE") {
+        return res.status(400).json({ message: "파일 크기 초과 (1MB 제한)" });
+      }
+      return res.status(400).json({ message: err.message });
+    }
+
+    //디버깅
+    console.log("이미지 라우터 끝");
+
+    next();
+  });
 }
