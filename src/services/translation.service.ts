@@ -1,4 +1,5 @@
 import * as deepl from "deepl-node";
+import "dotenv/config";
 
 const authKey = process.env.DEEPL_API_KEY!;
 const translator = new deepl.Translator(authKey);

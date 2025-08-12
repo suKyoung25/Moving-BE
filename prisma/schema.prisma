@@ -125,6 +125,7 @@ model Review {
   id         String   @id @default(uuid())
   rating     Int      @default(0)
   content    String
+  images     String[]
   createdAt  DateTime @default(now())
   clientId   String
   moverId    String
@@ -187,5 +188,6 @@ enum NotificationType {
   NEW_ESTIMATE
   ESTIMATE_CONFIRMED
   ESTIMATE_REJECTED
+  CANCELD
   MOVING_DAY
 }
