@@ -12,7 +12,6 @@ notificationRouter.get("/stream", cacheMiddleware(300), notificationController.s
 notificationRouter.get(
   "/",
   translationMiddleware(["notifications.content"]),
-  cacheMiddleware(300),
   notificationController.getNotifications,
 );
 
