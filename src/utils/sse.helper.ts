@@ -23,6 +23,7 @@ export function sendNotificationTo(userId: string, payload: any) {
   try {
     res.write(data);
   } catch (error) {
+    console.error(`${userId} 알림 전송 실패:`, error);
     removeUser(userId); // 오류 발생 시 연결 정리
   }
 }

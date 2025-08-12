@@ -35,8 +35,9 @@ app.use(
     credentials: true,
   }),
 );
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+// 파일 업로드 크기 제한 설정
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(cookieParser());
 app.use(passport.initialize());
 app.use(process.env.NODE_ENV === "production" ? morgan("combined") : morgan("dev"));
