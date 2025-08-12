@@ -2,13 +2,20 @@ import moverController from "../controllers/mover.controller";
 import { optionalAuth, verifyAccessToken } from "../middlewares/auth.middleware";
 import express from "express";
 import { translationMiddleware } from "../middlewares/translation.middleware";
+import { cacheMiddleware } from "../middlewares/cache.middleware";
 
 const { getMovers, getMoverDetail, toggleFavoriteMover, getMoverProfile } = moverController;
 
 const moverRouter = express.Router();
 
 // 전체 기사님 리스트 조회 (비회원도 가능)
-moverRouter.get("/", optionalAuth, translationMiddleware(["movers.introduction"]), getMovers);
+moverRouter.get(
+  "/",
+  cacheMiddleware(300),
+  optionalAuth,
+  translationMiddleware(["movers.introduction"]),
+  getMovers,
+);
 
 // 기사님 본인 프로필 조회
 moverRouter.get(

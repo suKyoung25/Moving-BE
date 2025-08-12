@@ -12,18 +12,18 @@ redis.on("connect", () => console.log("✅ Redis 연결됨"));
 redis.on("ready", () => console.log("✅ Redis 준비됨"));
 redis.on("error", (err) => console.error("❌ Redis 오류: ", err));
 
-// 캐시 가져오는 조건
-const buildKey = (req: Request) => `cache:GET:${req.originalUrl}`;
-
 // 캐싱 미들웨어 함수 (TTL을 매개변수로 받음)
 export const cacheMiddleware = (ttl = 300) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
+      // 식별자
+      const userId = req.auth?.userId || undefined;
+      const cacheKey = `cache:${userId}:${req.originalUrl}`;
+
       // GET만 캐싱
       if (req.method !== "GET") return next();
 
       // Redis에서 캐시된 데이터 확인
-      const cacheKey = buildKey(req);
       const cachedData = await redis.get(cacheKey);
       console.log("cachedData 여부", !!cachedData);
 
