@@ -1,12 +1,5 @@
 import mock from "../mocks/client.mock";
 
-// 의존성 제거 용도로 mock 함수 만듦
-jest.mock("@prisma/client", () => {
-  return {
-    PrismaClient: jest.fn().mockImplementation(() => mockPrisma),
-  };
-});
-
 // 프리즈마 가져옴
 const mockPrisma = {
   client: {
@@ -15,6 +8,12 @@ const mockPrisma = {
     update: jest.fn(),
   },
 };
+
+// 의존성 제거 용도로 mock 함수 만듦
+jest.mock("@prisma/client", () => {
+  const rest = jest.requireActual("@prisma/client");
+  return { ...rest, PrismaClient: jest.fn(() => mockPrisma) };
+});
 
 // import 순서 변경 (위에 쓰면 적용 안 됨)
 import authClientRepository from "./authClient.repository";
