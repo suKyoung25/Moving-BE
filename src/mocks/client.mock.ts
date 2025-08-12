@@ -1,8 +1,9 @@
 /**
- * prisma 폴더 밑에 mock 폴더를 만들려고 했는데 ts 오류 나서 일단 여기다가 만들어 놓습니다.
+ * auth
  */
 
-import { Provider } from "@prisma/client";
+import { MoveType, Provider } from "@prisma/client";
+import { ClientProfileRegister } from "../types";
 
 const fullClientInfo = {
   id: "fc6796df-4ed0-46db-a1d7-7c28ce49979d",
@@ -104,3 +105,128 @@ const clientMock = {
 };
 
 export default clientMock;
+
+/**
+ * 프로필
+ */
+
+const deficientDataInDB = {
+  id: "fc6796df-4ed0-46db-a1d7-7c28ce49979d",
+  email: "asdf@example.com",
+  name: "그냥사람",
+  phone: "01012345678",
+  hashedPassword: "asdf1234에이것저것덧붙임",
+  profileImage: "",
+  provider: "LOCAL",
+  isProfileCompleted: false,
+  serviceType: [],
+  livingArea: [],
+};
+
+const fullDataInDB = {
+  id: "fc6796df-4ed0-46db-a1d7-7c28ce49979d",
+  email: "asdf@example.com",
+  name: "그냥사람",
+  phone: "01012345678",
+  hashedPassword: "asdf1234에이것저것덧붙임",
+  profileImage: "이미지주소",
+  provider: "LOCAL",
+  isProfileCompleted: true,
+  serviceType: ["SMALL", "HOME", "OFFICE"],
+  livingArea: [{ regionName: "서울" }, { regionName: "경기" }],
+};
+
+const profileInfo: ClientProfileRegister = {
+  profileImage: "이미지주소",
+  serviceType: [MoveType.SMALL, MoveType.HOME, MoveType.OFFICE],
+  livingArea: ["서울", "경기"],
+};
+
+const profileImageEdit = {
+  profileImage: "이미지주소를바꿈",
+};
+
+const fullDataInDBChanged = {
+  id: "fc6796df-4ed0-46db-a1d7-7c28ce49979d",
+  email: "asdf@example.com",
+  name: "그냥사람",
+  phone: "01012345678",
+  hashedPassword: "asdf1234에이것저것덧붙임",
+  profileImage: "이미지주소를바꿈",
+  provider: "LOCAL",
+  isProfileCompleted: true,
+  serviceType: ["SMALL", "HOME", "OFFICE"],
+  livingArea: ["서울", "경기"],
+};
+
+const deficientDataToFE = {
+  accessToken: "이것은-accessToken-이다",
+  refreshToken: "이것은-refreshToken-이다",
+  user: {
+    id: "fc6796df-4ed0-46db-a1d7-7c28ce49979d",
+    email: "asdf@example.com",
+    name: "그냥사람",
+    phone: "01012345678",
+    hashedPassword: "asdf1234에이것저것덧붙임",
+    profileImage: "",
+    provider: "LOCAL",
+    isProfileCompleted: false,
+    serviceType: [],
+    livingArea: [],
+    userType: "client",
+  },
+};
+
+const fullDataToFE = {
+  accessToken: "이것은-accessToken-이다",
+  refreshToken: "이것은-refreshToken-이다",
+  user: {
+    id: "fc6796df-4ed0-46db-a1d7-7c28ce49979d",
+    email: "asdf@example.com",
+    name: "그냥사람",
+    phone: "01012345678",
+    hashedPassword: "asdf1234에이것저것덧붙임",
+    profileImage: "이미지주소",
+    provider: "LOCAL",
+    isProfileCompleted: false,
+    serviceType: ["SMALL", "HOME", "OFFICE"],
+    livingArea: ["서울", "경기"],
+    userType: "client",
+  },
+};
+
+const filteredDeficientDataInDB = {
+  id: "fc6796df-4ed0-46db-a1d7-7c28ce49979d",
+  email: "asdf@example.com",
+  name: "그냥사람",
+  phone: "01012345678",
+  profileImage: "",
+  provider: "LOCAL",
+  isProfileCompleted: false,
+  serviceType: [],
+  livingArea: [],
+};
+
+const filteredFullDataInDB = {
+  id: "fc6796df-4ed0-46db-a1d7-7c28ce49979d",
+  email: "asdf@example.com",
+  name: "그냥사람",
+  phone: "01012345678",
+  profileImage: "이미지주소",
+  provider: "LOCAL",
+  isProfileCompleted: true,
+  serviceType: ["SMALL", "HOME", "OFFICE"],
+  livingArea: ["서울", "경기"],
+};
+
+export const profileMock = {
+  deficientDataInDB,
+  fullDataInDB,
+  profileInfo,
+  deficientDataToFE,
+  fullDataToFE,
+  filteredDeficientDataInDB,
+  filteredFullDataInDB,
+  profileImageEdit,
+  fullDataInDBChanged,
+};
