@@ -5,9 +5,10 @@ import communityService from "../services/community.service";
 async function getAllCommunity(req: Request, res: Response, next: NextFunction) {
   try {
     const offset = parseInt(req.query.offset as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 5;
+    const limit = parseInt(req.query.limit as string) || 6;
+    const search = req.query.search as string;
 
-    const result = await communityService.getAllCommunity(offset, limit);
+    const result = await communityService.getAllCommunity(offset, limit, search);
 
     res.status(200).json(result);
   } catch (e) {
@@ -103,6 +104,7 @@ async function createReply(req: Request, res: Response, next: NextFunction) {
   }
 }
 
+// 해당하는 게시글의 댓글 조회
 async function getRepliesByCommunityId(req: Request, res: Response, next: NextFunction) {
   try {
     const communityId = req.params.communityId;
@@ -119,10 +121,70 @@ async function getRepliesByCommunityId(req: Request, res: Response, next: NextFu
   }
 }
 
+// 커뮤니티 삭제
+async function deleteCommunity(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { id } = req.params;
+    const userId = req.auth!.userId;
+    const userType = req.auth!.userType;
+
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "게시글 ID가 필요합니다.",
+      });
+    }
+
+    const result = await communityService.deleteCommunity(id, userId, userType);
+
+    if (!result.success) {
+      return res.status(400).json({
+        success: false,
+        message: "게시글 삭제 오류.",
+      });
+    }
+
+    res.status(200).json(result);
+  } catch (e) {
+    next(e);
+  }
+}
+
+// 댓글 삭제
+async function deleteReply(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { replyId } = req.params;
+    const userId = req.auth!.userId;
+    const userType = req.auth!.userType;
+
+    if (!replyId) {
+      return res.status(400).json({
+        success: false,
+        message: "댓글 ID가 필요합니다.",
+      });
+    }
+
+    const result = await communityService.deleteReply(replyId, userId, userType);
+
+    if (!result.success) {
+      return res.status(400).json({
+        success: false,
+        message: "댓글 삭제 오류.",
+      });
+    }
+
+    res.status(200).json(result);
+  } catch (e) {
+    next(e);
+  }
+}
+
 export default {
   getAllCommunity,
   createCommunity,
   createReply,
   getCommunityById,
   getRepliesByCommunityId,
+  deleteCommunity,
+  deleteReply,
 };

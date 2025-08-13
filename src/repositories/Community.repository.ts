@@ -1,11 +1,31 @@
 import prisma from "../configs/prisma.config";
 import { CreateCommunityData, CreateReplyData } from "../types/Community.type";
 
-async function findAllCommunity(offset: number, limit: number) {
+async function findAllCommunity(offset: number, limit: number, search?: string) {
   const skip = (offset - 1) * limit;
+
+  const whereCondition = search
+    ? {
+        OR: [
+          {
+            title: {
+              contains: search,
+              mode: "insensitive" as const,
+            },
+          },
+          {
+            content: {
+              contains: search,
+              mode: "insensitive" as const,
+            },
+          },
+        ],
+      }
+    : {};
 
   const [communities, totalCount] = await prisma.$transaction([
     prisma.community.findMany({
+      where: whereCondition,
       include: {
         client: {
           select: {
@@ -45,7 +65,9 @@ async function findAllCommunity(offset: number, limit: number) {
       skip,
       take: limit,
     }),
-    prisma.community.count(),
+    prisma.community.count({
+      where: whereCondition,
+    }),
   ]);
 
   const formattedCommunities = communities.map((community) => ({
@@ -74,6 +96,7 @@ async function findAllCommunity(offset: number, limit: number) {
     communities: formattedCommunities,
     totalCount,
     totalPages: Math.ceil(totalCount / limit),
+    searchKeyword: search || null,
   };
 }
 
@@ -167,10 +190,31 @@ async function findRepliesByCommunityId(communityId: string) {
   }));
 }
 
+async function deleteCommunity(id: string) {
+  return await prisma.community.delete({
+    where: { id },
+  });
+}
+
+async function findByIdReply(id: string) {
+  return prisma.reply.findUnique({
+    where: { id },
+  });
+}
+
+async function deleteReply(id: string) {
+  return await prisma.reply.delete({
+    where: { id },
+  });
+}
+
 export default {
   findAllCommunity,
   create,
   createReply,
   findByIdWithDetails,
   findRepliesByCommunityId,
+  deleteCommunity,
+  deleteReply,
+  findByIdReply,
 };

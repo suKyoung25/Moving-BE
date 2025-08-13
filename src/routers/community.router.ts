@@ -13,5 +13,7 @@ communityRouter.get(
   optionalAuth,
   communityController.getRepliesByCommunityId,
 );
+communityRouter.delete("/:id", verifyAccessToken, communityController.deleteCommunity);
+communityRouter.delete("/reply/:replyId", verifyAccessToken, communityController.deleteReply);
 
 export default communityRouter;

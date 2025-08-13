@@ -1,9 +1,9 @@
 import CommunityRepository from "../repositories/Community.repository";
 import { CreateCommunityData, CreateReplyData } from "../types/Community.type";
 
-async function getAllCommunity(offset: number, limit: number) {
+async function getAllCommunity(offset: number, limit: number, search?: string) {
   try {
-    const communities = await CommunityRepository.findAllCommunity(offset, limit);
+    const communities = await CommunityRepository.findAllCommunity(offset, limit, search);
     return {
       success: true,
       data: communities,
@@ -113,10 +113,80 @@ async function getRepliesByCommunityId(communityId: string) {
   return CommunityRepository.findRepliesByCommunityId(communityId);
 }
 
+async function deleteCommunity(id: string, userId: string, userType: "client" | "mover") {
+  try {
+    const community = await CommunityRepository.findByIdWithDetails(id);
+
+    if (!community) {
+      return {
+        success: false,
+        message: "존재하지 않는 게시글입니다.",
+      };
+    }
+
+    const isAuthor =
+      (userType === "client" && community.clientId === userId) ||
+      (userType === "mover" && community.moverId === userId);
+
+    if (!isAuthor) {
+      return {
+        success: false,
+        message: "본인이 작성한 게시글만 삭제할 수 있습니다.",
+      };
+    }
+
+    await CommunityRepository.deleteCommunity(id);
+
+    return {
+      success: true,
+      message: "게시글이 삭제되었습니다.",
+    };
+  } catch (e) {
+    console.log(e);
+    throw new Error("게시글 삭제에 실패했습니다.");
+  }
+}
+
+async function deleteReply(id: string, userId: string, userType: "client" | "mover") {
+  try {
+    const reply = await CommunityRepository.findByIdReply(id);
+
+    if (!reply) {
+      return {
+        success: false,
+        message: "존재하지 않는 댓글입니다.",
+      };
+    }
+
+    const isAuthor =
+      (userType === "client" && reply.clientId === userId) ||
+      (userType === "mover" && reply.moverId === userId);
+
+    if (!isAuthor) {
+      return {
+        success: false,
+        message: "본인이 작성한 게시글만 삭제할 수 있습니다.",
+      };
+    }
+
+    await CommunityRepository.deleteReply(id);
+
+    return {
+      success: true,
+      message: "댓글이 삭제되었습니다.",
+    };
+  } catch (e) {
+    console.log(e);
+    throw new Error("댓글 삭제에 실패했습니다.");
+  }
+}
+
 export default {
   getAllCommunity,
   createCommunity,
   createReply,
   getCommunity,
   getRepliesByCommunityId,
+  deleteCommunity,
+  deleteReply,
 };
