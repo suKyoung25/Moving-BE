@@ -4,7 +4,6 @@ import { validateReq } from "../middlewares/auth.middleware";
 import { checkMoverAccountInfo } from "../middlewares/account.middleware";
 import express from "express";
 import { basicInfoUpdateLimit } from "../middlewares/rateLimits.middleware";
-import { invalidateCache } from "../middlewares/cache.middleware";
 
 const accountRouter = express.Router();
 
@@ -14,7 +13,6 @@ accountRouter.patch(
   validateReq(editAccountMoverSchema),
   basicInfoUpdateLimit,
   checkMoverAccountInfo,
-  invalidateCache(),
   accountMoverController.editAccountMover,
 );
 
