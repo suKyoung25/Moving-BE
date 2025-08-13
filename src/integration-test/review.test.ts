@@ -1,12 +1,15 @@
 import request from "supertest";
 import app from "../app";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import prisma from "../configs/prisma.config";
 
 // 전역 테스트 종료 후 데이터베이스 정리
 afterAll(async () => {
-  await prisma.$disconnect();
+  await prisma.review.deleteMany();
+  await prisma.estimate.deleteMany();
+  await prisma.request.deleteMany();
+  await prisma.requestDraft.deleteMany();
+  await prisma.mover.deleteMany();
+  await prisma.client.deleteMany();
 });
 
 describe("POST /reviews - 리뷰 작성 API 테스트", () => {
@@ -61,19 +64,19 @@ describe("POST /reviews - 리뷰 작성 API 테스트", () => {
 
     authToken = loginResponse.body.data.accessToken;
 
-    // testClient가 유효한지 확인하고, 필요시 재생성
+    // 클라이언트가 유효한지 확인하고, 필요시 재생성
     const existingClient = await prisma.client.findUnique({
       where: { id: testClient.id },
     });
 
     if (!existingClient) {
-      // client가 삭제되었다면 재생성
+      // 클라이언트가 삭제되었다면 재생성
       const createClientResponse = await request(app)
         .post("/auth/signup/client")
         .send({
           email: "reviewtest.client1@test.com",
-          name: "김고객",
-          phone: "01012345567",
+          name: "김철",
+          phone: "0103333333",
           password: "password1!",
           passwordConfirmation: "password1!",
         })
@@ -356,6 +359,27 @@ describe("GET /reviews/me - 내가 작성한 리뷰 목록 조회 API 테스트"
 
     authToken = loginResponse.body.data.accessToken;
 
+    // 클라이언트가 유효한지 확인하고, 필요시 재생성
+    const existingClient = await prisma.client.findUnique({
+      where: { id: testClient.id },
+    });
+
+    if (!existingClient) {
+      // 클라이언트가 삭제되었다면 재생성
+      const createClientResponse = await request(app)
+        .post("/auth/signup/client")
+        .send({
+          email: "reviewtest.client2@test.com",
+          name: "이영",
+          phone: "0101111111",
+          password: "password1!",
+          passwordConfirmation: "password1!",
+        })
+        .expect(201);
+
+      testClient = createClientResponse.body.data.user;
+    }
+
     // requestDraft 생성 (이동 요청 완료 상태로 설정)
     await prisma.requestDraft.create({
       data: {
@@ -478,10 +502,6 @@ describe("GET /reviews/mover/:moverId - 특정 기사님 리뷰 목록 조회 AP
   let testRequest: any;
   let testEstimate: any;
 
-  beforeAll(async () => {
-    // beforeAll은 이제 비워둠 - beforeEach에서 처리
-  });
-
   beforeEach(async () => {
     // 각 테스트 전에 관련 데이터 모두 초기화
     await prisma.review.deleteMany();
@@ -532,6 +552,27 @@ describe("GET /reviews/mover/:moverId - 특정 기사님 리뷰 목록 조회 AP
       .expect(200);
 
     const authToken = loginResponse.body.data.accessToken;
+
+    // 클라이언트가 유효한지 확인하고, 필요시 재생성
+    const existingClient = await prisma.client.findUnique({
+      where: { id: testClient.id },
+    });
+
+    if (!existingClient) {
+      // 클라이언트가 삭제되었다면 재생성
+      const createClientResponse = await request(app)
+        .post("/auth/signup/client")
+        .send({
+          email: "reviewtest.client3@test.com",
+          name: "김민",
+          phone: "0104567890",
+          password: "password1!",
+          passwordConfirmation: "password1!",
+        })
+        .expect(201);
+
+      testClient = createClientResponse.body.data.user;
+    }
 
     // requestDraft 생성 (이동 요청 완료 상태로 설정)
     await prisma.requestDraft.create({
@@ -702,6 +743,27 @@ describe("PATCH /reviews/:reviewId - 리뷰 수정 API 테스트", () => {
       .expect(200);
 
     authToken = loginResponse.body.data.accessToken;
+
+    // 클라이언트가 유효한지 확인하고, 필요시 재생성
+    const existingClient = await prisma.client.findUnique({
+      where: { id: testClient.id },
+    });
+
+    if (!existingClient) {
+      // 클라이언트가 삭제되었다면 재생성
+      const createClientResponse = await request(app)
+        .post("/auth/signup/client")
+        .send({
+          email: "reviewtest.client4@test.com",
+          name: "이수",
+          phone: "0106789012",
+          password: "password1!",
+          passwordConfirmation: "password1!",
+        })
+        .expect(201);
+
+      testClient = createClientResponse.body.data.user;
+    }
 
     // requestDraft를 먼저 생성하여 삭제 오류 방지
     await prisma.requestDraft.create({
@@ -918,6 +980,27 @@ describe("DELETE /reviews/:reviewId - 리뷰 삭제 API 테스트", () => {
 
     authToken = loginResponse.body.data.accessToken;
 
+    // 클라이언트가 유효한지 확인하고, 필요시 재생성
+    const existingClient = await prisma.client.findUnique({
+      where: { id: testClient.id },
+    });
+
+    if (!existingClient) {
+      // 클라이언트가 삭제되었다면 재생성
+      const createClientResponse = await request(app)
+        .post("/auth/signup/client")
+        .send({
+          email: "reviewtest.client5@test.com",
+          name: "박현",
+          phone: "0108901234",
+          password: "password1!",
+          passwordConfirmation: "password1!",
+        })
+        .expect(201);
+
+      testClient = createClientResponse.body.data.user;
+    }
+
     // requestDraft를 먼저 생성하여 삭제 오류 방지
     await prisma.requestDraft.create({
       data: {
@@ -1036,10 +1119,6 @@ describe("GET /reviews/writable - 작성 가능한 리뷰 목록 조회 API 테�
   let testEstimate: any;
   let authToken: string;
 
-  beforeAll(async () => {
-    // beforeAll은 이제 비워둠 - beforeEach에서 처리
-  });
-
   beforeEach(async () => {
     // 각 테스트 전에 관련 데이터 모두 초기화
     await prisma.review.deleteMany();
@@ -1090,6 +1169,27 @@ describe("GET /reviews/writable - 작성 가능한 리뷰 목록 조회 API 테�
       .expect(200);
 
     authToken = loginResponse.body.data.accessToken;
+
+    // 클라이언트가 유효한지 확인하고, 필요시 재생성
+    const existingClient = await prisma.client.findUnique({
+      where: { id: testClient.id },
+    });
+
+    if (!existingClient) {
+      // 클라이언트가 삭제되었다면 재생성
+      const createClientResponse = await request(app)
+        .post("/auth/signup/client")
+        .send({
+          email: "reviewtest.client6@test.com",
+          name: "김영",
+          phone: "0106789012",
+          password: "password1!",
+          passwordConfirmation: "password1!",
+        })
+        .expect(201);
+
+      testClient = createClientResponse.body.data.user;
+    }
 
     // requestDraft 생성
     await prisma.requestDraft.create({

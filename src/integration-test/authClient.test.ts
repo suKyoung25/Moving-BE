@@ -1,17 +1,11 @@
 import request from "supertest";
 import app from "../app";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import prisma from "../configs/prisma.config";
 
 describe("POST /signup - 회원가입 API 테스트", () => {
   // 전후 데이터 정리
   beforeAll(async () => {
     await prisma.client.deleteMany();
-  });
-
-  afterAll(async () => {
-    await prisma.$disconnect();
   });
 
   beforeEach(async () => {
@@ -49,10 +43,6 @@ describe("POST /signin - 로그인 API 테스트", () => {
   // 전후 데이터 정리
   beforeAll(async () => {
     await prisma.client.deleteMany();
-  });
-
-  afterAll(async () => {
-    await prisma.$disconnect();
   });
 
   beforeEach(async () => {

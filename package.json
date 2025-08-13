@@ -14,7 +14,7 @@
     "test": "jest",
     "test:watch": "NODE_ENV=test jest --watchAll",
     "test:unit": "NODE_ENV=test DATABASE_URL=postgresql://postgres:password@localhost:5432/testdb jest --testPathIgnorePatterns=src/integration-test",
-    "test:integration": "NODE_ENV=test DATABASE_URL=postgresql://postgres:password@localhost:5433/testdb jest src/integration-test",
+    "test:integration": "NODE_ENV=test DATABASE_URL=postgresql://postgres:password@localhost:5433/testdb jest src/integration-test/index.test.ts",
     "coverage": "npm test -- --coverage"
   },
   "author": "codeit-4team",
