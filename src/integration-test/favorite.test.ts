@@ -14,7 +14,7 @@ beforeAll(async () => {
   await prisma.requestDraft.deleteMany();
   await prisma.client.deleteMany();
   await prisma.mover.deleteMany();
-  
+
   // 추가로 기존 테스트 데이터가 남아있을 수 있으므로 더 강력한 정리
   await prisma.$executeRaw`TRUNCATE TABLE "Favorite" CASCADE`;
   await prisma.$executeRaw`TRUNCATE TABLE "Review" CASCADE`;
@@ -74,7 +74,7 @@ describe("GET /favorites/me - 내가 찜한 기사님 목록 조회 API 테스�
 
     testMover1 = {
       id: createMover1Response.body.data.user.userId,
-      ...createMover1Response.body.data.user
+      ...createMover1Response.body.data.user,
     };
 
     const createMover2Response = await request(app)
@@ -91,7 +91,7 @@ describe("GET /favorites/me - 내가 찜한 기사님 목록 조회 API 테스�
 
     testMover2 = {
       id: createMover2Response.body.data.user.userId,
-      ...createMover2Response.body.data.user
+      ...createMover2Response.body.data.user,
     };
 
     const createMover3Response = await request(app)
@@ -108,7 +108,7 @@ describe("GET /favorites/me - 내가 찜한 기사님 목록 조회 API 테스�
 
     testMover3 = {
       id: createMover3Response.body.data.user.userId,
-      ...createMover3Response.body.data.user
+      ...createMover3Response.body.data.user,
     };
 
     // 클라이언트 로그인하여 토큰 획득
@@ -180,9 +180,7 @@ describe("GET /favorites/me - 내가 찜한 기사님 목록 조회 API 테스�
 
   it("인증 토큰 없이 찜한 기사님 목록 조회 시 401 에러를 반환해야 한다", async () => {
     // Action: 토큰 없이 찜한 기사님 목록 조회
-    const response = await request(app)
-      .get("/favorites/me")
-      .expect(401);
+    const response = await request(app).get("/favorites/me").expect(401);
 
     // Assertion: 결과 검증
     expect(response.body).toHaveProperty("message");
@@ -209,7 +207,7 @@ describe("GET /favorites/me - 내가 찜한 기사님 목록 조회 API 테스�
   it("페이지네이션 파라미터를 사용하여 찜한 기사님 목록을 조회할 수 있어야 한다", async () => {
     // Setup: 추가 무버 생성 및 찜 추가
     const timestamp = Date.now();
-    
+
     const createMover4Response = await request(app)
       .post("/auth/signup/mover")
       .send({
@@ -224,7 +222,7 @@ describe("GET /favorites/me - 내가 찜한 기사님 목록 조회 API 테스�
 
     const testMover4 = {
       id: createMover4Response.body.data.user.userId,
-      ...createMover4Response.body.data.user
+      ...createMover4Response.body.data.user,
     };
 
     await prisma.favorite.create({
@@ -264,7 +262,7 @@ describe("GET /favorites/me - 내가 찜한 기사님 목록 조회 API 테스�
   it("페이지 2를 요청했을 때 올바른 결과를 반환해야 한다", async () => {
     // Setup: 추가 무버들 생성 및 찜 추가 (총 3개)
     const timestamp = Date.now();
-    
+
     for (let i = 4; i <= 4; i++) {
       const createMoverResponse = await request(app)
         .post("/auth/signup/mover")
@@ -280,7 +278,7 @@ describe("GET /favorites/me - 내가 찜한 기사님 목록 조회 API 테스�
 
       const testMover = {
         id: createMoverResponse.body.data.user.userId,
-        ...createMoverResponse.body.data.user
+        ...createMoverResponse.body.data.user,
       };
 
       await prisma.favorite.create({

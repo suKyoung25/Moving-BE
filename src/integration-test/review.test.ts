@@ -13,7 +13,7 @@ beforeAll(async () => {
   await prisma.requestDraft.deleteMany();
   await prisma.client.deleteMany();
   await prisma.mover.deleteMany();
-  
+
   // 추가로 기존 테스트 데이터가 남아있을 수 있으므로 더 강력한 정리
   await prisma.$executeRaw`TRUNCATE TABLE "Review" CASCADE`;
   await prisma.$executeRaw`TRUNCATE TABLE "Estimate" CASCADE`;
@@ -72,7 +72,7 @@ describe("POST /reviews - 리뷰 작성 API 테스트", () => {
 
     testMover = {
       id: createMoverResponse.body.data.user.userId,
-      ...createMoverResponse.body.data.user
+      ...createMoverResponse.body.data.user,
     };
 
     // 클라이언트 로그인하여 토큰 획득
@@ -324,7 +324,7 @@ describe("GET /reviews/me - 내가 작성한 리뷰 목록 조회 API 테스트"
     await prisma.requestDraft.deleteMany();
     await prisma.mover.deleteMany();
     await prisma.client.deleteMany();
-    
+
     // 테스트에 필요한 데이터 재생성
     const createClientResponse = await request(app)
       .post("/auth/signup/client")
@@ -353,7 +353,7 @@ describe("GET /reviews/me - 내가 작성한 리뷰 목록 조회 API 테스트"
 
     testMover = {
       id: createMoverResponse.body.data.user.userId,
-      ...createMoverResponse.body.data.user
+      ...createMoverResponse.body.data.user,
     };
 
     // 클라이언트 로그인하여 토큰 획득
@@ -458,7 +458,10 @@ describe("GET /reviews/me - 내가 작성한 리뷰 목록 조회 API 테스트"
     expect(Array.isArray(response.body.data.reviews)).toBe(true);
     expect(response.body.data.reviews.length).toBe(1);
     expect(response.body.data.reviews[0]).toHaveProperty("rating", 5);
-    expect(response.body.data.reviews[0]).toHaveProperty("content", "테스트 리뷰입니다. 정말 만족스러운 서비스였습니다.");
+    expect(response.body.data.reviews[0]).toHaveProperty(
+      "content",
+      "테스트 리뷰입니다. 정말 만족스러운 서비스였습니다.",
+    );
   });
 
   test("작성한 리뷰가 없을 때 빈 배열을 반환해야 한다", async () => {
@@ -493,7 +496,7 @@ describe("GET /reviews/mover/:moverId - 특정 기사님 리뷰 목록 조회 AP
     await prisma.requestDraft.deleteMany();
     await prisma.mover.deleteMany();
     await prisma.client.deleteMany();
-    
+
     // 테스트에 필요한 데이터 재생성
     const createClientResponse = await request(app)
       .post("/auth/signup/client")
@@ -522,7 +525,7 @@ describe("GET /reviews/mover/:moverId - 특정 기사님 리뷰 목록 조회 AP
 
     testMover = {
       id: createMoverResponse.body.data.user.userId,
-      ...createMoverResponse.body.data.user
+      ...createMoverResponse.body.data.user,
     };
 
     // 클라이언트 로그인하여 토큰 획득
@@ -637,7 +640,10 @@ describe("GET /reviews/mover/:moverId - 특정 기사님 리뷰 목록 조회 AP
     expect(Array.isArray(response.body.data.reviews)).toBe(true);
     expect(response.body.data.reviews.length).toBe(1);
     expect(response.body.data.reviews[0]).toHaveProperty("rating", 5);
-    expect(response.body.data.reviews[0]).toHaveProperty("content", "테스트 리뷰입니다. 정말 만족스러운 서비스였습니다.");
+    expect(response.body.data.reviews[0]).toHaveProperty(
+      "content",
+      "테스트 리뷰입니다. 정말 만족스러운 서비스였습니다.",
+    );
   });
 
   test("기사님에게 리뷰가 없을 때 빈 배열을 반환해야 한다", async () => {
@@ -689,7 +695,7 @@ describe("PATCH /reviews/:reviewId - 리뷰 수정 API 테스트", () => {
 
     testMover = {
       id: createMoverResponse.body.data.user.userId,
-      ...createMoverResponse.body.data.user
+      ...createMoverResponse.body.data.user,
     };
 
     // 클라이언트 로그인하여 토큰 획득
@@ -904,7 +910,7 @@ describe("DELETE /reviews/:reviewId - 리뷰 삭제 API 테스트", () => {
 
     testMover = {
       id: createMoverResponse.body.data.user.userId,
-      ...createMoverResponse.body.data.user
+      ...createMoverResponse.body.data.user,
     };
 
     // 클라이언트 로그인하여 토큰 획득
@@ -1048,7 +1054,7 @@ describe("GET /reviews/writable - 작성 가능한 리뷰 목록 조회 API 테�
     await prisma.requestDraft.deleteMany();
     await prisma.mover.deleteMany();
     await prisma.client.deleteMany();
-    
+
     // 테스트에 필요한 데이터 재생성
     const createClientResponse = await request(app)
       .post("/auth/signup/client")
@@ -1077,7 +1083,7 @@ describe("GET /reviews/writable - 작성 가능한 리뷰 목록 조회 API 테�
 
     testMover = {
       id: createMoverResponse.body.data.user.userId,
-      ...createMoverResponse.body.data.user
+      ...createMoverResponse.body.data.user,
     };
 
     // 클라이언트 로그인하여 토큰 획득
