@@ -10,6 +10,7 @@ async function findReviewsByClientId(clientId: Client["id"], offset: number, lim
         id: true,
         rating: true,
         content: true,
+        images: true,
         createdAt: true,
         moverId: true,
         mover: { select: { nickName: true, profileImage: true } },
@@ -45,6 +46,7 @@ async function findReviewsByMoverId(moverId: string, offset: number, limit: numb
         id: true,
         rating: true,
         content: true,
+        images: true,
         createdAt: true,
         client: {
           select: {
@@ -110,7 +112,7 @@ async function findReviewById(reviewId: Review["id"]) {
 async function updateReviewTx(
   tx: Prisma.TransactionClient,
   reviewId: Review["id"],
-  data: Partial<Pick<Review, "rating" | "content">>,
+  data: Partial<Pick<Review, "rating" | "content" | "images">>,
 ) {
   return tx.review.update({
     where: { id: reviewId },
