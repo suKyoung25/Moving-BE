@@ -45,7 +45,7 @@ async function create(client: SignUpDataLocal) {
 async function loginWithLocal({ email, hashedPassword }: LoginDataLocal) {
   const client = await authClientRepository.findByEmail(email);
 
-  if (!client) {
+  if (!client || client.provider !== "LOCAL") {
     throw new NotFoundError(ErrorMessage.USER_NOT_FOUND);
   }
 

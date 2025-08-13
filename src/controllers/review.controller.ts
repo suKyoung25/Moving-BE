@@ -59,10 +59,10 @@ async function createReview(
 ) {
   try {
     const clientId = req.auth!.userId;
-    const { estimateId, rating, content } = req.body;
+    const { estimateId, rating, content, images } = req.body;
     const parsedRating = Number(rating);
     const review = await reviewService.createReview(
-      { estimateId, rating: parsedRating, content },
+      { estimateId, rating: parsedRating, content, images },
       clientId,
     );
 
@@ -81,10 +81,11 @@ async function updateReview(
   try {
     const clientId = req.auth!.userId;
     const { reviewId } = req.params;
-    const { rating, content } = req.body;
+    const { rating, content, images } = req.body;
     const updated = await reviewService.updateReview(reviewId, clientId, {
       rating,
       content,
+      images,
     });
 
     res.status(200).json({ message: "리뷰 수정 성공", data: updated });

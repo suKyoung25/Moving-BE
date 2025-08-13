@@ -21,6 +21,7 @@ import "./schedule/notification.cron";
 import helmet from "helmet";
 import morgan from "morgan";
 import translationRouter from "./routers/translation.router";
+import communityRouter from "./routers/community.router";
 
 const app = express();
 
@@ -52,6 +53,7 @@ app.use("/reviews", reviewRouter);
 app.use("/estimates", verifyAccessToken, estimateRouter);
 app.use("/favorites", verifyAccessToken, favoriteRouter);
 app.use("/requests", verifyAccessToken, requestRouter);
+app.use("/community", communityRouter);
 app.use("/notifications", verifyAccessToken, notificationRouter);
 app.use("/images", verifyAccessToken, imageRouter);
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(specs));

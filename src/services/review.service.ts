@@ -18,6 +18,7 @@ async function getMyReviews(clientId: Client["id"], page = 1, limit = 6) {
     id: e.id,
     rating: e.rating,
     content: e.content,
+    images: e.images,
     createdAt: e.createdAt,
     moverNickName: e.mover.nickName,
     moverProfileImage: e.mover.profileImage,
@@ -52,6 +53,7 @@ async function getMoverReviews(moverId: string, page = 1, limit = 6) {
     id: e.id,
     rating: e.rating,
     content: e.content,
+    images: e.images,
     createdAt: e.createdAt,
     clientName: e.client.name,
     price: e.estimate.price,
@@ -75,7 +77,7 @@ async function getMoverReviews(moverId: string, page = 1, limit = 6) {
 
 // 리뷰 작성
 async function createReview(data: CreateReviewDto, clientId: Client["id"]) {
-  const { estimateId, rating, content } = data;
+  const { estimateId, rating, content, images } = data;
 
   // 견적에서 moverId 조회 및 존재 확인
   const estimate = await estimateRepository.getEstimateMoverId(estimateId);
@@ -93,6 +95,7 @@ async function createReview(data: CreateReviewDto, clientId: Client["id"]) {
       mover: { connect: { id: estimate.moverId } },
       rating,
       content,
+      images: images ?? [],
     });
     await reviewRepository.updateMoverReviewStatsTx(estimate.moverId, tx);
     return review;
@@ -103,7 +106,7 @@ async function createReview(data: CreateReviewDto, clientId: Client["id"]) {
 async function updateReview(
   reviewId: Review["id"],
   clientId: Client["id"],
-  data: Partial<{ rating: Review["rating"]; content: Review["content"] }>,
+  data: Partial<{ rating: Review["rating"]; content: Review["content"]; images: Review["images"] }>,
 ) {
   if (!reviewId) throw new BadRequestError("reviewId가 필요합니다.");
 

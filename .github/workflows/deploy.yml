@@ -17,7 +17,6 @@ jobs:
         with:
           node-version: "20"
       - run: npm ci
-      - run: echo "${{ secrets.ENV }}" > .env
       - run: npm run build
 
   Deploy:
@@ -35,14 +34,8 @@ jobs:
       - name: 의존성 설치
         run: npm ci
 
-      - name: .env 파일 생성
-        run: echo "${{ secrets.ENV }}" > .env
-
-      - name: 빌드 실행
-        run: npm run build
-
-      - name: 빌드파일 압축하기
-        run: tar -czvf project.tar.gz dist package.json package-lock.json .env
+      - name: 소스 압축하기
+        run: tar -czvf project.tar.gz src package.json package-lock.json tsconfig.json prisma
 
       - name: scp로 EC2에 파일 전송
         uses: appleboy/scp-action@v1
@@ -53,7 +46,7 @@ jobs:
           source: project.tar.gz
           target: /home/ec2-user/6th-Moving-4Team-BE
 
-      - name: SSH로 EC2 접속해 서버 실행
+      - name: SSH로 EC2 접속 후 빌드 & 재시작
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -62,8 +55,10 @@ jobs:
           script_stop: true
           script: |
             cd /home/ec2-user/6th-Moving-4Team-BE
-            rm -rf dist
             tar -xvf project.tar.gz
             rm -f project.tar.gz
-            pm2 kill
-            pm2 start dist/server.js
+            npm ci
+            npm run build
+            npx prisma generate
+            npx prisma migrate deploy
+            pm2 restart server || pm2 start dist/server.js --name server

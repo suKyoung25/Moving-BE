@@ -1,9 +1,9 @@
 import imageController from "../controllers/image.controller";
-import { upload } from "../utils/uploadToS3";
+import { checkProfileImageSize } from "../middlewares/profile.middleware";
 import Router from "express";
 
 const imageRouter = Router();
 
-imageRouter.post("/upload", upload.single("image"), imageController.uploadImage);
+imageRouter.post("/upload", checkProfileImageSize, imageController.uploadImage);
 
 export default imageRouter;

@@ -36,6 +36,7 @@ describe("reviewService", () => {
           id: "review1",
           rating: 5,
           content: "Great",
+          images: [],
           createdAt: new Date(),
           moverId: "mover1",
           mover: { nickName: "Nick", profileImage: "url" },
@@ -101,13 +102,20 @@ describe("reviewService", () => {
       mockedEstimateRepository.getEstimateMoverId.mockResolvedValue({ moverId: "mover-uuid" });
       mockedReviewRepository.findReviewByEstimateId.mockResolvedValue(null);
 
-      const createdReview = { id: "review1", ...dto } as Review;
+      const createdReview = {
+        id: "review1",
+        ...dto,
+        images: [],
+        moverId: "mover-uuid",
+        clientId,
+        createdAt: new Date(),
+      } as Review;
       const mockTransactionCallback = jest.fn(async (tx) => createdReview);
 
       (mockedPrisma.$transaction as jest.Mock).mockImplementation(mockTransactionCallback);
 
       // Exercise
-      const result = await reviewService.createReview(dto, clientId);
+      const result = await reviewService.createReview({ ...dto, images: [] }, clientId);
 
       // Assertion
       expect(mockedEstimateRepository.getEstimateMoverId).toHaveBeenCalledWith(dto.estimateId);
@@ -122,7 +130,10 @@ describe("reviewService", () => {
 
       // Exercise & Assertion
       await expect(
-        reviewService.createReview({ estimateId: "nonexist", rating: 5, content: "A" }, "client1"),
+        reviewService.createReview(
+          { estimateId: "nonexist", rating: 5, content: "A", images: [] },
+          "client1",
+        ),
       ).rejects.toThrow(BadRequestError);
     });
 
@@ -135,7 +146,10 @@ describe("reviewService", () => {
 
       // Exercise & Assertion
       await expect(
-        reviewService.createReview({ estimateId: "exist", rating: 4, content: "B" }, "client1"),
+        reviewService.createReview(
+          { estimateId: "exist", rating: 4, content: "B", images: [] },
+          "client1",
+        ),
       ).rejects.toThrow(ValidationError);
     });
   });
@@ -145,7 +159,7 @@ describe("reviewService", () => {
       // Setup
       const reviewId = "review1";
       const clientId = "client1";
-      const data = { rating: 4, content: "Updated" };
+      const data = { rating: 4, content: "Updated", images: ["https://x/y.jpg"] };
 
       const existingReview = { id: reviewId, clientId, moverId: "mover1" } as Review;
       mockedReviewRepository.findReviewById.mockResolvedValue(existingReview);
@@ -261,6 +275,7 @@ describe("reviewService", () => {
           id: "r1",
           rating: 5,
           content: "Nice job",
+          images: [],
           createdAt: new Date(),
           client: { name: "ClientName" },
           estimate: {

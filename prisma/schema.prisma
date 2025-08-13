@@ -27,6 +27,8 @@ model Client {
   reviews      Review[]
   favorites    Favorite[]
   requestDraft RequestDraft?
+  communitys Community[]
+  replies Reply[]
 
   @@unique([provider, providerId])
 }
@@ -58,6 +60,8 @@ model Mover {
   reviews            Review[]
   favorites          Favorite[]
   designatedRequests DesignatedRequest[]
+  communitys Community[]
+  replies Reply[]
 
   @@unique([provider, providerId])
 }
@@ -164,6 +168,36 @@ model Region {
 
   clients Client[]
   movers  Mover[]
+}
+
+model Community {
+  id String @id @default(uuid())
+  title String
+  content String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  clientId String?
+  moverId String?
+
+  client Client? @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  mover Mover? @relation(fields: [moverId], references: [id], onDelete: Cascade)
+
+  replies Reply[]
+  }
+
+model Reply {
+  id String @id @default(uuid())
+  content String
+  createdAt DateTime @default(now())
+
+  communityId String
+  clientId String?
+  moverId String?
+
+  community Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  client Client? @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  mover Mover? @relation(fields: [moverId], references: [id], onDelete: Cascade)
 }
 
 enum Provider {

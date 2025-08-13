@@ -1,5 +1,5 @@
 import { ErrorMessage } from "../constants/ErrorMessage";
-import { ConflictError, CreatedToken } from "../types";
+import { ConflictError, CreatedToken, UnauthorizedError } from "../types";
 import jwt from "jsonwebtoken";
 
 export function generateAccessToken(user: CreatedToken): string {
