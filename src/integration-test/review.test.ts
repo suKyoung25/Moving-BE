@@ -6,31 +6,13 @@ const prisma = new PrismaClient();
 
 // 전역 테스트 시작 전 데이터베이스 정리
 beforeAll(async () => {
-  // 모든 관련 데이터를 순서대로 삭제 (외래키 제약조건 고려)
+  // review 테스트에 필요한 데이터만 정리
   await prisma.review.deleteMany();
-  await prisma.estimate.deleteMany();
-  await prisma.request.deleteMany();
-  await prisma.requestDraft.deleteMany();
-  await prisma.client.deleteMany();
-  await prisma.mover.deleteMany();
-
-  // 추가로 기존 테스트 데이터가 남아있을 수 있으므로 더 강력한 정리
-  await prisma.$executeRaw`TRUNCATE TABLE "Review" CASCADE`;
-  await prisma.$executeRaw`TRUNCATE TABLE "Estimate" CASCADE`;
-  await prisma.$executeRaw`TRUNCATE TABLE "Request" CASCADE`;
-  await prisma.$executeRaw`TRUNCATE TABLE "RequestDraft" CASCADE`;
-  await prisma.$executeRaw`TRUNCATE TABLE "Client" CASCADE`;
-  await prisma.$executeRaw`TRUNCATE TABLE "Mover" CASCADE`;
 });
 
 // 전역 테스트 종료 후 데이터베이스 정리
 afterAll(async () => {
   await prisma.review.deleteMany();
-  await prisma.estimate.deleteMany();
-  await prisma.request.deleteMany();
-  await prisma.requestDraft.deleteMany();
-  await prisma.client.deleteMany();
-  await prisma.mover.deleteMany();
   await prisma.$disconnect();
 });
 
@@ -86,22 +68,11 @@ describe("POST /reviews - 리뷰 작성 API 테스트", () => {
 
     authToken = loginResponse.body.data.accessToken;
 
-    // 무버 로그인하여 토큰 획득
-    const moverLoginResponse = await request(app)
-      .post("/auth/signin/mover")
-      .send({
-        email: "reviewtest.mover1@test.com",
-        password: "password1!",
-      })
-      .expect(200);
-
-    const moverAuthToken = moverLoginResponse.body.data.accessToken;
-
-    // requestDraft를 먼저 생성하여 삭제 오류 방지
+    // requestDraft 생성 (이동 요청 완료 상태로 설정)
     await prisma.requestDraft.create({
       data: {
         clientId: testClient.id,
-        currentStep: 0,
+        currentStep: 4, // 이동 요청 완료 상태
       },
     });
 
@@ -118,6 +89,17 @@ describe("POST /reviews - 리뷰 작성 API 테스트", () => {
       .expect(201);
 
     testRequest = createRequestResponse.body.data;
+
+    // 무버 로그인하여 견적 생성
+    const moverLoginResponse = await request(app)
+      .post("/auth/signin/mover")
+      .send({
+        email: "reviewtest.mover1@test.com",
+        password: "password1!",
+      })
+      .expect(200);
+
+    const moverAuthToken = moverLoginResponse.body.data.accessToken;
 
     // 테스트용 견적 생성
     const createEstimateResponse = await request(app)
@@ -142,7 +124,7 @@ describe("POST /reviews - 리뷰 작성 API 테스트", () => {
   });
 
   beforeEach(async () => {
-    // 각 테스트 전에 리뷰 데이터 정리 (테스트 격리)
+    // 각 테스트 전에 리뷰 데이터만 정리 (테스트 격리)
     await prisma.review.deleteMany();
   });
 
@@ -313,19 +295,7 @@ describe("GET /reviews/me - 내가 작성한 리뷰 목록 조회 API 테스트"
   let authToken: string;
 
   beforeAll(async () => {
-    // beforeAll은 이제 비워둠 - beforeEach에서 처리
-  });
-
-  beforeEach(async () => {
-    // 각 테스트 전에 관련 데이터 모두 초기화
-    await prisma.review.deleteMany();
-    await prisma.estimate.deleteMany();
-    await prisma.request.deleteMany();
-    await prisma.requestDraft.deleteMany();
-    await prisma.mover.deleteMany();
-    await prisma.client.deleteMany();
-
-    // 테스트에 필요한 데이터 재생성
+    // 테스트용 클라이언트 생성 (회원가입)
     const createClientResponse = await request(app)
       .post("/auth/signup/client")
       .send({
@@ -339,6 +309,7 @@ describe("GET /reviews/me - 내가 작성한 리뷰 목록 조회 API 테스트"
 
     testClient = createClientResponse.body.data.user;
 
+    // 테스트용 무버 생성 (회원가입)
     const createMoverResponse = await request(app)
       .post("/auth/signup/mover")
       .send({
@@ -367,11 +338,11 @@ describe("GET /reviews/me - 내가 작성한 리뷰 목록 조회 API 테스트"
 
     authToken = loginResponse.body.data.accessToken;
 
-    // requestDraft 생성
+    // requestDraft 생성 (이동 요청 완료 상태로 설정)
     await prisma.requestDraft.create({
       data: {
         clientId: testClient.id,
-        currentStep: 0,
+        currentStep: 4, // 이동 요청 완료 상태
       },
     });
 
@@ -420,6 +391,11 @@ describe("GET /reviews/me - 내가 작성한 리뷰 목록 조회 API 테스트"
       where: { id: testEstimate.id },
       data: { isClientConfirmed: true },
     });
+  });
+
+  beforeEach(async () => {
+    // 각 테스트 전에 리뷰 데이터만 정리 (테스트 격리)
+    await prisma.review.deleteMany();
   });
 
   test("인증 토큰 없이 내가 작성한 리뷰 목록 조회 시 401 에러를 반환해야 한다", async () => {
@@ -539,11 +515,11 @@ describe("GET /reviews/mover/:moverId - 특정 기사님 리뷰 목록 조회 AP
 
     const authToken = loginResponse.body.data.accessToken;
 
-    // requestDraft 생성
+    // requestDraft 생성 (이동 요청 완료 상태로 설정)
     await prisma.requestDraft.create({
       data: {
         clientId: testClient.id,
-        currentStep: 0,
+        currentStep: 4, // 이동 요청 완료 상태
       },
     });
 

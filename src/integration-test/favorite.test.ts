@@ -6,34 +6,13 @@ const prisma = new PrismaClient();
 
 // 전역 테스트 시작 전 데이터베이스 정리
 beforeAll(async () => {
-  // 모든 관련 데이터를 순서대로 삭제 (외래키 제약조건 고려)
+  // favorite 테스트에 필요한 데이터만 정리
   await prisma.favorite.deleteMany();
-  await prisma.review.deleteMany();
-  await prisma.estimate.deleteMany();
-  await prisma.request.deleteMany();
-  await prisma.requestDraft.deleteMany();
-  await prisma.client.deleteMany();
-  await prisma.mover.deleteMany();
-
-  // 추가로 기존 테스트 데이터가 남아있을 수 있으므로 더 강력한 정리
-  await prisma.$executeRaw`TRUNCATE TABLE "Favorite" CASCADE`;
-  await prisma.$executeRaw`TRUNCATE TABLE "Review" CASCADE`;
-  await prisma.$executeRaw`TRUNCATE TABLE "Estimate" CASCADE`;
-  await prisma.$executeRaw`TRUNCATE TABLE "Request" CASCADE`;
-  await prisma.$executeRaw`TRUNCATE TABLE "RequestDraft" CASCADE`;
-  await prisma.$executeRaw`TRUNCATE TABLE "Client" CASCADE`;
-  await prisma.$executeRaw`TRUNCATE TABLE "Mover" CASCADE`;
 });
 
 // 전역 테스트 종료 후 데이터베이스 정리
 afterAll(async () => {
   await prisma.favorite.deleteMany();
-  await prisma.review.deleteMany();
-  await prisma.estimate.deleteMany();
-  await prisma.request.deleteMany();
-  await prisma.requestDraft.deleteMany();
-  await prisma.client.deleteMany();
-  await prisma.mover.deleteMany();
   await prisma.$disconnect();
 });
 
@@ -127,7 +106,7 @@ describe("GET /favorites/me - 내가 찜한 기사님 목록 조회 API 테스�
     // 각 테스트 전에 찜 데이터만 정리 (테스트 격리)
     await prisma.favorite.deleteMany();
 
-    // 테스트용 찜 데이터 생성 (2개)
+    // 테스트용 찜 데이터 재생성 (2개)
     await prisma.favorite.create({
       data: {
         clientId: testClient.id,
