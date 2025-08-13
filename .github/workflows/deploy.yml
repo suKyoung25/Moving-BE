@@ -59,4 +59,6 @@ jobs:
             rm -f project.tar.gz
             npm ci
             npm run build
+            npx prisma generate
+            npx prisma migrate deploy
             pm2 restart server || pm2 start dist/server.js --name server
