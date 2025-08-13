@@ -61,11 +61,36 @@ describe("POST /reviews - 리뷰 작성 API 테스트", () => {
 
     authToken = loginResponse.body.data.accessToken;
 
+    // testClient가 유효한지 확인하고, 필요시 재생성
+    const existingClient = await prisma.client.findUnique({
+      where: { id: testClient.id },
+    });
+
+    if (!existingClient) {
+      // client가 삭제되었다면 재생성
+      const createClientResponse = await request(app)
+        .post("/auth/signup/client")
+        .send({
+          email: "reviewtest.client1@test.com",
+          name: "김고객",
+          phone: "01012345567",
+          password: "password1!",
+          passwordConfirmation: "password1!",
+        })
+        .expect(201);
+
+      testClient = createClientResponse.body.data.user;
+    }
+
     // requestDraft 생성 (이동 요청 완료 상태로 설정)
     await prisma.requestDraft.create({
       data: {
         clientId: testClient.id,
         currentStep: 4, // 이동 요청 완료 상태
+        moveType: "HOME",
+        moveDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7일 전
+        fromAddress: "서울시 강남구",
+        toAddress: "서울시 서초구",
       },
     });
 
