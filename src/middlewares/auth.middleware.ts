@@ -86,7 +86,7 @@ export async function checkMoverSignInInfo(req: Request, res: Response, next: Ne
     const fieldErrors: Record<string, string> = {};
 
     const mover = await authMoverRepository.getMoverByEmail(email);
-    if (!mover) {
+    if (!mover || mover.provider !== "LOCAL") {
       fieldErrors.email = ErrorMessage.USER_NOT_FOUND;
       throw new ConflictError("사용자를 찾을 수 없습니다.", fieldErrors);
     }
