@@ -59,10 +59,10 @@ async function createReview(
 ) {
   try {
     const clientId = req.auth!.userId;
-    const { estimateId, rating, content } = req.body;
+    const { estimateId, rating, content, images } = req.body;
     const parsedRating = Number(rating);
     const review = await reviewService.createReview(
-      { estimateId, rating: parsedRating, content },
+      { estimateId, rating: parsedRating, content, images },
       clientId,
     );
 

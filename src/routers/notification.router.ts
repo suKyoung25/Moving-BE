@@ -1,12 +1,11 @@
 import notificationController from "../controllers/notification.controller";
 import { Router } from "express";
 import { translationMiddleware } from "../middlewares/translation.middleware";
-import { cacheMiddleware } from "../middlewares/cache.middleware";
 
 const notificationRouter = Router();
 
 // SSE 연결
-notificationRouter.get("/stream", cacheMiddleware(300), notificationController.sendNotification);
+notificationRouter.get("/stream", notificationController.sendNotification);
 
 // 알림 조회
 notificationRouter.get(
