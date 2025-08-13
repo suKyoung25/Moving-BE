@@ -5,6 +5,7 @@ export const CreateReviewSchema = z.object({
   estimateId: z.string().uuid(),
   rating: z.number().int().min(1).max(5),
   content: z.string().min(10),
+  images: z.array(z.string()).optional().default([]),
 });
 
 export type CreateReviewDto = z.infer<typeof CreateReviewSchema>;
@@ -13,6 +14,7 @@ export type CreateReviewDto = z.infer<typeof CreateReviewSchema>;
 export const UpdateReviewschema = z.object({
   rating: z.number().int().min(1).max(5).optional(),
   content: z.string().min(1).optional(),
+  images: z.array(z.string()).optional(),
 });
 
 export type UpdateReviewDto = z.infer<typeof UpdateReviewschema>;

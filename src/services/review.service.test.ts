@@ -107,7 +107,7 @@ describe("reviewService", () => {
       (mockedPrisma.$transaction as jest.Mock).mockImplementation(mockTransactionCallback);
 
       // Exercise
-      const result = await reviewService.createReview(dto, clientId);
+      const result = await reviewService.createReview({ ...dto, images: [] }, clientId);
 
       // Assertion
       expect(mockedEstimateRepository.getEstimateMoverId).toHaveBeenCalledWith(dto.estimateId);
@@ -122,7 +122,10 @@ describe("reviewService", () => {
 
       // Exercise & Assertion
       await expect(
-        reviewService.createReview({ estimateId: "nonexist", rating: 5, content: "A" }, "client1"),
+        reviewService.createReview(
+          { estimateId: "nonexist", rating: 5, content: "A", images: [] },
+          "client1",
+        ),
       ).rejects.toThrow(BadRequestError);
     });
 
@@ -135,7 +138,10 @@ describe("reviewService", () => {
 
       // Exercise & Assertion
       await expect(
-        reviewService.createReview({ estimateId: "exist", rating: 4, content: "B" }, "client1"),
+        reviewService.createReview(
+          { estimateId: "exist", rating: 4, content: "B", images: [] },
+          "client1",
+        ),
       ).rejects.toThrow(ValidationError);
     });
   });
@@ -205,6 +211,7 @@ describe("reviewService", () => {
         createdAt: new Date(),
         rating: 5,
         content: "Some content",
+        images: [],
         clientId: "client1",
         moverId: "mover1",
         estimateId: "estimate1",

@@ -75,7 +75,7 @@ async function getMoverReviews(moverId: string, page = 1, limit = 6) {
 
 // 리뷰 작성
 async function createReview(data: CreateReviewDto, clientId: Client["id"]) {
-  const { estimateId, rating, content } = data;
+  const { estimateId, rating, content, images } = data;
 
   // 견적에서 moverId 조회 및 존재 확인
   const estimate = await estimateRepository.getEstimateMoverId(estimateId);
@@ -93,6 +93,7 @@ async function createReview(data: CreateReviewDto, clientId: Client["id"]) {
       mover: { connect: { id: estimate.moverId } },
       rating,
       content,
+      images: images ?? [],
     });
     await reviewRepository.updateMoverReviewStatsTx(estimate.moverId, tx);
     return review;
