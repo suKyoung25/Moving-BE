@@ -15,7 +15,7 @@ docker run --name test-postgres \
   -e POSTGRES_USER=postgres \
   -e POSTGRES_PASSWORD=password \
   -e POSTGRES_DB=testdb \
-  -p 5432:5432 \
+  -p 5433:5432 \
   -d postgres:13
 ```
 
@@ -38,7 +38,7 @@ docker exec -it test-postgres psql -U postgres -d testdb -c "SELECT version();"
 VScode 터미널에서 아래 명령어 실행
 
 ```
-DATABASE_URL=postgresql://postgres:password@localhost:5432/testdb npx prisma migrate deploy
+DATABASE_URL=postgresql://postgres:password@localhost:5433/testdb npx prisma migrate deploy
 ```
 
 ### 5. 테스트 실행 및 확인

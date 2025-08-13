@@ -4,15 +4,8 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-// 전역 테스트 시작 전 데이터베이스 정리
-beforeAll(async () => {
-  // favorite 테스트에 필요한 데이터만 정리
-  await prisma.favorite.deleteMany();
-});
-
 // 전역 테스트 종료 후 데이터베이스 정리
 afterAll(async () => {
-  await prisma.favorite.deleteMany();
   await prisma.$disconnect();
 });
 
@@ -44,7 +37,7 @@ describe("GET /favorites/me - 내가 찜한 기사님 목록 조회 API 테스�
       .send({
         email: "favoritetest.mover1@test.com",
         name: "박기사",
-        nickName: "이사왕",
+        nickName: "이사왕1",
         phone: "0108765432",
         password: "password1!",
         passwordConfirmation: "password1!",
@@ -61,7 +54,7 @@ describe("GET /favorites/me - 내가 찜한 기사님 목록 조회 API 테스�
       .send({
         email: "favoritetest.mover2@test.com",
         name: "최기사",
-        nickName: "이사전문",
+        nickName: "이사전문2",
         phone: "0109876543",
         password: "password1!",
         passwordConfirmation: "password1!",
@@ -78,8 +71,8 @@ describe("GET /favorites/me - 내가 찜한 기사님 목록 조회 API 테스�
       .send({
         email: "favoritetest.mover3@test.com",
         name: "이기사",
-        nickName: "이사마스터",
-        phone: "0105678901",
+        nickName: "이사마스터3",
+        phone: "01056789012",
         password: "password1!",
         passwordConfirmation: "password1!",
       })
@@ -102,22 +95,104 @@ describe("GET /favorites/me - 내가 찜한 기사님 목록 조회 API 테스�
     authToken = loginResponse.body.data.accessToken;
   });
 
+  afterAll(async () => {
+    // 테스트용 데이터 정리
+    await prisma.favorite.deleteMany();
+    await prisma.client.deleteMany({ where: { email: "favoritetest.client@test.com" } });
+    await prisma.mover.deleteMany({ where: { email: { startsWith: "favoritetest.mover" } } });
+  });
+
   beforeEach(async () => {
     // 각 테스트 전에 찜 데이터만 정리 (테스트 격리)
     await prisma.favorite.deleteMany();
 
+    // testClient가 유효한지 확인하고, 필요시 재생성
+    let currentClient = testClient;
+    const existingClient = await prisma.client.findUnique({
+      where: { id: testClient.id },
+    });
+
+    if (!existingClient) {
+      // client가 삭제되었다면 재생성
+      const createClientResponse = await request(app)
+        .post("/auth/signup/client")
+        .send({
+          email: "favoritetest.client@test.com",
+          name: "김고객",
+          phone: "0101234567",
+          password: "password1!",
+          passwordConfirmation: "password1!",
+        })
+        .expect(201);
+
+      currentClient = createClientResponse.body.data.user;
+      testClient = currentClient;
+    }
+
+    // testMover1과 testMover2가 유효한지 확인하고, 필요시 재생성
+    let currentMover1 = testMover1;
+    let currentMover2 = testMover2;
+
+    const existingMover1 = await prisma.mover.findUnique({
+      where: { id: testMover1.id },
+    });
+
+    if (!existingMover1) {
+      const createMover1Response = await request(app)
+        .post("/auth/signup/mover")
+        .send({
+          email: "favoritetest.mover1@test.com",
+          name: "박기사",
+          nickName: "이사왕1",
+          phone: "0108765432",
+          password: "password1!",
+          passwordConfirmation: "password1!",
+        })
+        .expect(201);
+
+      currentMover1 = {
+        id: createMover1Response.body.data.user.userId,
+        ...createMover1Response.body.data.user,
+      };
+      testMover1 = currentMover1;
+    }
+
+    const existingMover2 = await prisma.mover.findUnique({
+      where: { id: testMover2.id },
+    });
+
+    if (!existingMover2) {
+      const createMover2Response = await request(app)
+        .post("/auth/signup/mover")
+        .send({
+          email: "favoritetest.mover2@test.com",
+          name: "최기사",
+          nickName: "이사전문2",
+          phone: "0109876543",
+          password: "password1!",
+          passwordConfirmation: "password1!",
+        })
+        .expect(201);
+
+      currentMover2 = {
+        id: createMover2Response.body.data.user.userId,
+        ...createMover2Response.body.data.user,
+      };
+      testMover2 = currentMover2;
+    }
+
     // 테스트용 찜 데이터 재생성 (2개)
     await prisma.favorite.create({
       data: {
-        clientId: testClient.id,
-        moverId: testMover1.id,
+        clientId: currentClient.id,
+        moverId: currentMover1.id,
       },
     });
 
     await prisma.favorite.create({
       data: {
-        clientId: testClient.id,
-        moverId: testMover2.id,
+        clientId: currentClient.id,
+        moverId: currentMover2.id,
       },
     });
   });
@@ -185,15 +260,13 @@ describe("GET /favorites/me - 내가 찜한 기사님 목록 조회 API 테스�
 
   it("페이지네이션 파라미터를 사용하여 찜한 기사님 목록을 조회할 수 있어야 한다", async () => {
     // Setup: 추가 무버 생성 및 찜 추가
-    const timestamp = Date.now();
-
     const createMover4Response = await request(app)
       .post("/auth/signup/mover")
       .send({
-        email: `favoritetest.mover4.${timestamp}@test.com`,
+        email: "favoritetest.mover4@test.com",
         name: "한기사",
-        nickName: "이사프로",
-        phone: "0107890123",
+        nickName: "이사프로4",
+        phone: "01078901234",
         password: "password1!",
         passwordConfirmation: "password1!",
       })
@@ -240,16 +313,14 @@ describe("GET /favorites/me - 내가 찜한 기사님 목록 조회 API 테스�
 
   it("페이지 2를 요청했을 때 올바른 결과를 반환해야 한다", async () => {
     // Setup: 추가 무버들 생성 및 찜 추가 (총 3개)
-    const timestamp = Date.now();
-
     for (let i = 4; i <= 4; i++) {
       const createMoverResponse = await request(app)
         .post("/auth/signup/mover")
         .send({
-          email: `favoritetest.mover${i}.${timestamp}@test.com`,
+          email: "favoritetest.mover5@test.com",
           name: `기사${i}`,
-          nickName: `이사${i}`,
-          phone: `010123456${i}`,
+          nickName: `이사5`,
+          phone: `0101334567${i}`,
           password: "password1!",
           passwordConfirmation: "password1!",
         })
