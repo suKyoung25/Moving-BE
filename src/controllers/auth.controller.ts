@@ -97,17 +97,6 @@ async function signInEasily(req: Request, res: Response, next: NextFunction) {
   }
 }
 
-// 이메일 인증
-async function requestVerification(req: Request, res: Response, next: NextFunction) {
-  try {
-    const { email } = req.body;
-    // await authClientService.processEmailVerificationRequest(email);
-    res.status(200).json({ message: "Verification email sent. Please check your inbox." });
-  } catch (error) {
-    next(error);
-  }
-}
-
 const authController = {
   setRefreshToken,
   getMe,
