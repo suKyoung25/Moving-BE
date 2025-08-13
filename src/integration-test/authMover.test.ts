@@ -17,7 +17,6 @@ describe("POST /auth/signup/mover - 기사님 회원가입 API 테스트", () =>
   afterAll(async () => {
     // 테스트용 DB 초기화
     await prisma.mover.deleteMany({ where: { email: validUser.email } });
-    await prisma.$disconnect();
   });
 
   test("유효한 데이터면 기사님 회원가입 시 성공한다", async () => {
@@ -74,7 +73,6 @@ describe("POST /auth/signin/mover - 기사님 로그인 API 테스트", () => {
   afterAll(async () => {
     // 테스트용 DB 초기화
     await prisma.mover.deleteMany({ where: { email: validUser.email } });
-    await prisma.$disconnect();
   });
 
   test("유효한 데이터면 기사님 로그인 시 성공한다", async () => {
