@@ -1,8 +1,9 @@
 import { Router } from "express";
 import * as translationController from "../controllers/translation.controller";
+import { invalidateCache } from "../middlewares/cache.middleware";
 
 const translationRouter = Router();
 
-translationRouter.post("/translate", translationController.translate);
+translationRouter.post("/translate", invalidateCache(), translationController.translate);
 
 export default translationRouter;

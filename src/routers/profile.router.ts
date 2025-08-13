@@ -5,6 +5,7 @@ import { validateReq, verifyAccessToken } from "../middlewares/auth.middleware";
 import express from "express";
 import { checkMoverProfileInfo } from "../middlewares/profile.middleware";
 import { profileUpdateLimit } from "../middlewares/rateLimits.middleware";
+import { invalidateCache } from "../middlewares/cache.middleware";
 
 const profileRouter = express.Router();
 
@@ -14,6 +15,7 @@ profileRouter.patch(
   verifyAccessToken,
   validateReq(MoverProfileSchema),
   checkMoverProfileInfo,
+  invalidateCache(),
   profileMoverController.moverPatchProfile,
 );
 
@@ -22,6 +24,7 @@ profileRouter.patch(
   "/clients",
   verifyAccessToken,
   profileUpdateLimit,
+  invalidateCache(),
   profileClientController.update,
 );
 

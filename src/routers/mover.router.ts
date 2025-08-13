@@ -2,6 +2,7 @@ import moverController from "../controllers/mover.controller";
 import { optionalAuth, verifyAccessToken } from "../middlewares/auth.middleware";
 import express from "express";
 import { translationMiddleware } from "../middlewares/translation.middleware";
+import { cacheMiddleware, invalidateCache } from "../middlewares/cache.middleware";
 
 const { getMovers, getMoverDetail, toggleFavoriteMover, getMoverProfile } = moverController;
 
@@ -12,7 +13,7 @@ moverRouter.get(
   "/",
   optionalAuth,
   translationMiddleware(["movers.introduction"]),
-  (req, res, next) => console.log(req.body),
+  cacheMiddleware(),
   getMovers,
 );
 
@@ -21,6 +22,7 @@ moverRouter.get(
   "/profile",
   verifyAccessToken,
   translationMiddleware(["data.introduction", "data.description"]),
+  cacheMiddleware(),
   getMoverProfile,
 );
 
@@ -29,10 +31,16 @@ moverRouter.get(
   "/:moverId",
   optionalAuth,
   translationMiddleware(["introduction", "description"]),
+  cacheMiddleware(),
   getMoverDetail,
 );
 
 // 기사님 찜 토글
-moverRouter.post("/:moverId/toggle-favorite", verifyAccessToken, toggleFavoriteMover);
+moverRouter.post(
+  "/:moverId/toggle-favorite",
+  verifyAccessToken,
+  invalidateCache(),
+  toggleFavoriteMover,
+);
 
 export default moverRouter;
