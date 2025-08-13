@@ -1,13 +1,12 @@
 import { Router } from "express";
-import { invalidateCache } from "../middlewares/cache.middleware";
 
 const infoRouter = Router();
 
-infoRouter.get("/status", invalidateCache(), (req, res) => {
+infoRouter.get("/status", (req, res) => {
   res.status(200).json({ message: "Express Server is Running" });
 });
 
-infoRouter.get("/", invalidateCache(), (req, res) => {
+infoRouter.get("/", (req, res) => {
   res.send(`
     <!DOCTYPE html>
     <html lang="ko">

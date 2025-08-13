@@ -15,24 +15,17 @@ import express from "express";
 import passport from "passport";
 import { createSocialAuthMiddleware } from "../middlewares/passport/passport.middleware";
 import { loginLimiter } from "../middlewares/rateLimits.middleware";
-import { cacheMiddleware, invalidateCache } from "../middlewares/cache.middleware";
 
 const authRouter = express.Router();
 
 // 토큰 재생성
-authRouter.post("/refresh-token", invalidateCache(), authController.setRefreshToken);
+authRouter.post("/refresh-token", authController.setRefreshToken);
 
 // 사용자 불러오기
-authRouter.get("/", verifyAccessToken, cacheMiddleware(), authController.getMe);
+authRouter.get("/", verifyAccessToken, authController.getMe);
 
 // 기사님 회원가입 - Local
-authRouter.post(
-  "/signup/mover",
-  validateReq(signUpSchema),
-  checkMoverSignUpInfo,
-  invalidateCache(),
-  moverSignup,
-);
+authRouter.post("/signup/mover", validateReq(signUpSchema), checkMoverSignUpInfo, moverSignup);
 
 // 기사님 로그인 - Local
 authRouter.post(
@@ -40,7 +33,6 @@ authRouter.post(
   validateReq(signInSchema),
   loginLimiter,
   checkMoverSignInInfo,
-  invalidateCache(),
   moverSignin,
 );
 
@@ -50,7 +42,6 @@ authRouter.delete(
   verifyAccessToken,
   validateReq(deleteUserSchema),
   checkMoverWithdrawInfo,
-  invalidateCache(),
   moverWithdraw,
 );
 
@@ -59,7 +50,6 @@ authRouter.post(
   "/signup/client",
   validateReq(signUpSchema),
   checkClientSignUpInfo,
-  invalidateCache(),
   authClientController.signUp,
 );
 
@@ -68,7 +58,6 @@ authRouter.post(
   "/signin/client",
   validateReq(signInSchema),
   loginLimiter,
-  invalidateCache(),
   authClientController.login,
 );
 
@@ -78,7 +67,6 @@ authRouter.delete(
   verifyAccessToken,
   validateReq(deleteUserSchema),
   checkClientWithdrawInfo,
-  invalidateCache(),
   authClientController.deleteAccount,
 );
 
@@ -94,7 +82,6 @@ authRouter.get("/google", (req, res, next) => {
 authRouter.get(
   "/google/callback",
   createSocialAuthMiddleware("google"),
-  invalidateCache(),
   authController.signInEasily,
 );
 
@@ -107,12 +94,7 @@ authRouter.get("/kakao", (req, res, next) => {
   })(req, res, next);
 });
 
-authRouter.get(
-  "/kakao/callback",
-  createSocialAuthMiddleware("kakao"),
-  invalidateCache(),
-  authController.signInEasily,
-);
+authRouter.get("/kakao/callback", createSocialAuthMiddleware("kakao"), authController.signInEasily);
 
 // 네이버 로그인
 authRouter.get("/naver", (req, res, next) => {
@@ -123,11 +105,6 @@ authRouter.get("/naver", (req, res, next) => {
   })(req, res, next);
 });
 
-authRouter.get(
-  "/naver/callback",
-  createSocialAuthMiddleware("naver"),
-  invalidateCache(),
-  authController.signInEasily,
-);
+authRouter.get("/naver/callback", createSocialAuthMiddleware("naver"), authController.signInEasily);
 
 export default authRouter;
