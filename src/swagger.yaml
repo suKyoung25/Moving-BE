@@ -814,8 +814,10 @@ components:
           maximum: 5
         content:
           type: string
-        moverId:
-          type: string
+        images:
+          type: array
+          items:
+            type: string
 
     UpdateReview:
       type: object
@@ -826,3 +828,7 @@ components:
           maximum: 5
         content:
           type: string
+        images:
+          type: array
+          items:
+            type: string

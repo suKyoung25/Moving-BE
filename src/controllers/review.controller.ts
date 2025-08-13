@@ -81,10 +81,11 @@ async function updateReview(
   try {
     const clientId = req.auth!.userId;
     const { reviewId } = req.params;
-    const { rating, content } = req.body;
+    const { rating, content, images } = req.body;
     const updated = await reviewService.updateReview(reviewId, clientId, {
       rating,
       content,
+      images,
     });
 
     res.status(200).json({ message: "리뷰 수정 성공", data: updated });
