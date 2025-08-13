@@ -18,6 +18,7 @@ export const cacheMiddleware = (ttl = 300) => {
     try {
       // 식별자
       const userId = req.auth?.userId || undefined;
+      const locale = "";
       const cacheKey = `cache:${userId}:${req.originalUrl}`;
 
       // GET만 캐싱
@@ -51,7 +52,7 @@ export const cacheMiddleware = (ttl = 300) => {
       next();
     } catch (error) {
       console.error("Cache middleware error:", error);
-      // Redis 에러가 발생해도 애플리케이션은 계속 동작하도록 next() 호출
+      // 오류가 발생해도 애플리케이션은 계속 동작하도록 next() 호출
       next();
     }
   };

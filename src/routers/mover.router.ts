@@ -8,7 +8,13 @@ const { getMovers, getMoverDetail, toggleFavoriteMover, getMoverProfile } = move
 const moverRouter = express.Router();
 
 // 전체 기사님 리스트 조회 (비회원도 가능)
-moverRouter.get("/", optionalAuth, translationMiddleware(["movers.introduction"]), getMovers);
+moverRouter.get(
+  "/",
+  optionalAuth,
+  translationMiddleware(["movers.introduction"]),
+  (req, res, next) => console.log(req.body),
+  getMovers,
+);
 
 // 기사님 본인 프로필 조회
 moverRouter.get(
