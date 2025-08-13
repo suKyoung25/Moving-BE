@@ -18,7 +18,8 @@ export const cacheMiddleware = (ttl = 300) => {
     try {
       // 식별자
       const userId = req.auth?.userId || undefined;
-      const cacheKey = `cache:${userId}:${req.originalUrl}`;
+      const locale = req.query.targetLang || "ko";
+      const cacheKey = `cache:${userId}:${locale}:${req.originalUrl}`;
 
       // GET만 캐싱
       if (req.method !== "GET") return next();
@@ -51,26 +52,34 @@ export const cacheMiddleware = (ttl = 300) => {
       next();
     } catch (error) {
       console.error("Cache middleware error:", error);
-      // Redis 에러가 발생해도 애플리케이션은 계속 동작하도록 next() 호출
+      // 오류가 발생해도 애플리케이션은 계속 동작하도록 next() 호출
       next();
     }
   };
 };
 
 // 캐시 무효화 미들웨어 함수 (특정 URL만 무효화)
-export const invalidateCache = (url?: string) => {
+export const invalidateCache = (targetUrls?: string) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
-      if (url) {
-        // 특정 URL의 캐시만 삭제
-        const cacheKey = `cache:${url}`;
-        await redis.del(cacheKey);
-        console.log(`Invalidated cache for: ${cacheKey}`);
+      // 특정 캐시만 삭제(식별자)
+      const userId = req.auth?.userId || undefined;
+      const locale = req.query.targetLang || "ko";
+
+      if (targetUrls && targetUrls.length > 0) {
+        for (const url of targetUrls) {
+          const cacheKey = `cache:${userId}:${locale}:${url}`;
+          await redis.del(cacheKey);
+          console.log(`Invalidated cache for: ${cacheKey}`);
+        }
       } else {
-        // 현재 요청 URL의 캐시 삭제
-        const cacheKey = `cache:${req.originalUrl}`;
-        await redis.del(cacheKey);
-        console.log(`Invalidated cache for: ${cacheKey}`);
+        // 사용자별 모든 캐시 삭제 (패턴 매칭)
+        const pattern = `cache:${userId}:${locale}:*`;
+        const keys = await redis.keys(pattern);
+        if (keys.length > 0) {
+          await redis.del(...keys);
+          console.log(`Invalidated ${keys.length} cache entries for user: ${userId}`);
+        }
       }
 
       next();
