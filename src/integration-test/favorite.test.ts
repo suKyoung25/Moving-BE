@@ -83,7 +83,7 @@ describe("GET /favorites/me - 내가 찜한 기사님 목록 조회 API 테스�
         email: "favoritetest.mover2@test.com",
         name: "최기사",
         nickName: "이사전문",
-        phone: "0103456789",
+        phone: "0109876543",
         password: "password1!",
         passwordConfirmation: "password1!",
       })
