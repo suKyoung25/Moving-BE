@@ -4,15 +4,8 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-// 전역 테스트 시작 전 데이터베이스 정리
-beforeAll(async () => {
-  // review 테스트에 필요한 데이터만 정리
-  await prisma.review.deleteMany();
-});
-
 // 전역 테스트 종료 후 데이터베이스 정리
 afterAll(async () => {
-  await prisma.review.deleteMany();
   await prisma.$disconnect();
 });
 
@@ -45,7 +38,7 @@ describe("POST /reviews - 리뷰 작성 API 테스트", () => {
       .send({
         email: "reviewtest.mover1@test.com",
         name: "박기",
-        nickName: "이사왕",
+        nickName: "이사왕1",
         phone: "0104444444",
         password: "password1!",
         passwordConfirmation: "password1!",
@@ -315,7 +308,7 @@ describe("GET /reviews/me - 내가 작성한 리뷰 목록 조회 API 테스트"
       .send({
         email: "reviewtest.mover2@test.com",
         name: "최민",
-        nickName: "이사전문",
+        nickName: "이사전문2",
         phone: "0102222222",
         password: "password1!",
         passwordConfirmation: "password1!",
@@ -492,7 +485,7 @@ describe("GET /reviews/mover/:moverId - 특정 기사님 리뷰 목록 조회 AP
       .send({
         email: "reviewtest.mover3@test.com",
         name: "박준",
-        nickName: "이사마스터",
+        nickName: "이사마스터3",
         phone: "0105678901",
         password: "password1!",
         passwordConfirmation: "password1!",
@@ -662,8 +655,8 @@ describe("PATCH /reviews/:reviewId - 리뷰 수정 API 테스트", () => {
       .send({
         email: "reviewtest.mover4@test.com",
         name: "최영",
-        nickName: "이사프로",
-        phone: "0107890123",
+        nickName: "이사프로4",
+        phone: "01078901231",
         password: "password1!",
         passwordConfirmation: "password1!",
       })
@@ -877,7 +870,7 @@ describe("DELETE /reviews/:reviewId - 리뷰 삭제 API 테스트", () => {
       .send({
         email: "reviewtest.mover5@test.com",
         name: "김준",
-        nickName: "이사스타",
+        nickName: "이사스타5",
         phone: "0109012345",
         password: "password1!",
         passwordConfirmation: "password1!",
@@ -1051,7 +1044,7 @@ describe("GET /reviews/writable - 작성 가능한 리뷰 목록 조회 API 테�
         email: "reviewtest.mover6@test.com",
         name: "박준",
         nickName: "이사마스터",
-        phone: "0107890123",
+        phone: "01078901232",
         password: "password1!",
         passwordConfirmation: "password1!",
       })
