@@ -1,5 +1,6 @@
 import moverService from "../services/mover.service";
 import { Request, Response, NextFunction } from "express";
+import { ForbiddenError } from "../types";
 
 async function getMovers(req: Request, res: Response, next: NextFunction) {
   try {
@@ -59,6 +60,11 @@ async function toggleFavoriteMover(req: Request, res: Response, next: NextFuncti
 // 기사님 본인 프로필 조회
 async function getMoverProfile(req: Request, res: Response, next: NextFunction) {
   try {
+    // userType 체크
+    if (req.auth?.userType !== "mover") {
+      throw new ForbiddenError("기사 계정만 접근 가능합니다.");
+    }
+
     const moverId = req.auth!.userId;
     const result = await moverService.getMoverProfile(moverId);
 
