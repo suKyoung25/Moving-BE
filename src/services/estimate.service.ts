@@ -4,6 +4,7 @@ import { PrismaClient, EstimateStatus } from "@prisma/client";
 import notificationService from "./notification.service";
 import { BadRequestError, NotFoundError } from "../types";
 import authClientRepository from "../repositories/authClient.repository";
+import { translateData } from "../utils/translation.util";
 
 interface EstimateInput {
   price?: number;
@@ -16,7 +17,7 @@ interface EstimateInput {
 const prisma = new PrismaClient();
 
 // client 대기 중인 견적서 조회
-async function getPendingEstimates(clientId: string, offset = 0, limit = 6) {
+async function getPendingEstimates(clientId: string, offset = 0, limit = 6, targetLang?: string) {
   const { estimates, totalCount } = await estimateRepository.findPendingEstimatesByClientId(
     clientId,
     offset,
@@ -59,10 +60,21 @@ async function getPendingEstimates(clientId: string, offset = 0, limit = 6) {
     }),
   );
 
-  return {
+  const result = {
     data: results,
     totalCount,
   };
+
+  // 번역이 필요한 경우 번역 수행
+  if (targetLang) {
+    return (await translateData(
+      result,
+      ["data.estimate.comment", "data.request.fromAddress", "data.request.toAddress"],
+      targetLang,
+    )) as typeof result;
+  }
+
+  return result;
 }
 
 // 견적 보내기 (기사)
@@ -125,13 +137,24 @@ async function rejectEstimate({ comment, moverId, clientId, requestId }: Estimat
 }
 
 // 보낸 견적 조회
-async function getPaginatedSentEstimates(moverId: string, page: number) {
-  return estimateRepository.getPaginatedSentEstimates(moverId, page);
+async function getPaginatedSentEstimates(moverId: string, page: number, targetLang?: string) {
+  const result = await estimateRepository.getPaginatedSentEstimates(moverId, page);
+
+  // 번역이 필요한 경우 번역 수행
+  if (targetLang) {
+    return (await translateData(
+      result,
+      ["data.comment", "data.request.fromAddress", "data.request.toAddress"],
+      targetLang,
+    )) as typeof result;
+  }
+
+  return result;
 }
 
 // 보낸 견적 상세 조회
-async function findSentEstimateById(moverId: string, estimateId: string) {
-  return prisma.estimate.findFirst({
+async function findSentEstimateById(moverId: string, estimateId: string, targetLang?: string) {
+  const result = await prisma.estimate.findFirst({
     where: {
       id: estimateId,
       moverId,
@@ -163,11 +186,33 @@ async function findSentEstimateById(moverId: string, estimateId: string) {
       },
     },
   });
+
+  // 번역이 필요한 경우 번역 수행
+  if (targetLang && result) {
+    return (await translateData(
+      result,
+      ["request.fromAddress", "request.toAddress"],
+      targetLang,
+    )) as typeof result;
+  }
+
+  return result;
 }
 
 // 반려한 견적 조회
-async function getRejectedEstimates(moverId: string, page: number) {
-  return await estimateRepository.getRejectedEstimates(moverId, page);
+async function getRejectedEstimates(moverId: string, page: number, targetLang?: string) {
+  const result = await estimateRepository.getRejectedEstimates(moverId, page);
+
+  // 번역이 필요한 경우 번역 수행
+  if (targetLang) {
+    return (await translateData(
+      result,
+      ["data.comment", "data.request.fromAddress", "data.request.toAddress"],
+      targetLang,
+    )) as typeof result;
+  }
+
+  return result;
 }
 
 // client 받은 견적 조회
@@ -176,6 +221,7 @@ async function getReceivedEstimates(
   page: number,
   limit: number,
   category: "all" | "confirmed",
+  targetLang?: string,
 ) {
   const { estimates, totalCount } = await estimateRepository.findReceivedEstimatesByClientId(
     clientId,
@@ -219,7 +265,18 @@ async function getReceivedEstimates(
     }),
   );
 
-  return { data, totalCount };
+  const result = { data, totalCount };
+
+  // 번역이 필요한 경우 번역 수행
+  if (targetLang) {
+    return (await translateData(
+      result,
+      ["data.estimate.comment", "data.request.fromAddress", "data.request.toAddress"],
+      targetLang,
+    )) as typeof result;
+  }
+
+  return result;
 }
 
 // client 견적 확정

@@ -5,15 +5,16 @@ import { NextFunction, Request, Response } from "express";
 async function getPendingEstimates(req: Request, res: Response, next: NextFunction) {
   try {
     const clientId = req.auth!.userId;
+    const targetLang = typeof req.query.targetLang === "string" ? req.query.targetLang : undefined;
 
     const offset = parseInt(req.query.offset as string) || 0;
     const limit = parseInt(req.query.limit as string) || 6;
 
-    const data = await estimateService.getPendingEstimates(clientId, offset, limit);
+    const data = await estimateService.getPendingEstimates(clientId, offset, limit, targetLang);
 
     res.status(200).json({
       message: "대기 중인 견적 조회 성공",
-      ...data,
+      ...(data as Record<string, unknown>),
     });
   } catch (e) {
     next(e);
@@ -65,6 +66,7 @@ export async function getSentEstimateDetail(
   try {
     const moverId = req.auth?.userId;
     const estimateId = req.params.id;
+    const targetLang = typeof req.query.targetLang === "string" ? req.query.targetLang : undefined;
 
     if (!moverId || !estimateId) {
       res.status(400).json({
@@ -73,7 +75,7 @@ export async function getSentEstimateDetail(
       return;
     }
 
-    const estimate = await estimateService.findSentEstimateById(moverId, estimateId);
+    const estimate = await estimateService.findSentEstimateById(moverId, estimateId, targetLang);
 
     if (!estimate) {
       res.status(404).json({
@@ -128,6 +130,7 @@ async function getSentEstimates(req: Request, res: Response, next: NextFunction)
   try {
     const moverId = req.auth?.userId;
     const page = parseInt(req.query.page as string) || 1;
+    const targetLang = typeof req.query.targetLang === "string" ? req.query.targetLang : undefined;
 
     if (!moverId) {
       return res.status(401).json({ message: "인증 필요" });
@@ -136,6 +139,7 @@ async function getSentEstimates(req: Request, res: Response, next: NextFunction)
     const { totalCount, totalPages, estimates } = await estimateService.getPaginatedSentEstimates(
       moverId,
       page,
+      targetLang,
     );
 
     res.status(200).json({

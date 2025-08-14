@@ -4,9 +4,10 @@ import estimateRepository from "../repositories/estimate.repository";
 import reviewRepository from "../repositories/review.repository";
 import { BadRequestError, ForbiddenError, NotFoundError, ValidationError } from "../types";
 import { Client, Review } from "@prisma/client";
+import { translateData } from "../utils/translation.util";
 
 // 내가 작성한 리뷰 목록 (페이징 포함)
-async function getMyReviews(clientId: Client["id"], page = 1, limit = 6) {
+async function getMyReviews(clientId: Client["id"], page = 1, limit = 6, targetLang?: string) {
   if (page < 1) page = 1;
   if (limit < 1) limit = 6;
 
@@ -30,7 +31,7 @@ async function getMyReviews(clientId: Client["id"], page = 1, limit = 6) {
       e.estimate.request.designatedRequests.some((dr) => dr.moverId === e.moverId),
   }));
 
-  return {
+  const result = {
     reviews: mappedReviews,
     total,
     pagination: {
@@ -39,9 +40,16 @@ async function getMyReviews(clientId: Client["id"], page = 1, limit = 6) {
       totalPages: Math.ceil(total / limit),
     },
   };
+
+  // 번역이 필요한 경우 번역 수행
+  if (targetLang) {
+    return await translateData(result, ["reviews.content"], targetLang) as typeof result;
+  }
+
+  return result;
 }
 
-async function getMoverReviews(moverId: string, page = 1, limit = 6) {
+async function getMoverReviews(moverId: string, page = 1, limit = 6, targetLang?: string) {
   if (page < 1) page = 1;
   if (limit < 1) limit = 6;
 
@@ -64,7 +72,7 @@ async function getMoverReviews(moverId: string, page = 1, limit = 6) {
       e.estimate.request.designatedRequests.some((dr) => dr.moverId === moverId),
   }));
 
-  return {
+  const result = {
     reviews: mappedReviews,
     total,
     pagination: {
@@ -73,6 +81,13 @@ async function getMoverReviews(moverId: string, page = 1, limit = 6) {
       totalPages: Math.ceil(total / limit),
     },
   };
+
+  // 번역이 필요한 경우 번역 수행
+  if (targetLang) {
+    return await translateData(result, ["reviews.content"], targetLang) as typeof result;
+  }
+
+  return result;
 }
 
 // 리뷰 작성

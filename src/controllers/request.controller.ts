@@ -13,7 +13,8 @@ import { NextFunction, Request, Response } from "express";
 async function getDraft(req: Request, res: Response, next: NextFunction) {
   try {
     const clientId = req.auth!.userId;
-    const draft = await requestService.getDraft(clientId);
+    const targetLang = typeof req.query.targetLang === "string" ? req.query.targetLang : undefined;
+    const draft = await requestService.getDraft(clientId, targetLang);
     res.status(200).json({ message: "견적 요청 중간 상태 조회 성공", data: draft });
   } catch (err) {
     next(err);
@@ -40,7 +41,8 @@ async function saveDraft(req: Request<{}, {}, RequestDraftDto>, res: Response, n
 // 견적 요청 상세 조회
 async function getRequest(req: Request, res: Response, next: NextFunction) {
   try {
-    const request = await requestService.getRequest(req.params.id);
+    const targetLang = typeof req.query.targetLang === "string" ? req.query.targetLang : undefined;
+    const request = await requestService.getRequest(req.params.id, targetLang);
     res.status(200).json({ message: "견적 요청 조회 성공", data: request });
   } catch (err) {
     next(err);
@@ -52,13 +54,17 @@ async function getRequests(req: Request, res: Response, next: NextFunction) {
   try {
     const clientId = req.auth!.userId;
     const { limit, cursor, sort } = req.query;
+    const targetLang = typeof req.query.targetLang === "string" ? req.query.targetLang : undefined;
 
-    const data = await requestService.getRequests({
-      clientId,
-      limit: Number(limit),
-      cursor: cursor as string,
-      sort: sort as "asc" | "desc",
-    });
+    const data = await requestService.getRequests(
+      {
+        clientId,
+        limit: Number(limit),
+        cursor: cursor as string,
+        sort: sort as "asc" | "desc",
+      },
+      targetLang,
+    );
     res.status(200).json({ message: "보낸 견적 요청 목록 조회 성공", ...data });
   } catch (err) {
     next(err);

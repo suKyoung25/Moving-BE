@@ -1,20 +1,32 @@
 import CommunityRepository from "../repositories/Community.repository";
 import { CreateCommunityData, CreateReplyData } from "../types/Community.type";
+import { translateData } from "../utils/translation.util";
 
-async function getAllCommunity(offset: number, limit: number, search?: string) {
+async function getAllCommunity(offset: number, limit: number, search?: string, targetLang?: string) {
   try {
     const communities = await CommunityRepository.findAllCommunity(offset, limit, search);
-    return {
+    const result = {
       success: true,
       data: communities,
     };
+
+    // 번역이 필요한 경우 번역 수행
+    if (targetLang) {
+      return await translateData(result, [
+        "data.communities.content",
+        "data.communities.title",
+        "data.communities.replies.content"
+      ], targetLang) as typeof result;
+    }
+
+    return result;
   } catch (e) {
     console.log(e);
     throw new Error("커뮤니티 목록 조회 실패");
   }
 }
 
-async function getCommunity(id: string) {
+async function getCommunity(id: string, targetLang?: string) {
   try {
     const community = await CommunityRepository.findByIdWithDetails(id);
 
@@ -25,10 +37,17 @@ async function getCommunity(id: string) {
       };
     }
 
-    return {
+    const result = {
       success: true,
       data: community,
     };
+
+    // 번역이 필요한 경우 번역 수행
+    if (targetLang) {
+      return await translateData(result, ["data.content", "data.title"], targetLang) as typeof result;
+    }
+
+    return result;
   } catch (e) {
     console.log(e);
     throw new Error("게시글을 불러올 수 없습니다.");

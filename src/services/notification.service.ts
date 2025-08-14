@@ -13,6 +13,7 @@ import {
 import { parseRegionKeywords } from "../utils/region.util";
 import { sendNotificationTo } from "../utils/sse.helper";
 import { Estimate, NotificationType } from "@prisma/client";
+import { translateData } from "../utils/translation.util";
 
 // 알림 전송 + 저장 함수
 async function sendAndSaveNotification({
@@ -28,8 +29,15 @@ async function sendAndSaveNotification({
 }
 
 // 알림 목록 조회
-async function getNotifications(userId: string, cursor?: string, limit?: number) {
-  return await notificationRepository.getNotifications({ userId, cursor, limit });
+async function getNotifications(userId: string, cursor?: string, limit?: number, targetLang?: string) {
+  const result = await notificationRepository.getNotifications({ userId, cursor, limit });
+  
+  // 번역이 필요한 경우 번역 수행
+  if (targetLang) {
+    return await translateData(result, ["notifications.content"], targetLang) as typeof result;
+  }
+  
+  return result;
 }
 
 // 알림 읽기
