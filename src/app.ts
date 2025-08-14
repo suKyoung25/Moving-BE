@@ -22,7 +22,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 import translationRouter from "./routers/translation.router";
 import communityRouter from "./routers/community.router";
-
+import * as Sentry from "@sentry/node";
 const app = express();
 
 // trust proxy 설정 (쿠키 보안 관련: production 시 필요)
@@ -58,6 +58,9 @@ app.use("/notifications", verifyAccessToken, notificationRouter);
 app.use("/images", verifyAccessToken, imageRouter);
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(specs));
 app.use("/api/translation", translationRouter);
+
+// 에러 보고
+Sentry.setupExpressErrorHandler(app);
 
 // 에러 핸들러
 app.use(errorHandler);

@@ -16,7 +16,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - run: npm ci
+      - run: npm i
       - run: npm run build
 
   Deploy:
@@ -32,7 +32,7 @@ jobs:
           node-version: "20"
 
       - name: 의존성 설치
-        run: npm ci
+        run: npm i
 
       - name: 소스 압축하기
         run: tar -czvf project.tar.gz src package.json package-lock.json tsconfig.json prisma
@@ -57,7 +57,7 @@ jobs:
             cd /home/ec2-user/6th-Moving-4Team-BE
             tar -xvf project.tar.gz
             rm -f project.tar.gz
-            npm ci
+            npm i
             npm run build
             npx prisma generate
             npx prisma migrate deploy

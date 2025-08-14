@@ -18,6 +18,7 @@ async function getMyReviews(clientId: Client["id"], page = 1, limit = 6) {
     id: e.id,
     rating: e.rating,
     content: e.content,
+    images: e.images,
     createdAt: e.createdAt,
     moverNickName: e.mover.nickName,
     moverProfileImage: e.mover.profileImage,
@@ -52,6 +53,7 @@ async function getMoverReviews(moverId: string, page = 1, limit = 6) {
     id: e.id,
     rating: e.rating,
     content: e.content,
+    images: e.images,
     createdAt: e.createdAt,
     clientName: e.client.name,
     price: e.estimate.price,
@@ -104,7 +106,7 @@ async function createReview(data: CreateReviewDto, clientId: Client["id"]) {
 async function updateReview(
   reviewId: Review["id"],
   clientId: Client["id"],
-  data: Partial<{ rating: Review["rating"]; content: Review["content"] }>,
+  data: Partial<{ rating: Review["rating"]; content: Review["content"]; images: Review["images"] }>,
 ) {
   if (!reviewId) throw new BadRequestError("reviewId가 필요합니다.");
 

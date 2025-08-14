@@ -3,6 +3,7 @@ import "./authClient.test";
 import "./authMover.test";
 import "./favorite.test";
 import "./review.test";
+import "./translation.test";
 import prisma from "../configs/prisma.config";
 
 afterAll(async () => {
