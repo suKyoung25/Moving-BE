@@ -13,6 +13,8 @@ async function getMovers(req: Request, res: Response, next: NextFunction) {
       sortBy = "mostReviewed",
     } = req.query;
 
+    const targetLang = typeof req.query.targetLang === "string" ? req.query.targetLang : undefined;
+
     const params = {
       page: parseInt(page as string, 10),
       limit: parseInt(limit as string, 10),
@@ -22,7 +24,7 @@ async function getMovers(req: Request, res: Response, next: NextFunction) {
       sortBy: sortBy as string,
     };
 
-    const result = await moverService.getMovers(req.auth?.userId, params);
+    const result = await moverService.getMovers(req.auth?.userId, params, targetLang);
     res.status(200).json(result);
   } catch (error) {
     next(error);
@@ -31,7 +33,8 @@ async function getMovers(req: Request, res: Response, next: NextFunction) {
 
 async function getMoverDetail(req: Request, res: Response, next: NextFunction) {
   try {
-    const result = await moverService.getMoverDetail(req.params.moverId, req.auth?.userId);
+    const targetLang = typeof req.query.targetLang === "string" ? req.query.targetLang : undefined;
+    const result = await moverService.getMoverDetail(req.params.moverId, req.auth?.userId, targetLang);
     res.status(200).json(result);
   } catch (error) {
     next(error);
@@ -66,7 +69,8 @@ async function getMoverProfile(req: Request, res: Response, next: NextFunction) 
     }
 
     const moverId = req.auth!.userId;
-    const result = await moverService.getMoverProfile(moverId);
+    const targetLang = typeof req.query.targetLang === "string" ? req.query.targetLang : undefined;
+    const result = await moverService.getMoverProfile(moverId, targetLang);
 
     res.status(200).json({
       message: "기사님 프로필 조회 성공",

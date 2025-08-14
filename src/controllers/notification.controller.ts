@@ -7,7 +7,8 @@ async function getNotifications(req: Request, res: Response, next: NextFunction)
   try {
     const userId = req.auth!.userId;
     const { cursor, limit } = req.query as { cursor?: string; limit?: string };
-    const list = await notificationService.getNotifications(userId, cursor, Number(limit));
+    const targetLang = typeof req.query.targetLang === "string" ? req.query.targetLang : undefined;
+    const list = await notificationService.getNotifications(userId, cursor, Number(limit), targetLang);
 
     res.json({
       message: "알림 조회 성공",

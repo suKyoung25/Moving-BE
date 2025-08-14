@@ -1,6 +1,5 @@
 import notificationController from "../controllers/notification.controller";
 import { Router } from "express";
-import { translationMiddleware } from "../middlewares/translation.middleware";
 
 const notificationRouter = Router();
 
@@ -10,7 +9,6 @@ notificationRouter.get("/stream", notificationController.sendNotification);
 // 알림 조회
 notificationRouter.get(
   "/",
-  translationMiddleware(["notifications.content"]),
   notificationController.getNotifications,
 );
 
