@@ -43,7 +43,7 @@ async function getMyReviews(clientId: Client["id"], page = 1, limit = 6, targetL
 
   // 번역이 필요한 경우 번역 수행
   if (targetLang) {
-    return await translateData(result, ["reviews.content"], targetLang) as typeof result;
+    return (await translateData(result, ["reviews.content"], targetLang)) as typeof result;
   }
 
   return result;
@@ -84,7 +84,7 @@ async function getMoverReviews(moverId: string, page = 1, limit = 6, targetLang?
 
   // 번역이 필요한 경우 번역 수행
   if (targetLang) {
-    return await translateData(result, ["reviews.content"], targetLang) as typeof result;
+    return (await translateData(result, ["reviews.content"], targetLang)) as typeof result;
   }
 
   return result;

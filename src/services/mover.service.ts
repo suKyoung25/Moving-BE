@@ -23,7 +23,7 @@ async function getMovers(clientId?: string, params: GetMoversParams = {}, target
 
   // 번역이 필요한 경우 번역 수행
   if (targetLang) {
-    return await translateData(result, ["movers.introduction"], targetLang) as typeof result;
+    return (await translateData(result, ["movers.introduction"], targetLang)) as typeof result;
   }
 
   return result;
@@ -32,12 +32,16 @@ async function getMovers(clientId?: string, params: GetMoversParams = {}, target
 // 기사님 상세 조회
 async function getMoverDetail(moverId: string, clientId?: string, targetLang?: string) {
   if (!moverId) throw new BadRequestError("moverId가 필요합니다.");
-  
+
   const result = await moverRepository.fetchMoverDetail(moverId, clientId);
 
   // 번역이 필요한 경우 번역 수행
   if (targetLang) {
-    return await translateData(result, ["introduction", "description"], targetLang) as typeof result;
+    return (await translateData(
+      result,
+      ["introduction", "description"],
+      targetLang,
+    )) as typeof result;
   }
 
   return result;
@@ -63,7 +67,11 @@ async function getMoverProfile(moverId: string, targetLang?: string) {
 
   // 번역이 필요한 경우 번역 수행
   if (targetLang) {
-    return await translateData(result, ["data.introduction", "data.description"], targetLang) as typeof result;
+    return (await translateData(
+      result,
+      ["data.introduction", "data.description"],
+      targetLang,
+    )) as typeof result;
   }
 
   return result;

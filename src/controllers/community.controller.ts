@@ -114,8 +114,9 @@ async function getRepliesByCommunityId(req: Request, res: Response, next: NextFu
       res.status(400).json({ success: false, message: "게시글 ID가 필요합니다." });
       return;
     }
+    const targetLang = typeof req.query.targetLang === "string" ? req.query.targetLang : undefined;
 
-    const replies = await communityService.getRepliesByCommunityId(communityId);
+    const replies = await communityService.getRepliesByCommunityId(communityId, targetLang);
 
     res.status(200).json(replies);
   } catch (e) {
