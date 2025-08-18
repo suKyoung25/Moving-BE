@@ -10,7 +10,7 @@ function getPaginationParams(req: Request) {
   return { page, limit };
 }
 
-// 리뷰 목록 조회 (내가 작성한 리뷰 + 특정 기사님 리뷰)
+// 리뷰 목록 조회 함수 개선
 async function getReviews(req: Request, res: Response, next: NextFunction) {
   try {
     const { moverId } = req.params;
@@ -21,18 +21,27 @@ async function getReviews(req: Request, res: Response, next: NextFunction) {
     let message;
 
     if (moverId) {
-      // 특정 기사님 리뷰 조회 (공개용)
+      // moverId 유효성 검사 추가
+      if (!moverId.trim()) {
+        return res.status(400).json({ message: "유효하지 않은 기사 ID입니다." });
+      }
+
       result = await reviewService.getMoverReviews(moverId, page, limit, targetLang);
       message = "기사님 리뷰 목록 조회 성공";
     } else {
-      // 내가 작성한 리뷰 조회 (기본값)
       const clientId = req.auth!.userId;
       result = await reviewService.getMyReviews(clientId, page, limit, targetLang);
       message = "내가 작성한 리뷰 목록 조회 성공";
     }
 
-    res.status(200).json({ message, data: result });
+    // 응답 구조 일관성 확보
+    res.status(200).json({
+      message,
+      data: result,
+      success: true, // 성공 여부 플래그 추가
+    });
   } catch (error) {
+    console.error("getReviews Error:", error); // 서버 로그
     next(error);
   }
 }

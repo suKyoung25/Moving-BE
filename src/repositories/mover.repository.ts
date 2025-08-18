@@ -44,8 +44,6 @@ async function fetchMovers(
   params: GetMoversParams = {},
 ): Promise<GetMoversResponse> {
   try {
-    console.log("🔍 Repository fetchMovers 시작");
-    console.log("📝 파라미터:", params);
     const {
       page = 1,
       limit = 10,
@@ -121,7 +119,6 @@ async function fetchMovers(
 
     // 위치 기반 검색을 위해 더 많은 데이터를 가져온 후 필터링
     const fetchLimit = latitude !== undefined && longitude !== undefined ? limit * 3 : limit;
-    console.log("🔄 Prisma 쿼리 실행 중...");
     // 수정: 지정견적 정보 포함하여 데이터 조회
     const movers = await prisma.mover.findMany({
       where: whereCondition,
@@ -219,7 +216,6 @@ async function fetchMovers(
       // 페이지네이션 적용
       processedMovers = processedMovers.slice(skip, skip + limit);
     }
-    console.log("✅ Prisma 쿼리 성공");
     const hasMore =
       latitude !== undefined && longitude !== undefined
         ? processedMovers.length === limit
