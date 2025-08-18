@@ -13,9 +13,10 @@
     "cache": "dotenv -- bash -c 'ssh -i \"$SSH_KEY_PATH\" -L 6379:$REDIS_HOST:6379 $EC2_USER@$EC2_HOST'",
     "test": "jest",
     "test:watch": "NODE_ENV=test jest --watchAll",
-    "test:unit": "NODE_ENV=test DATABASE_URL=postgresql://postgres:password@localhost:5432/testdb jest --testPathIgnorePatterns=src/integration-test",
+    "test:unit": "NODE_ENV=test DATABASE_URL=postgresql://postgres:password@localhost:5433/testdb jest --testPathIgnorePatterns=src/integration-test",
     "test:integration": "NODE_ENV=test DATABASE_URL=postgresql://postgres:password@localhost:5433/testdb jest src/integration-test/index.test.ts",
-    "coverage": "npm test -- --coverage"
+    "coverage": "NODE_ENV=test npm test -- --coverage",
+    "postinstall": "prisma generate"
   },
   "author": "codeit-4team",
   "license": "ISC",
