@@ -8,15 +8,38 @@ interface GetMoversParams {
   area?: string;
   serviceType?: string;
   sortBy?: string;
+  // 위치 기반 검색 파라미터
+  latitude?: number;
+  longitude?: number;
+  radius?: number;
 }
 
 // 전체 기사님 리스트 조회
 async function getMovers(clientId?: string, params: GetMoversParams = {}) {
   // 페이지네이션 파라미터 검증
-  const { page = 1, limit = 10 } = params;
+  const { page = 1, limit = 10, latitude, longitude, radius } = params;
 
   if (page < 1) throw new BadRequestError("페이지는 1 이상이어야 합니다.");
   if (limit < 1 || limit > 100) throw new BadRequestError("limit은 1-100 사이여야 합니다.");
+
+  // 위치 기반 검색 파라미터 검증
+  if (latitude !== undefined || longitude !== undefined) {
+    if (latitude === undefined || longitude === undefined) {
+      throw new BadRequestError("위도와 경도는 함께 제공되어야 합니다.");
+    }
+
+    if (latitude < -90 || latitude > 90) {
+      throw new BadRequestError("위도는 -90도에서 90도 사이여야 합니다.");
+    }
+
+    if (longitude < -180 || longitude > 180) {
+      throw new BadRequestError("경도는 -180도에서 180도 사이여야 합니다.");
+    }
+  }
+
+  if (radius !== undefined && (radius < 1 || radius > 100)) {
+    throw new BadRequestError("검색 반경은 1km에서 100km 사이여야 합니다.");
+  }
 
   return moverRepository.fetchMovers(clientId, params);
 }

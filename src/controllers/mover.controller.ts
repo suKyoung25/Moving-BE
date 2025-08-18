@@ -11,6 +11,9 @@ async function getMovers(req: Request, res: Response, next: NextFunction) {
       area,
       serviceType,
       sortBy = "mostReviewed",
+      latitude,
+      longitude,
+      radius = "10",
     } = req.query;
 
     const params = {
@@ -20,11 +23,48 @@ async function getMovers(req: Request, res: Response, next: NextFunction) {
       area: area as string,
       serviceType: serviceType as string,
       sortBy: sortBy as string,
+      // 위치 기반 검색 파라미터 처리
+      latitude: latitude ? parseFloat(latitude as string) : undefined,
+      longitude: longitude ? parseFloat(longitude as string) : undefined,
+      radius: parseInt(radius as string, 10),
     };
+
+    // 위치 파라미터 유효성 검사
+    if (params.latitude !== undefined && isNaN(params.latitude)) {
+      return res.status(400).json({ message: "유효하지 않은 위도 값입니다." });
+    }
+
+    if (params.longitude !== undefined && isNaN(params.longitude)) {
+      return res.status(400).json({ message: "유효하지 않은 경도 값입니다." });
+    }
+
+    if (isNaN(params.radius)) {
+      return res.status(400).json({ message: "유효하지 않은 반경 값입니다." });
+    }
+
+    console.log("검색 파라미터:", params);
 
     const result = await moverService.getMovers(req.auth?.userId, params);
     res.status(200).json(result);
   } catch (error) {
+    console.error("❌❌❌ getMovers 에러 발생 ❌❌❌");
+
+    // TypeScript 안전한 에러 처리
+    if (error instanceof Error) {
+      console.error("에러 타입:", error.constructor.name);
+      console.error("에러 메시지:", error.message);
+      console.error("에러 스택:", error.stack);
+    } else {
+      console.error("알 수 없는 에러:", error);
+    }
+
+    // Prisma 에러인 경우 (any로 타입 단언)
+    const prismaError = error as any;
+    if (prismaError?.code) {
+      console.error("Prisma 에러 코드:", prismaError.code);
+      console.error("Prisma 메타:", prismaError.meta);
+    }
+
     next(error);
   }
 }
@@ -34,6 +74,7 @@ async function getMoverDetail(req: Request, res: Response, next: NextFunction) {
     const result = await moverService.getMoverDetail(req.params.moverId, req.auth?.userId);
     res.status(200).json(result);
   } catch (error) {
+    console.error("❌ getMoverDetail 에러:", error);
     next(error);
   }
 }
@@ -52,7 +93,7 @@ async function toggleFavoriteMover(req: Request, res: Response, next: NextFuncti
       favoriteCount: result.favoriteCount,
     });
   } catch (error) {
-    console.error("찜 토글 오류:", error);
+    console.error("❌ 찜 토글 오류:", error);
     next(error);
   }
 }
@@ -73,6 +114,7 @@ async function getMoverProfile(req: Request, res: Response, next: NextFunction) 
       data: result,
     });
   } catch (error) {
+    console.error("❌ getMoverProfile 에러:", error);
     next(error);
   }
 }

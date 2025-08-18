@@ -2,7 +2,7 @@ import { ErrorMessage } from "../constants/ErrorMessage";
 import { MoveType } from "@prisma/client";
 import z from "zod";
 
-// 기사님 프로필 관련 사용
+// 기사님 프로필 관련 사용 - 위치 정보 추가
 export const MoverProfileSchema = z.object({
   image: z.string().optional(),
   nickName: z.string().min(1, "별명을 입력해주세요."),
@@ -15,6 +15,11 @@ export const MoverProfileSchema = z.object({
     })
     .min(1, "* 1개 이상 선택해주세요."),
   serviceArea: z.array(z.string().min(1)).min(1, "* 1개 이상 선택해주세요."),
+
+  // 🆕 위치 정보 필드 추가
+  latitude: z.number().min(-90).max(90).optional(),
+  longitude: z.number().min(-180).max(180).optional(),
+  businessAddress: z.string().optional(),
 });
 
 export type MoverProfileDto = z.infer<typeof MoverProfileSchema>;

@@ -1,3 +1,4 @@
+//client.type.ts
 import { MoveType } from "@prisma/client";
 
 // 프로필 등록
