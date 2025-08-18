@@ -16,6 +16,8 @@ async function getMovers(req: Request, res: Response, next: NextFunction) {
       radius = "10",
     } = req.query;
 
+    const targetLang = typeof req.query.targetLang === "string" ? req.query.targetLang : undefined;
+
     const params = {
       page: parseInt(page as string, 10),
       limit: parseInt(limit as string, 10),
@@ -29,22 +31,8 @@ async function getMovers(req: Request, res: Response, next: NextFunction) {
       radius: parseInt(radius as string, 10),
     };
 
-    // 위치 파라미터 유효성 검사
-    if (params.latitude !== undefined && isNaN(params.latitude)) {
-      return res.status(400).json({ message: "유효하지 않은 위도 값입니다." });
-    }
+    const result = await moverService.getMovers(req.auth?.userId, params, targetLang);
 
-    if (params.longitude !== undefined && isNaN(params.longitude)) {
-      return res.status(400).json({ message: "유효하지 않은 경도 값입니다." });
-    }
-
-    if (isNaN(params.radius)) {
-      return res.status(400).json({ message: "유효하지 않은 반경 값입니다." });
-    }
-
-    console.log("검색 파라미터:", params);
-
-    const result = await moverService.getMovers(req.auth?.userId, params);
     res.status(200).json(result);
   } catch (error) {
     console.error("❌❌❌ getMovers 에러 발생 ❌❌❌");
@@ -71,7 +59,12 @@ async function getMovers(req: Request, res: Response, next: NextFunction) {
 
 async function getMoverDetail(req: Request, res: Response, next: NextFunction) {
   try {
-    const result = await moverService.getMoverDetail(req.params.moverId, req.auth?.userId);
+    const targetLang = typeof req.query.targetLang === "string" ? req.query.targetLang : undefined;
+    const result = await moverService.getMoverDetail(
+      req.params.moverId,
+      req.auth?.userId,
+      targetLang,
+    );
     res.status(200).json(result);
   } catch (error) {
     console.error("❌ getMoverDetail 에러:", error);
@@ -107,7 +100,8 @@ async function getMoverProfile(req: Request, res: Response, next: NextFunction) 
     }
 
     const moverId = req.auth!.userId;
-    const result = await moverService.getMoverProfile(moverId);
+    const targetLang = typeof req.query.targetLang === "string" ? req.query.targetLang : undefined;
+    const result = await moverService.getMoverProfile(moverId, targetLang);
 
     res.status(200).json({
       message: "기사님 프로필 조회 성공",

@@ -1,5 +1,5 @@
-import { translate } from "./translation.controller";
 import translationService from "../services/translation.service";
+import translationController from "./translation.controller";
 
 // translationService 모킹
 jest.mock("../services/translation.service");
@@ -11,6 +11,10 @@ function createMockRes() {
   return { status, json } as any;
 }
 
+function createMockNext() {
+  return jest.fn();
+}
+
 describe("translation.controller", () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -20,10 +24,11 @@ describe("translation.controller", () => {
     // Setup
     const req: any = { body: { text: "Hello", targetLang: "ko" } };
     const res = createMockRes();
+    const next = createMockNext();
     mockedTranslationService.translateText.mockResolvedValueOnce("안녕");
 
     // Exercise
-    await translate(req, res);
+    await translationController.translate(req, res, next);
 
     // Assertion
     expect(mockedTranslationService.translateText).toHaveBeenCalledWith("Hello", "ko");
@@ -35,9 +40,10 @@ describe("translation.controller", () => {
     // Setup
     const req: any = { body: {} };
     const res = createMockRes();
+    const next = createMockNext();
 
     // Exercise
-    await translate(req, res);
+    await translationController.translate(req, res, next);
 
     // Assertion
     expect(res.status).toHaveBeenCalledWith(400);
@@ -49,10 +55,11 @@ describe("translation.controller", () => {
     // Setup
     const req: any = { body: { text: "Hello", targetLang: "ko" } };
     const res = createMockRes();
+    const next = createMockNext();
     mockedTranslationService.translateText.mockRejectedValueOnce(new Error("DeepL error"));
 
     // Exercise
-    await translate(req, res);
+    await translationController.translate(req, res, next);
 
     // Assertion
     expect(res.status).toHaveBeenCalledWith(500);

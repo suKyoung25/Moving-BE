@@ -2,7 +2,6 @@ import reviewController from "../controllers/review.controller";
 import { CreateReviewSchema, UpdateReviewschema } from "../dtos/review.dto";
 import { validateReq, verifyAccessToken } from "../middlewares/auth.middleware";
 import { Router } from "express";
-import { translationMiddleware } from "../middlewares/translation.middleware";
 
 const reviewRouter = Router();
 
@@ -10,7 +9,6 @@ const reviewRouter = Router();
 reviewRouter.get(
   "/me",
   verifyAccessToken,
-  translationMiddleware(["data.reviews.content"]),
   reviewController.getReviews,
 );
 
@@ -18,14 +16,12 @@ reviewRouter.get(
 reviewRouter.get(
   "/mover",
   verifyAccessToken,
-  translationMiddleware(["data.reviews.content"]),
   reviewController.getMoverOwnReviews,
 );
 
 // 특정 기사님에게 달린 리뷰 목록 (공개용)
 reviewRouter.get(
   "/mover/:moverId",
-  translationMiddleware(["data.reviews.content"]),
   reviewController.getReviews,
 );
 

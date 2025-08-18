@@ -7,8 +7,9 @@ async function getAllCommunity(req: Request, res: Response, next: NextFunction) 
     const offset = parseInt(req.query.offset as string) || 1;
     const limit = parseInt(req.query.limit as string) || 6;
     const search = req.query.search as string;
+    const targetLang = typeof req.query.targetLang === "string" ? req.query.targetLang : undefined;
 
-    const result = await communityService.getAllCommunity(offset, limit, search);
+    const result = await communityService.getAllCommunity(offset, limit, search, targetLang);
 
     res.status(200).json(result);
   } catch (e) {
@@ -20,6 +21,7 @@ async function getAllCommunity(req: Request, res: Response, next: NextFunction) 
 async function getCommunityById(req: Request, res: Response, next: NextFunction) {
   try {
     const { id } = req.params;
+    const targetLang = typeof req.query.targetLang === "string" ? req.query.targetLang : undefined;
 
     if (!id) {
       return res.status(400).json({
@@ -28,7 +30,7 @@ async function getCommunityById(req: Request, res: Response, next: NextFunction)
       });
     }
 
-    const result = await communityService.getCommunity(id);
+    const result = await communityService.getCommunity(id, targetLang);
 
     if (!result.success) {
       return res.status(404).json(result);
@@ -112,8 +114,9 @@ async function getRepliesByCommunityId(req: Request, res: Response, next: NextFu
       res.status(400).json({ success: false, message: "게시글 ID가 필요합니다." });
       return;
     }
+    const targetLang = typeof req.query.targetLang === "string" ? req.query.targetLang : undefined;
 
-    const replies = await communityService.getRepliesByCommunityId(communityId);
+    const replies = await communityService.getRepliesByCommunityId(communityId, targetLang);
 
     res.status(200).json(replies);
   } catch (e) {
