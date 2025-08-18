@@ -138,18 +138,12 @@ async function notifyEstimateConfirmed({
 }
 
 // 견적 반려 알림
-async function notifyEstimateRejcted({
-  userId,
-  moverName,
-  type,
-  targetId,
-  targetUrl,
-}: NotifyConfirmEstimate) {
+async function notifyEstimateRejcted({ userId, moverName, type }: NotifyConfirmEstimate) {
   const content = NotificationTemplate.ESTIMATE_REJECTED.client(moverName!);
 
   if (!content) return;
 
-  await sendAndSaveNotification({ userId, content, type, targetId, targetUrl });
+  await sendAndSaveNotification({ userId, content, type });
 }
 
 // 이사 알림

@@ -129,8 +129,6 @@ async function rejectEstimate({ comment, moverId, clientId, requestId }: Estimat
     userId: clientId,
     moverName: mover.nickName!,
     type: "ESTIMATE_REJECTED",
-    targetId: newEstimate.id,
-    targetUrl: `/my-quotes/client/${newEstimate.id}`,
   });
 
   return newEstimate;
