@@ -2,8 +2,8 @@ import { MoveType, NotificationType } from "@prisma/client";
 
 export interface NotifyInput {
   type: NotificationType;
-  targetId: string;
-  targetUrl: string;
+  targetId?: string;
+  targetUrl?: string;
 }
 
 export interface NotifyNewEstimate extends NotifyInput {
@@ -28,6 +28,6 @@ export interface NotificationPayload {
   userId: string;
   content: string;
   type: NotificationType;
-  targetId: string;
-  targetUrl: string;
+  targetId?: string;
+  targetUrl?: string;
 }
