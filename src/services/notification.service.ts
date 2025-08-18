@@ -29,14 +29,19 @@ async function sendAndSaveNotification({
 }
 
 // 알림 목록 조회
-async function getNotifications(userId: string, cursor?: string, limit?: number, targetLang?: string) {
+async function getNotifications(
+  userId: string,
+  cursor?: string,
+  limit?: number,
+  targetLang?: string,
+) {
   const result = await notificationRepository.getNotifications({ userId, cursor, limit });
-  
+
   // 번역이 필요한 경우 번역 수행
   if (targetLang) {
-    return await translateData(result, ["notifications.content"], targetLang) as typeof result;
+    return (await translateData(result, ["notifications.content"], targetLang)) as typeof result;
   }
-  
+
   return result;
 }
 

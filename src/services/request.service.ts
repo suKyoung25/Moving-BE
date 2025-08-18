@@ -16,12 +16,16 @@ import { translateData } from "../utils/translation.util";
 // 견적 요청 중간 상태 조회
 async function getDraft(clientId: string, targetLang?: string) {
   const result = await requestRepository.getRequestDraftById(clientId);
-  
+
   // 번역이 필요한 경우 번역 수행
   if (targetLang && result) {
-    return await translateData(result, ["data.fromAddress", "data.toAddress"], targetLang) as typeof result;
+    return (await translateData(
+      result,
+      ["data.fromAddress", "data.toAddress"],
+      targetLang,
+    )) as typeof result;
   }
-  
+
   return result;
 }
 
@@ -33,28 +37,35 @@ async function saveDraft(clientId: string, data: Partial<RequestDraft>) {
 // 견적 요청 상세 조회
 async function getRequest(requestId: string, targetLang?: string) {
   const result = await requestRepository.findRequest(requestId);
-  
+
   // 번역이 필요한 경우 번역 수행
   if (targetLang && result) {
-    return await translateData(result, ["data.fromAddress", "data.toAddress"], targetLang) as typeof result;
+    return (await translateData(
+      result,
+      ["data.fromAddress", "data.toAddress"],
+      targetLang,
+    )) as typeof result;
   }
-  
+
   return result;
 }
 
 // 보낸 견적 요청 조회 (일반 유저) {
-async function getRequests({ clientId, limit, cursor, sort }: GetClientRequestsInput, targetLang?: string) {
+async function getRequests(
+  { clientId, limit, cursor, sort }: GetClientRequestsInput,
+  targetLang?: string,
+) {
   const result = await requestRepository.getRequestsByClientId({ clientId, limit, cursor, sort });
-  
+
   // 번역이 필요한 경우 번역 수행
   if (targetLang) {
-    return await translateData(result, [
-      "requests.fromAddress",
-      "requests.toAddress",
-      "requests.estimates.comment"
-    ], targetLang) as typeof result;
+    return (await translateData(
+      result,
+      ["requests.fromAddress", "requests.toAddress", "requests.estimates.comment"],
+      targetLang,
+    )) as typeof result;
   }
-  
+
   return result;
 }
 

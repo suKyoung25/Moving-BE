@@ -2,7 +2,12 @@ import CommunityRepository from "../repositories/Community.repository";
 import { CreateCommunityData, CreateReplyData } from "../types/Community.type";
 import { translateData } from "../utils/translation.util";
 
-async function getAllCommunity(offset: number, limit: number, search?: string, targetLang?: string) {
+async function getAllCommunity(
+  offset: number,
+  limit: number,
+  search?: string,
+  targetLang?: string,
+) {
   try {
     const communities = await CommunityRepository.findAllCommunity(offset, limit, search);
     const result = {
@@ -12,11 +17,11 @@ async function getAllCommunity(offset: number, limit: number, search?: string, t
 
     // 번역이 필요한 경우 번역 수행
     if (targetLang) {
-      return await translateData(result, [
-        "data.communities.content",
-        "data.communities.title",
-        "data.communities.replies.content"
-      ], targetLang) as typeof result;
+      return (await translateData(
+        result,
+        ["data.communities.content", "data.communities.title", "data.communities.replies.content"],
+        targetLang,
+      )) as typeof result;
     }
 
     return result;
@@ -44,7 +49,11 @@ async function getCommunity(id: string, targetLang?: string) {
 
     // 번역이 필요한 경우 번역 수행
     if (targetLang) {
-      return await translateData(result, ["data.content", "data.title"], targetLang) as typeof result;
+      return (await translateData(
+        result,
+        ["data.content", "data.title"],
+        targetLang,
+      )) as typeof result;
     }
 
     return result;
@@ -122,14 +131,25 @@ async function createReply(data: CreateReplyData) {
   }
 }
 
-async function getRepliesByCommunityId(communityId: string) {
+async function getRepliesByCommunityId(communityId: string, targetLang?: string) {
   if (!communityId) {
     return {
       success: false,
       message: "커뮤니티 Id가 필요합니다",
     };
   }
-  return CommunityRepository.findRepliesByCommunityId(communityId);
+  const communities = CommunityRepository.findRepliesByCommunityId(communityId);
+
+  // 번역이 필요한 경우 번역 수행
+  if (targetLang) {
+    return (await translateData(
+      communities,
+      ["data.content", "data.title"],
+      targetLang,
+    )) as typeof communities;
+  }
+
+  return communities;
 }
 
 async function deleteCommunity(id: string, userId: string, userType: "client" | "mover") {
