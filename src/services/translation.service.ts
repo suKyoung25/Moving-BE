@@ -1,8 +1,15 @@
 import * as deepl from "deepl-node";
 import "dotenv/config";
+import { getCachedTranslation, setCachedTranslation } from "../utils/cache.util";
+import { delay } from "../utils/translation.util";
 
 const authKey = process.env.DEEPL_API_KEY!;
 const translator = new deepl.Translator(authKey);
+
+// 번역 설정
+const TRANSLATION_TIMEOUT = 10000; // 10초
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 1000; // 1초
 
 // 정확한 Case 유지된 허용 코드 배열 (DeepL 타입과 동일)
 const allowedCodes: deepl.TargetLanguageCode[] = [
@@ -82,7 +89,19 @@ function normalizeTargetLang(lang: string): deepl.TargetLanguageCode | undefined
 }
 
 /**
- * 텍스트를 지정한 언어로 번역하는 함수
+ * 타임아웃이 있는 Promise 래퍼
+ */
+function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error(`타임아웃: ${timeoutMs}ms`)), timeoutMs),
+    ),
+  ]);
+}
+
+/**
+ * 텍스트를 지정한 언어로 번역하는 함수 (캐싱 및 재시도 로직 포함)
  */
 async function translateText(text: string, targetLang?: string): Promise<string> {
   if (!targetLang) {
@@ -94,8 +113,58 @@ async function translateText(text: string, targetLang?: string): Promise<string>
     throw new Error(`지원하지 않는 targetLang 코드입니다: ${targetLang}`);
   }
 
-  const result = await translator.translateText(text, null, normalizedLang);
-  return result.text;
+  // 캐시에서 먼저 확인
+  const cachedResult = await getCachedTranslation(text, normalizedLang);
+  if (cachedResult) {
+    console.log(`[translateText] 캐시에서 번역 결과 반환: "${text.substring(0, 30)}..."`);
+    return cachedResult;
+  }
+
+  let lastError: Error | null = null;
+
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      const startTime = Date.now();
+
+      const result = await withTimeout(
+        translator.translateText(text, null, normalizedLang),
+        TRANSLATION_TIMEOUT,
+      );
+
+      const duration = Date.now() - startTime;
+
+      // 성공 시 캐시에 저장
+      await setCachedTranslation(text, normalizedLang, result.text);
+
+      // 성공 시 로그
+      if (duration > 5000) {
+        console.warn(
+          `[translateText] 느린 번역 감지: ${duration}ms - "${text.substring(0, 50)}..."`,
+        );
+      } else {
+        console.log(
+          `[translateText] 번역 성공: ${duration}ms - "${text.substring(
+            0,
+            30,
+          )}..." -> "${result.text.substring(0, 30)}..."`,
+        );
+      }
+
+      return result.text;
+    } catch (error) {
+      lastError = error as Error;
+      console.warn(`[translateText] 번역 시도 ${attempt}/${MAX_RETRIES} 실패:`, error);
+
+      if (attempt < MAX_RETRIES) {
+        // 재시도 전 지연
+        await delay(RETRY_DELAY * attempt);
+      }
+    }
+  }
+
+  // 모든 재시도 실패
+  console.error(`[translateText] 모든 번역 시도 실패 (${MAX_RETRIES}회):`, lastError);
+  throw lastError || new Error("번역 실패");
 }
 
 export default { translateText };
