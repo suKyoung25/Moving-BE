@@ -50,58 +50,44 @@ async function getMyReviews(clientId: Client["id"], page = 1, limit = 6, targetL
 }
 
 async function getMoverReviews(moverId: string, page = 1, limit = 6, targetLang?: string) {
-  // 입력값 검증
-  if (!moverId || typeof moverId !== "string") {
-    throw new BadRequestError("유효한 기사 ID가 필요합니다.");
-  }
-
   if (page < 1) page = 1;
   if (limit < 1) limit = 6;
 
   const offset = (page - 1) * limit;
+  const { reviews, total } = await reviewRepository.findReviewsByMoverId(moverId, offset, limit);
 
-  try {
-    const { reviews, total } = await reviewRepository.findReviewsByMoverId(moverId, offset, limit);
+  // 결과 매핑
+  const mappedReviews = reviews.map((e) => ({
+    id: e.id,
+    rating: e.rating,
+    content: e.content,
+    images: e.images,
+    createdAt: e.createdAt,
+    clientName: e.client.name,
+    price: e.estimate.price,
+    moveType: e.estimate.request.moveType,
+    moveDate: e.estimate.request.moveDate,
+    isDesignatedEstimate:
+      Array.isArray(e.estimate.request.designatedRequests) &&
+      e.estimate.request.designatedRequests.some((dr) => dr.moverId === moverId),
+  }));
 
-    // 데이터 검증
-    if (!Array.isArray(reviews)) {
-      throw new Error("리뷰 데이터 형식이 올바르지 않습니다.");
-    }
+  const result = {
+    reviews: mappedReviews,
+    total,
+    pagination: {
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
 
-    const mappedReviews = reviews.map((e) => ({
-      id: e.id,
-      rating: e.rating,
-      content: e.content,
-      images: e.images || [],
-      createdAt: e.createdAt,
-      clientName: e.client?.name || "익명",
-      price: e.estimate?.price || 0,
-      moveType: e.estimate?.request?.moveType || "",
-      moveDate: e.estimate?.request?.moveDate || null,
-      isDesignatedEstimate:
-        Array.isArray(e.estimate?.request?.designatedRequests) &&
-        e.estimate.request.designatedRequests.some((dr) => dr.moverId === moverId),
-    }));
-
-    const result = {
-      reviews: mappedReviews,
-      total,
-      pagination: {
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
-    };
-
-    if (targetLang) {
-      return (await translateData(result, ["reviews.content"], targetLang)) as typeof result;
-    }
-
-    return result;
-  } catch (error) {
-    console.error("getMoverReviews Service Error:", error);
-    throw error;
+  // 번역이 필요한 경우 번역 수행
+  if (targetLang) {
+    return (await translateData(result, ["reviews.content"], targetLang)) as typeof result;
   }
+
+  return result;
 }
 
 // 리뷰 작성

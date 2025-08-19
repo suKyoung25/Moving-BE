@@ -54,11 +54,6 @@ model Mover {
   averageReviewRating Float      @default(0)
   reviewCount         Int        @default(0)
   isProfileCompleted  Boolean    @default(false)
-  
-  // 새로 추가된 위치 정보 필드들
-  latitude            Float?
-  longitude           Float?
-  businessAddress     String?
 
   serviceArea        Region[]
   estimates          Estimate[]
