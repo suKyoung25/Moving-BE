@@ -19,16 +19,7 @@
 > Moving is a smart moving comparison platform that helps users easily compare quotes from multiple movers and choose the most suitable professional for their needs. It simplifies the previously complex and opaque moving quote process, allowing users to quickly find experts who match their desired conditions (moving type, location, schedule, etc.). Additionally, from the mover's perspective, efficient customer matching is possible, providing a transparent transaction environment and convenient service experience.
 >
 > Project Period: 2025.07.01 ~ 2025.08.18 <br />
-> Test Account: <table >
 
-    <tr>
-      <td>id</td>
-      <td>client1@test.com</td>
-    </tr>
-    <tr>
-      <td>pw</td>
-      <td>password1!</td>
-    </tr> </table>
 
 - [Frontend Repository](https://github.com/az0319h/6th-Moving-4Team-FE)
 - [FE Deployment Site](https://moving-web.site/ko)
@@ -412,3 +403,4 @@ const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
 └─ tsconfig.json            # TypeScript configuration
 
 ```
+
