@@ -1,6 +1,6 @@
 import { ErrorMessage } from "../constants/ErrorMessage";
 import { z } from "zod";
-import { emailSchema, nameSchema, phoneSchema } from "./auth.dto";
+import { nameSchema, phoneSchema } from "./auth.dto";
 
 // 개별 스키마
 export const profileImageSchema = z.string().optional();
@@ -14,8 +14,26 @@ export const livingAreaSchema = z
   .min(1, ErrorMessage.NO_REGION)
   .max(5, ErrorMessage.MAX_REGION);
 
-const passwordSchema = z.string().optional();
-const basicPasswordSchema = z.string().min(8, "기존 비밀번호를 입력해주세요.").optional();
+const passwordSchema = z
+  .string()
+  .min(8, ErrorMessage.PASSWORD_LENGTH_LIMIT)
+  .max(16, ErrorMessage.PASSWORD_LENGTH_LIMIT)
+  .regex(
+    /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,16}$/,
+    ErrorMessage.PASSWORD_REGEX,
+  )
+  .optional()
+  .or(z.literal(""));
+const basicPasswordSchema = z
+  .string()
+  .min(8, ErrorMessage.PASSWORD_LENGTH_LIMIT)
+  .max(16, ErrorMessage.PASSWORD_LENGTH_LIMIT)
+  .regex(
+    /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,16}$/,
+    ErrorMessage.PASSWORD_REGEX,
+  )
+  .optional()
+  .or(z.literal(""));
 
 // 프로필 생성/수정을 함수로 분기처리 함
 export function profileClientSchema(mode: "create" | "update") {
