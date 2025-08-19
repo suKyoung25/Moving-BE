@@ -19,16 +19,7 @@
 > Moving 是一个智能搬家比较平台，帮助用户轻松比较多个搬家公司的报价，并选择最适合自己需求的专业人士。它简化了之前复杂且不透明的搬家报价流程，让用户能够快速找到符合期望条件（搬家类型、地区、日程等）的专家。此外，从搬家公司的角度来看，也能实现高效的客户匹配，提供透明的交易环境和便捷的服务体验。
 >
 > 项目期间: 2025.07.01 ~ 2025.08.18 <br />
-> 测试账户: <table >
 
-    <tr>
-      <td>id</td>
-      <td>client1@test.com</td>
-    </tr>
-    <tr>
-      <td>pw</td>
-      <td>password1!</td>
-    </tr> </table>
 
 - [前端仓库](https://github.com/az0319h/6th-Moving-4Team-FE)
 - [前端部署网站](https://moving-web.site/ko)
@@ -412,3 +403,4 @@ const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
 └─ tsconfig.json            # TypeScript配置
 
 ```
+
