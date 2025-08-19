@@ -141,7 +141,7 @@ async function findByIdWithDetails(id: string) {
       },
       mover: {
         select: {
-          name: true,
+          nickName: true,
           profileImage: true,
         },
       },
@@ -162,7 +162,7 @@ async function findByIdWithDetails(id: string) {
     updatedAt: community.updatedAt,
     clientId: community.clientId,
     moverId: community.moverId,
-    userNickname: community.client?.name || community.mover?.name || "익명",
+    userNickname: community.client?.name || community.mover?.nickName || "익명",
     profileImg: community.client?.profileImage || community.mover?.profileImage || null,
     replyCount: community._count.replies,
   };

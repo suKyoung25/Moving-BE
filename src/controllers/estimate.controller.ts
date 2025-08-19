@@ -1,3 +1,4 @@
+import { rejectEstimateSchema, sendEstimateSchema } from "../dtos/estimate.dto";
 import estimateService from "../services/estimate.service";
 import { NextFunction, Request, Response } from "express";
 
@@ -29,22 +30,15 @@ async function sendEstimateToRequest(
 ): Promise<void> {
   try {
     const moverId = req.auth!.userId;
-    const { price, comment, clientId, requestId } = req.body;
 
-    // TODO: 커스텀 에러 객체 사용해주세요
-    if (!price || !comment || !clientId || !requestId) {
-      res.status(400).json({
-        message: "price, comment, clientId, requestId는 모두 필수입니다.",
-      });
-      return;
-    }
+    const parsed = sendEstimateSchema.parse(req.body);
 
     const updatedEstimate = await estimateService.createEstimate({
-      price,
-      comment,
+      price: parsed.price,
+      comment: parsed.comment,
       moverId,
-      clientId,
-      requestId,
+      clientId: parsed.clientId,
+      requestId: parsed.requestId,
     });
 
     res.status(200).json({
@@ -99,20 +93,13 @@ async function rejectEstimate(req: Request, res: Response, next: NextFunction): 
   try {
     const moverId = req.auth!.userId;
 
-    const { comment, clientId, requestId } = req.body;
-
-    if (!comment || !clientId || !requestId) {
-      res.status(400).json({
-        message: "comment,  clientId, requestId는 모두 필수입니다.",
-      });
-      return;
-    }
+    const parsed = rejectEstimateSchema.parse(req.body);
 
     const updatedEstimate = await estimateService.rejectEstimate({
-      comment,
+      comment: parsed.comment,
       moverId,
-      clientId,
-      requestId,
+      clientId: parsed.clientId,
+      requestId: parsed.requestId,
     });
 
     res.status(200).json({
