@@ -1,4 +1,3 @@
-//mover.type.ts
 import { MoveType } from "@prisma/client";
 
 // TODO: moverType 가능한 부분 병합하거나 extends 사용 부탁드립니다
@@ -16,11 +15,6 @@ export type SimplifiedMover = {
   isFavorite: boolean;
   hasDesignatedRequest?: boolean;
   designatedEstimateStatus?: "CONFIRMED" | "REJECTED" | null;
-  // 위치 정보 추가
-  latitude?: number | null;
-  longitude?: number | null;
-  businessAddress?: string | null;
-  distance?: number; // 검색 위치로부터의 거리(km)
 };
 
 export interface MoverDetail extends SimplifiedMover {
@@ -30,7 +24,6 @@ export interface MoverDetail extends SimplifiedMover {
   serviceArea: string[];
   createdAt: Date;
   updatedAt: Date;
-  // 위치 정보도 포함됨 (SimplifiedMover에서 상속)
 }
 
 // 기사님 기본정보 수정 시 필요한 타입 (컨트롤러, 서비스 단)
@@ -62,22 +55,4 @@ export type MoverProfile = {
   description: string;
   serviceType: MoveType[];
   serviceArea: string[];
-  // 위치 정보 추가
-  latitude?: number;
-  longitude?: number;
-  businessAddress?: string;
 };
-
-// API 요청 파라미터에 위치 기반 검색 추가
-export interface GetMoversParams {
-  page?: number;
-  limit?: number;
-  search?: string;
-  area?: string;
-  serviceType?: string;
-  sortBy?: string;
-  // 위치 기반 검색 파라미터
-  latitude?: number;
-  longitude?: number;
-  radius?: number; // km 단위
-}
