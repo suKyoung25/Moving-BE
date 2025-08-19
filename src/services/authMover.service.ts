@@ -101,12 +101,11 @@ async function oAuthCreateOrUpdate(socialData: SignUpDataSocial) {
       throw new BadRequestError(`이미 ${existingUser.provider} 가입 시 사용된 이메일입니다.`);
     }
 
-    // 유저 있으면 provider, providerId, name, phone, email 업데이트
+    // 유저 있으면 provider, providerId, phone, email 업데이트 (이름은 넣으면 안 됨)
     const user = await authMoverRepository.createOrUpdate({
       id: existingUser.id,
       provider: socialData.provider,
       providerId: socialData.providerId,
-      name: socialData.name,
       email: socialData.email,
       phone: socialData.phone,
     });
