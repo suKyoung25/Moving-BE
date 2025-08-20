@@ -97,10 +97,8 @@ async function signInEasily(req: Request, res: Response, next: NextFunction) {
   }
 }
 
-const authController = {
+export default {
   setRefreshToken,
   getMe,
   signInEasily,
 };
-
-export default authController;

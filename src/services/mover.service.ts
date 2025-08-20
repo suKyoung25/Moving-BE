@@ -1,15 +1,6 @@
 import moverRepository from "../repositories/mover.repository";
-import { BadRequestError } from "../types";
+import { BadRequestError, GetMoversParams } from "../types";
 import { translateData } from "../utils/translation.util";
-
-interface GetMoversParams {
-  page?: number;
-  limit?: number;
-  search?: string;
-  area?: string;
-  serviceType?: string;
-  sortBy?: string;
-}
 
 // 전체 기사님 리스트 조회
 async function getMovers(clientId?: string, params: GetMoversParams = {}, targetLang?: string) {

@@ -54,3 +54,20 @@ export interface MoverProfile {
   serviceType: MoveType[];
   serviceArea: string[];
 }
+
+export interface GetMoversParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  area?: string;
+  serviceType?: string;
+  sortBy?: string;
+}
+
+export interface GetMoversResponse {
+  movers: SimplifiedMover[];
+  total: number;
+  page: number;
+  limit: number;
+  hasMore: boolean;
+}

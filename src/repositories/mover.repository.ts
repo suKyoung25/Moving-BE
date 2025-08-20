@@ -1,22 +1,13 @@
 import prisma from "../configs/prisma.config";
-import { ConflictError, MoverDetail, NotFoundError, ServerError, SimplifiedMover } from "../types";
-
-interface GetMoversParams {
-  page?: number;
-  limit?: number;
-  search?: string;
-  area?: string;
-  serviceType?: string;
-  sortBy?: string;
-}
-
-interface GetMoversResponse {
-  movers: SimplifiedMover[];
-  total: number;
-  page: number;
-  limit: number;
-  hasMore: boolean;
-}
+import {
+  ConflictError,
+  GetMoversParams,
+  GetMoversResponse,
+  MoverDetail,
+  NotFoundError,
+  ServerError,
+  SimplifiedMover,
+} from "../types";
 
 // 전체 기사님 리스트 조회 (페이지네이션 지원)
 async function fetchMovers(

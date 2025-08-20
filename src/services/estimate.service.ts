@@ -2,19 +2,10 @@ import estimateRepository from "../repositories/estimate.repository";
 import moverRepository from "../repositories/mover.repository";
 import { PrismaClient, EstimateStatus } from "@prisma/client";
 import notificationService from "./notification.service";
-import { BadRequestError, NotFoundError } from "../types";
+import { BadRequestError, EstimateInput, NotFoundError } from "../types";
 import authClientRepository from "../repositories/authClient.repository";
 import { translateData } from "../utils/translation.util";
-
-interface EstimateInput {
-  price?: number;
-  comment: string;
-  moverId: string;
-  clientId: string;
-  requestId: string;
-}
-
-const prisma = new PrismaClient();
+import prisma from "../configs/prisma.config";
 
 // client 대기 중인 견적서 조회
 async function getPendingEstimates(clientId: string, offset = 0, limit = 6, targetLang?: string) {

@@ -53,4 +53,8 @@ async function moverWithdraw(
   }
 }
 
-export { moverSignup, moverSignin, moverWithdraw };
+export default {
+  moverSignup,
+  moverSignin,
+  moverWithdraw,
+};

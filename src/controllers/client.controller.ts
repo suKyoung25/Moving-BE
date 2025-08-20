@@ -40,8 +40,6 @@ async function update(
   }
 }
 
-const profileClientController = {
+export default {
   update,
 };
-
-export default profileClientController;

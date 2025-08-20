@@ -46,6 +46,8 @@ async function deleteAccount(
   }
 }
 
-const authClientController = { signUp, login, deleteAccount };
-
-export default authClientController;
+export default {
+  signUp,
+  login,
+  deleteAccount,
+};
