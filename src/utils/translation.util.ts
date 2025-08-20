@@ -47,21 +47,12 @@ async function translateTextsSafeInline(texts: string[], targetLang?: string): P
     textToIndex.get(text)!.push(index);
   });
 
-  console.log(
-    `[translateTextsSafeInline] 번역 시작: ${texts.length}개 텍스트 (중복 제거 후 ${uniqueTexts.length}개)`,
-  );
-
   // 배치로 나누어 처리
   const batches = chunkArray(uniqueTexts, BATCH_SIZE);
   const translatedMap = new Map<string, string>();
 
   for (let i = 0; i < batches.length; i++) {
     const batch = batches[i];
-    console.log(
-      `[translateTextsSafeInline] 배치 ${i + 1}/${batches.length} 처리 중 (${
-        batch.length
-      }개 텍스트)`,
-    );
 
     try {
       const batchStartTime = Date.now();
@@ -76,10 +67,6 @@ async function translateTextsSafeInline(texts: string[], targetLang?: string): P
             if (translated === text) {
               console.warn(
                 `[translateTextsSafeInline] 번역 결과가 원문과 동일합니다: "${text}" -> "${translated}" (${duration}ms)`,
-              );
-            } else {
-              console.log(
-                `[translateTextsSafeInline] 번역 성공: "${text}" -> "${translated}" (${duration}ms)`,
               );
             }
 
@@ -100,7 +87,6 @@ async function translateTextsSafeInline(texts: string[], targetLang?: string): P
       });
 
       const batchDuration = Date.now() - batchStartTime;
-      console.log(`[translateTextsSafeInline] 배치 ${i + 1} 완료: ${batchDuration}ms`);
 
       // 마지막 배치가 아니면 지연
       if (i < batches.length - 1) {
@@ -120,12 +106,6 @@ async function translateTextsSafeInline(texts: string[], targetLang?: string): P
 
   // 캐시 통계 로깅
   const cacheStats = getCacheStats();
-  console.log(`[translateTextsSafeInline] 번역 완료: ${texts.length}개 텍스트 처리됨`);
-  console.log(
-    `[translateTextsSafeInline] 캐시 통계: 메모리 ${cacheStats.memorySize}개, Redis ${
-      cacheStats.redisConnected ? "연결됨" : "연결안됨"
-    }`,
-  );
 
   return result;
 }
@@ -227,7 +207,7 @@ export async function translateData(
   targetLang?: string,
 ): Promise<unknown> {
   if (!targetLang) {
-    console.log("[translateData] targetLang이 없어 번역을 건너뜁니다.");
+    console.error("[translateData] targetLang이 없어 번역을 건너뜁니다.");
     return data;
   }
 
@@ -243,7 +223,6 @@ export async function translateData(
   }
 
   const startTime = Date.now();
-  console.log(`[translateData] 번역 시작 - 언어: ${targetLang}, 경로: ${paths.join(", ")}`);
 
   try {
     for (const path of paths) {
@@ -254,17 +233,9 @@ export async function translateData(
 
       const pathStartTime = Date.now();
       const items = getValueArrayByPath(data, path);
-      console.log(`[translateData] 경로 "${path}"에서 ${items.length}개 항목 발견`);
 
       if (items.length > 0) {
         const texts = items.map((i) => i.value).filter((text) => text && text.trim() !== "");
-        console.log(
-          `[translateData] 번역할 텍스트 ${texts.length}개:`,
-          texts
-            .slice(0, 3)
-            .map((t) => `"${t}"`)
-            .join(", ") + (texts.length > 3 ? "..." : ""),
-        );
 
         if (texts.length > 0) {
           const translated = await translateTextsSafeInline(texts, targetLang);
@@ -282,9 +253,6 @@ export async function translateData(
           });
 
           const pathDuration = Date.now() - pathStartTime;
-          console.log(
-            `[translateData] 경로 "${path}" 번역 완료: ${successCount}/${texts.length} 성공 (${pathDuration}ms)`,
-          );
         }
       }
     }
@@ -294,7 +262,6 @@ export async function translateData(
   }
 
   const totalDuration = Date.now() - startTime;
-  console.log(`[translateData] 번역 완료 - 총 소요시간: ${totalDuration}ms`);
   return data;
 }
 
