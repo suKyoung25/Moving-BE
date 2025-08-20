@@ -1,5 +1,5 @@
 import prisma from "../configs/prisma.config";
-import { CreateCommunityData, CreateReplyData } from "../types/Community.type";
+import { CreateCommunityData, CreateReplyData } from "../types";
 
 async function findAllCommunity(offset: number, limit: number, search?: string) {
   const skip = (offset - 1) * limit;

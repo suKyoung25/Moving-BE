@@ -1,5 +1,5 @@
-import CommunityRepository from "../repositories/Community.repository";
-import { CreateCommunityData, CreateReplyData } from "../types/Community.type";
+import communityRepository from "../repositories/community.repository.tmp";
+import { CreateCommunityData, CreateReplyData } from "../types";
 import { translateData } from "../utils/translation.util";
 
 async function getAllCommunity(
@@ -9,7 +9,7 @@ async function getAllCommunity(
   targetLang?: string,
 ) {
   try {
-    const communities = await CommunityRepository.findAllCommunity(offset, limit, search);
+    const communities = await communityRepository.findAllCommunity(offset, limit, search);
     const result = {
       success: true,
       data: communities,
@@ -33,7 +33,7 @@ async function getAllCommunity(
 
 async function getCommunity(id: string, targetLang?: string) {
   try {
-    const community = await CommunityRepository.findByIdWithDetails(id);
+    const community = await communityRepository.findByIdWithDetails(id);
 
     if (!community) {
       return {
@@ -79,7 +79,7 @@ async function createCommunity(data: CreateCommunityData) {
       };
     }
 
-    const newCommunity = await CommunityRepository.create({
+    const newCommunity = await communityRepository.create({
       title: data.title.trim(),
       content: data.content.trim(),
       clientId: data.clientId,
@@ -106,7 +106,7 @@ async function createReply(data: CreateReplyData) {
     }
 
     // 게시글 존재 확인
-    const community = await CommunityRepository.findByIdWithDetails(data.communityId);
+    const community = await communityRepository.findByIdWithDetails(data.communityId);
     if (!community) {
       return {
         success: false,
@@ -115,7 +115,7 @@ async function createReply(data: CreateReplyData) {
     }
 
     // 댓글 생성
-    const newReply = await CommunityRepository.createReply({
+    const newReply = await communityRepository.createReply({
       content: data.content.trim(),
       communityId: data.communityId,
       clientId: data.clientId,
@@ -138,7 +138,7 @@ async function getRepliesByCommunityId(communityId: string, targetLang?: string)
       message: "커뮤니티 Id가 필요합니다",
     };
   }
-  const communities = CommunityRepository.findRepliesByCommunityId(communityId);
+  const communities = communityRepository.findRepliesByCommunityId(communityId);
 
   // 번역이 필요한 경우 번역 수행
   if (targetLang) {
@@ -154,7 +154,7 @@ async function getRepliesByCommunityId(communityId: string, targetLang?: string)
 
 async function deleteCommunity(id: string, userId: string, userType: "client" | "mover") {
   try {
-    const community = await CommunityRepository.findByIdWithDetails(id);
+    const community = await communityRepository.findByIdWithDetails(id);
 
     if (!community) {
       return {
@@ -174,7 +174,7 @@ async function deleteCommunity(id: string, userId: string, userType: "client" | 
       };
     }
 
-    await CommunityRepository.deleteCommunity(id);
+    await communityRepository.deleteCommunity(id);
 
     return {
       success: true,
@@ -188,7 +188,7 @@ async function deleteCommunity(id: string, userId: string, userType: "client" | 
 
 async function deleteReply(id: string, userId: string, userType: "client" | "mover") {
   try {
-    const reply = await CommunityRepository.findByIdReply(id);
+    const reply = await communityRepository.findByIdReply(id);
 
     if (!reply) {
       return {
@@ -208,7 +208,7 @@ async function deleteReply(id: string, userId: string, userType: "client" | "mov
       };
     }
 
-    await CommunityRepository.deleteReply(id);
+    await communityRepository.deleteReply(id);
 
     return {
       success: true,
