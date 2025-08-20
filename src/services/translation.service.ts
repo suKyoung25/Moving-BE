@@ -115,10 +115,7 @@ async function translateText(text: string, targetLang?: string): Promise<string>
 
   // 캐시에서 먼저 확인
   const cachedResult = await getCachedTranslation(text, normalizedLang);
-  if (cachedResult) {
-    console.log(`[translateText] 캐시에서 번역 결과 반환: "${text.substring(0, 30)}..."`);
-    return cachedResult;
-  }
+  if (cachedResult) return cachedResult;
 
   let lastError: Error | null = null;
 
@@ -140,13 +137,6 @@ async function translateText(text: string, targetLang?: string): Promise<string>
       if (duration > 5000) {
         console.warn(
           `[translateText] 느린 번역 감지: ${duration}ms - "${text.substring(0, 50)}..."`,
-        );
-      } else {
-        console.log(
-          `[translateText] 번역 성공: ${duration}ms - "${text.substring(
-            0,
-            30,
-          )}..." -> "${result.text.substring(0, 30)}..."`,
         );
       }
 

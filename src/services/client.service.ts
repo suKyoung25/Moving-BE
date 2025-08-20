@@ -18,7 +18,6 @@ async function update(userId: Client["id"], profile: ClientProfileRegister | Cli
   if (!isRegistered) {
     const newProfile = profile as ClientProfileRegister;
 
-    // TODO: 나중에 미들웨어로 뺄게요.... 바쁘니까 일단 구현....
     if (!newProfile.serviceType || newProfile.serviceType.length === 0) {
       throw new ConflictError(ErrorMessage.NO_SERVICE_TYPE);
     }

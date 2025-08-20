@@ -1,4 +1,4 @@
-import communityRepository from "../repositories/community.repository.tmp";
+import communityRepository from "../repositories/community.repository";
 import { CreateCommunityData, CreateReplyData } from "../types";
 import { translateData } from "../utils/translation.util";
 
@@ -26,7 +26,7 @@ async function getAllCommunity(
 
     return result;
   } catch (e) {
-    console.log(e);
+    console.error(e);
     throw new Error("커뮤니티 목록 조회 실패");
   }
 }
@@ -58,7 +58,7 @@ async function getCommunity(id: string, targetLang?: string) {
 
     return result;
   } catch (e) {
-    console.log(e);
+    console.error(e);
     throw new Error("게시글을 불러올 수 없습니다.");
   }
 }
@@ -91,7 +91,7 @@ async function createCommunity(data: CreateCommunityData) {
       data: newCommunity,
     };
   } catch (e) {
-    console.log(e);
+    console.error(e);
     throw new Error("게시글 작성에 실패했습니다.");
   }
 }
@@ -127,7 +127,7 @@ async function createReply(data: CreateReplyData) {
       data: newReply,
     };
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 }
 
@@ -181,7 +181,7 @@ async function deleteCommunity(id: string, userId: string, userType: "client" | 
       message: "게시글이 삭제되었습니다.",
     };
   } catch (e) {
-    console.log(e);
+    console.error(e);
     throw new Error("게시글 삭제에 실패했습니다.");
   }
 }
@@ -215,7 +215,7 @@ async function deleteReply(id: string, userId: string, userType: "client" | "mov
       message: "댓글이 삭제되었습니다.",
     };
   } catch (e) {
-    console.log(e);
+    console.error(e);
     throw new Error("댓글 삭제에 실패했습니다.");
   }
 }

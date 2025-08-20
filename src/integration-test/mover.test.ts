@@ -96,7 +96,7 @@ describe("Mover API Integration Tests", () => {
         where: { id: testClientId },
       });
     } catch (error) {
-      console.log("Cleanup error:", error);
+      console.error("Cleanup error:", error);
     } finally {
       await prisma.$disconnect();
     }

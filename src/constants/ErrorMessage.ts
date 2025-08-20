@@ -39,7 +39,7 @@ export const ErrorMessage = {
   // Failed
   FALIED_CANCEL_REQUEST: "확정된 견적은 취소할 수 없습니다.",
 
-  // 회원가입 추가
+  // SignUp
   NO_EMAIL: "이메일을 입력해 주세요.",
   NO_NAME: "이름을 입력해 주세요.",
   NO_PHONE: "전화번호를 입력해 주세요.",
@@ -49,7 +49,7 @@ export const ErrorMessage = {
   NAME_LENGTH_LIMIT: "이름을 4자 이내로 입력해 주세요.",
   PHONE_REGEX: "전화번호는 9~11자 사이의 숫자여야 합니다.",
 
-  // 프로필 추가
+  // Profile
   NO_CLIENT_PROFILE: "이용 서비스와 내가 사는 지역을 선택해야 합니다.",
   NO_SERVICE_TYPE: "서비스 유형을 1개 이상 선택해야 합니다.",
   NO_REGION: "지역을 1개 이상 선택해야 합니다.",

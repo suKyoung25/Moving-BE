@@ -57,7 +57,6 @@ let redisClient: Redis | null = null;
 try {
   if (process.env.REDIS_URL) {
     redisClient = new Redis(process.env.REDIS_URL);
-    console.log("[Cache] Redis 연결 성공");
   }
 } catch (error) {
   console.warn("[Cache] Redis 연결 실패, 메모리 캐시만 사용:", error);
@@ -87,7 +86,6 @@ export async function getCachedTranslation(
     if (redisClient) {
       const cached = await redisClient.get(key);
       if (cached) {
-        console.log(`[Cache] Redis에서 캐시 히트: "${text.substring(0, 30)}..."`);
         return cached;
       }
     }
@@ -95,7 +93,6 @@ export async function getCachedTranslation(
     // 메모리 캐시 확인
     const memoryCached = memoryCache.get(key);
     if (memoryCached) {
-      console.log(`[Cache] 메모리에서 캐시 히트: "${text.substring(0, 30)}..."`);
       return memoryCached;
     }
 
@@ -124,13 +121,6 @@ export async function setCachedTranslation(
     if (redisClient) {
       await redisClient.setex(key, CACHE_TTL, translatedText);
     }
-
-    console.log(
-      `[Cache] 번역 결과 캐시 저장: "${text.substring(0, 30)}..." -> "${translatedText.substring(
-        0,
-        30,
-      )}..."`,
-    );
   } catch (error) {
     console.warn("[Cache] 캐시 저장 중 오류:", error);
   }
@@ -162,8 +152,6 @@ export async function clearCache(): Promise<void> {
       console.warn("[Cache] Redis 캐시 초기화 중 오류:", error);
     }
   }
-
-  console.log("[Cache] 모든 캐시가 초기화되었습니다.");
 }
 
 /**

@@ -1,11 +1,9 @@
 import { MoveType } from "@prisma/client";
 
-// TODO: moverType 가능한 부분 병합하거나 extends 사용 부탁드립니다
-
-export type SimplifiedMover = {
+export interface SimplifiedMover {
   id: string;
   nickName: string | null;
-  serviceType: string[]; // 혹은 MoveType[]
+  serviceType: string[];
   career: number | null;
   averageReviewRating: number;
   reviewCount: number;
@@ -15,7 +13,7 @@ export type SimplifiedMover = {
   isFavorite: boolean;
   hasDesignatedRequest?: boolean;
   designatedEstimateStatus?: "CONFIRMED" | "REJECTED" | null;
-};
+}
 
 export interface MoverDetail extends SimplifiedMover {
   name: string;
@@ -26,27 +24,27 @@ export interface MoverDetail extends SimplifiedMover {
   updatedAt: Date;
 }
 
-// 기사님 기본정보 수정 시 필요한 타입 (컨트롤러, 서비스 단)
-export type EditMoverAccount = {
+// 기사님 기본정보 수정 (컨트롤러, 서비스)
+export interface EditMoverAccount {
   moverId: string;
   name: string;
   email: string;
   phone: string;
   existedPassword?: string;
   newPassword?: string;
-};
+}
 
-// 기사님 기본정보 수정 시 필요한 타입 (레포지토리 단)
-export type EditMoverAccountWithHash = {
+// 기사님 기본정보 수정 (레포지토리)
+export interface EditMoverAccountWithHash {
   moverId: string;
   name: string;
   email: string;
   phone: string;
   hashedNewPassword?: string;
-};
+}
 
-// 기사님 프로필 등록할 때 필요한 값 (레포지토리 단)
-export type MoverProfile = {
+// 기사님 프로필 등록 (레포지토리)
+export interface MoverProfile {
   userId: string;
   image?: string;
   nickName: string;
@@ -55,4 +53,21 @@ export type MoverProfile = {
   description: string;
   serviceType: MoveType[];
   serviceArea: string[];
-};
+}
+
+export interface GetMoversParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  area?: string;
+  serviceType?: string;
+  sortBy?: string;
+}
+
+export interface GetMoversResponse {
+  movers: SimplifiedMover[];
+  total: number;
+  page: number;
+  limit: number;
+  hasMore: boolean;
+}

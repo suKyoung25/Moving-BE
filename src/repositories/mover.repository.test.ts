@@ -261,7 +261,7 @@ describe("Mover Repository 실제 구현 확인", () => {
     } catch (error: unknown) {
       // 타입 가드를 사용해서 error 타입 확인
       if (error instanceof Error) {
-        console.log("실제 에러:", error.constructor.name, error.message);
+        console.error("실제 에러:", error.constructor.name, error.message);
 
         // 현재는 ServerError를 던지는 것 같으니 이에 맞춰 테스트
         expect(error).toBeInstanceOf(ServerError);

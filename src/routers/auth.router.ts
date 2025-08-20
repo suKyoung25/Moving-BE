@@ -1,6 +1,6 @@
 import authController from "../controllers/auth.controller";
 import authClientController from "../controllers/authClient.controller";
-import { moverSignin, moverSignup, moverWithdraw } from "../controllers/authMover.controller";
+import authMoverController from "../controllers/authMover.controller";
 import { deleteUserSchema, signInSchema, signUpSchema } from "../dtos/auth.dto";
 import {
   checkClientSignUpInfo,
@@ -11,12 +11,12 @@ import {
   validateReq,
   verifyAccessToken,
 } from "../middlewares/auth.middleware";
-import express from "express";
+import { Router } from "express";
 import passport from "passport";
 import { createSocialAuthMiddleware } from "../middlewares/passport/passport.middleware";
 import { loginLimiter } from "../middlewares/rateLimits.middleware";
 
-const authRouter = express.Router();
+const authRouter = Router();
 
 // 토큰 재생성
 authRouter.post("/refresh-token", authController.setRefreshToken);
@@ -25,7 +25,12 @@ authRouter.post("/refresh-token", authController.setRefreshToken);
 authRouter.get("/", verifyAccessToken, authController.getMe);
 
 // 기사님 회원가입 - Local
-authRouter.post("/signup/mover", validateReq(signUpSchema), checkMoverSignUpInfo, moverSignup);
+authRouter.post(
+  "/signup/mover",
+  validateReq(signUpSchema),
+  checkMoverSignUpInfo,
+  authMoverController.moverSignup,
+);
 
 // 기사님 로그인 - Local
 authRouter.post(
@@ -33,7 +38,7 @@ authRouter.post(
   validateReq(signInSchema),
   loginLimiter,
   checkMoverSignInInfo,
-  moverSignin,
+  authMoverController.moverSignin,
 );
 
 // 기사님 회원탈퇴 - Local
@@ -42,7 +47,7 @@ authRouter.delete(
   verifyAccessToken,
   validateReq(deleteUserSchema),
   checkMoverWithdrawInfo,
-  moverWithdraw,
+  authMoverController.moverWithdraw,
 );
 
 // Client 회원가입 - Local
