@@ -1,4 +1,4 @@
-import communityRepository from "../repositories/community.repository.tmp";
+import communityRepository from "../repositories/community.repository";
 import { CreateCommunityData, CreateReplyData } from "../types";
 import { translateData } from "../utils/translation.util";
 

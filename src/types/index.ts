@@ -4,4 +4,4 @@ export * from "./errors";
 export * from "./mover.type";
 export * from "./notification.type";
 export * from "./request.type";
-export * from "./community.type.tmp";
+export * from "./community.type";
