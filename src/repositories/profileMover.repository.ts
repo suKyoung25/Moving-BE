@@ -16,7 +16,6 @@ async function findById(id: Mover["id"]) {
 }
 
 // 지역 라벨 > 지역 아이디 찾기 (관계형이라서 stirng > id로 변환해줘야함)
-// TODO: 지역 레포단을 만들 필요는 없을 것 같아서 우선 프로필 레포에 작성함
 async function findRegionByLabel(user: MoverProfile) {
   return await prisma.region.findMany({
     where: {

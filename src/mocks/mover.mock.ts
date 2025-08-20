@@ -1,5 +1,3 @@
-// constants/mover.mock.ts
-
 export const mockMoverInfo = {
   id: "mover-123",
   nickName: "김기사",

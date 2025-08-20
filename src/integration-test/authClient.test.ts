@@ -34,9 +34,6 @@ describe("POST /signup - 회원가입 API 테스트", () => {
     expect(createSignupResponse.body.data.user.email).toBe("asdf@example.com");
     expect(createSignupResponse.body).toHaveProperty("data.accessToken");
   });
-
-  // test.todo("이미 DB에 있는 이메일로 회원가입 시도하면 오류");
-  // test.todo("이미 DB에 있는 전화번호로 회원가입 시도하면 오류");
 });
 
 describe("POST /signin - 로그인 API 테스트", () => {
