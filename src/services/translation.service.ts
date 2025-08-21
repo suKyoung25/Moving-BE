@@ -13,6 +13,7 @@ const RETRY_DELAY = 1000; // 1초
 
 // 정확한 Case 유지된 허용 코드 배열 (DeepL 타입과 동일)
 const allowedCodes: deepl.TargetLanguageCode[] = [
+  "ko",
   "bg",
   "cs",
   "da",
@@ -56,6 +57,7 @@ function normalizeTargetLang(lang: string): deepl.TargetLanguageCode | undefined
   // 소문자 매핑 키: 하이픈 뒤도 소문자.
   // DeepL 공식 타입은 하이픈 뒤 대문자 유지하지만, 실제 API는 소문자 하이픈 뒤 대문자 제외 버전도 허용 가능함.
   const map: Record<string, deepl.TargetLanguageCode> = {
+    ko: "ko",
     bg: "bg",
     cs: "cs",
     da: "da",
