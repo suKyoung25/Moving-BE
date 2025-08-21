@@ -23,6 +23,12 @@ communityRouter.get(
   communityController.getRepliesByCommunityId,
 );
 
+// 커뮤니티 게시글 수정
+communityRouter.patch("/:id", verifyAccessToken, communityController.updateCommunity);
+
+// 커뮤니티 댓글 수정
+communityRouter.patch("/reply/:id", verifyAccessToken, communityController.updateReply);
+
 // 커뮤니티 게시글 삭제
 communityRouter.delete("/:id", verifyAccessToken, communityController.deleteCommunity);
 

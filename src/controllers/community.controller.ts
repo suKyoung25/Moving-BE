@@ -42,7 +42,7 @@ async function getCommunityById(req: Request, res: Response, next: NextFunction)
   }
 }
 
-//게시글 작성
+// 게시글 작성
 async function createCommunity(req: Request, res: Response, next: NextFunction) {
   try {
     const { title, content } = req.body;
@@ -106,6 +106,74 @@ async function createReply(req: Request, res: Response, next: NextFunction) {
   }
 }
 
+// 게시글 수정
+async function updateCommunity(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { id } = req.params;
+    const { title, content } = req.body;
+    const userId = req.auth!.userId;
+    const userType = req.auth!.userType;
+
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "게시글 ID가 필요합니다.",
+      });
+    }
+
+    if (!title || !title.trim() || !content || !content.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "제목과 내용을 입력해주세요.",
+      });
+    }
+
+    const result = await communityService.updateCommunity(id, { title, content }, userId, userType);
+
+    if (!result.success) {
+      return res.status(400).json(result);
+    }
+
+    res.status(200).json(result);
+  } catch (e) {
+    next(e);
+  }
+}
+
+// 댓글 수정
+async function updateReply(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { id } = req.params;
+    const { content } = req.body;
+    const userId = req.auth!.userId;
+    const userType = req.auth!.userType;
+
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "댓글 ID가 필요합니다.",
+      });
+    }
+
+    if (!content || !content.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "댓글 내용을 입력해주세요.",
+      });
+    }
+
+    const result = await communityService.updateReply(id, content, userId, userType);
+
+    if (!result.success) {
+      return res.status(400).json(result);
+    }
+
+    res.status(200).json(result);
+  } catch (e) {
+    next(e);
+  }
+}
+
 // 해당하는 게시글의 댓글 조회
 async function getRepliesByCommunityId(req: Request, res: Response, next: NextFunction) {
   try {
@@ -124,7 +192,7 @@ async function getRepliesByCommunityId(req: Request, res: Response, next: NextFu
   }
 }
 
-// 커뮤니티 삭제
+// 커뮤니티 게시글 삭제
 async function deleteCommunity(req: Request, res: Response, next: NextFunction) {
   try {
     const { id } = req.params;
@@ -186,6 +254,8 @@ export default {
   getAllCommunity,
   createCommunity,
   createReply,
+  updateCommunity,
+  updateReply,
   getCommunityById,
   getRepliesByCommunityId,
   deleteCommunity,
