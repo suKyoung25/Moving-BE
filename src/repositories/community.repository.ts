@@ -137,11 +137,10 @@ async function updateReply(id: string, content: string) {
     where: { id },
     data: {
       content,
-      // updatedAt: new Date(), // 수정 시간 업데이트
     },
     include: {
       client: { select: { id: true, name: true, profileImage: true } },
-      mover: { select: { id: true, name: true, profileImage: true } },
+      mover: { select: { id: true, nickName: true, profileImage: true } },
     },
   });
 }
@@ -197,7 +196,7 @@ async function findRepliesByCommunityId(communityId: string) {
     where: { communityId },
     include: {
       client: { select: { id: true, name: true, profileImage: true } },
-      mover: { select: { id: true, name: true, profileImage: true } },
+      mover: { select: { id: true, nickName: true, profileImage: true } },
     },
     orderBy: { createdAt: "desc" },
   });
@@ -209,7 +208,7 @@ async function findRepliesByCommunityId(communityId: string) {
     clientId: reply.clientId,
     moverId: reply.moverId,
     communityId: reply.communityId,
-    userNickname: reply.client?.name || reply.mover?.name || "익명",
+    userNickname: reply.client?.name || reply.mover?.nickName || "익명",
     profileImg: reply.client?.profileImage || reply.mover?.profileImage || null,
   }));
 }
