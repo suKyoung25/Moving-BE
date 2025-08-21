@@ -131,6 +131,111 @@ async function createReply(data: CreateReplyData) {
   }
 }
 
+async function updateCommunity(
+  id: string,
+  data: CreateCommunityData,
+  userId: string,
+  userType: "client" | "mover",
+) {
+  try {
+    // 게시글 존재 확인 및 작성자 확인
+    const community = await communityRepository.findByIdWithDetails(id);
+
+    if (!community) {
+      return {
+        success: false,
+        message: "존재하지 않는 게시글입니다.",
+      };
+    }
+
+    // 작성자 본인인지 확인
+    const isAuthor =
+      (userType === "client" && community.clientId === userId) ||
+      (userType === "mover" && community.moverId === userId);
+
+    if (!isAuthor) {
+      return {
+        success: false,
+        message: "본인이 작성한 게시글만 수정할 수 있습니다.",
+      };
+    }
+
+    // 내용 유효성 검사
+    if (!data.title.trim() || !data.content.trim()) {
+      return {
+        success: false,
+        message: "제목과 내용을 입력해주세요.",
+      };
+    }
+
+    // 게시글 수정
+    const updatedCommunity = await communityRepository.update(id, {
+      title: data.title.trim(),
+      content: data.content.trim(),
+    });
+
+    return {
+      success: true,
+      data: updatedCommunity,
+      message: "게시글이 수정되었습니다.",
+    };
+  } catch (e) {
+    console.error(e);
+    throw new Error("게시글 수정에 실패했습니다.");
+  }
+}
+
+async function updateReply(
+  id: string,
+  content: string,
+  userId: string,
+  userType: "client" | "mover",
+) {
+  try {
+    // 댓글 존재 확인 및 작성자 확인
+    const reply = await communityRepository.findByIdReply(id);
+
+    if (!reply) {
+      return {
+        success: false,
+        message: "존재하지 않는 댓글입니다.",
+      };
+    }
+
+    // 작성자 본인인지 확인
+    const isAuthor =
+      (userType === "client" && reply.clientId === userId) ||
+      (userType === "mover" && reply.moverId === userId);
+
+    if (!isAuthor) {
+      return {
+        success: false,
+        message: "본인이 작성한 댓글만 수정할 수 있습니다.",
+      };
+    }
+
+    // 내용 유효성 검사
+    if (!content.trim()) {
+      return {
+        success: false,
+        message: "댓글 내용을 입력해주세요.",
+      };
+    }
+
+    // 댓글 수정
+    const updatedReply = await communityRepository.updateReply(id, content.trim());
+
+    return {
+      success: true,
+      data: updatedReply,
+      message: "댓글이 수정되었습니다.",
+    };
+  } catch (e) {
+    console.error(e);
+    throw new Error("댓글 수정에 실패했습니다.");
+  }
+}
+
 async function getRepliesByCommunityId(communityId: string, targetLang?: string) {
   if (!communityId) {
     return {
@@ -224,6 +329,8 @@ export default {
   getAllCommunity,
   createCommunity,
   createReply,
+  updateCommunity,
+  updateReply,
   getCommunity,
   getRepliesByCommunityId,
   deleteCommunity,

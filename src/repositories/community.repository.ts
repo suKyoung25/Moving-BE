@@ -122,6 +122,30 @@ async function createReply(data: CreateReplyData) {
   });
 }
 
+async function update(id: string, data: CreateCommunityData) {
+  return await prisma.community.update({
+    where: { id },
+    data: {
+      title: data.title,
+      content: data.content,
+    },
+  });
+}
+
+async function updateReply(id: string, content: string) {
+  return await prisma.reply.update({
+    where: { id },
+    data: {
+      content,
+      // updatedAt: new Date(), // 수정 시간 업데이트
+    },
+    include: {
+      client: { select: { id: true, name: true, profileImage: true } },
+      mover: { select: { id: true, name: true, profileImage: true } },
+    },
+  });
+}
+
 async function findByIdWithDetails(id: string) {
   const community = await prisma.community.findUnique({
     where: { id },
@@ -212,6 +236,8 @@ export default {
   findAllCommunity,
   create,
   createReply,
+  update,
+  updateReply,
   findByIdWithDetails,
   findRepliesByCommunityId,
   deleteCommunity,
