@@ -1,0 +1,64 @@
+name: Deploy To EC2
+
+on:
+  push:
+    branches:
+      - dev
+  pull_request:
+    branches:
+      - dev
+
+jobs:
+  Check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: npm i
+      - run: npm run build
+
+  Deploy:
+    runs-on: ubuntu-latest
+    needs: Check
+    if: github.ref == 'refs/heads/dev'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Node 설치
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: 의존성 설치
+        run: npm i
+
+      - name: 소스 압축하기
+        run: tar -czvf project.tar.gz src package.json package-lock.json tsconfig.json prisma
+
+      - name: scp로 EC2에 파일 전송
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          source: project.tar.gz
+          target: /home/ec2-user/6th-Moving-4Team-BE
+
+      - name: SSH로 EC2 접속 후 빌드 & 재시작
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          script_stop: true
+          script: |
+            cd /home/ec2-user/6th-Moving-4Team-BE
+            tar -xvf project.tar.gz
+            rm -f project.tar.gz
+            npm i
+            npm run build
+            npx prisma generate
+            npx prisma migrate deploy
+            pm2 restart server || pm2 start dist/server.js --name server

@@ -1,0 +1,227 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Client {
+  id                 String     @id @default(uuid())
+  email              String     @unique
+  name               String?
+  phone              String?    @unique
+  hashedPassword     String?
+  profileImage       String?
+  provider           Provider   @default(LOCAL)
+  providerId         String?
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+  serviceType        MoveType[]
+  isProfileCompleted Boolean    @default(false)
+
+  livingArea   Region[]
+  requests     Request[]
+  estimates    Estimate[]
+  reviews      Review[]
+  favorites    Favorite[]
+  requestDraft RequestDraft?
+  communitys Community[]
+  replies Reply[]
+
+  @@unique([provider, providerId])
+}
+
+model Mover {
+  id                  String     @id @default(uuid())
+  email               String     @unique
+  name                String?
+  nickName            String?    @unique
+  phone               String?    @unique
+  hashedPassword      String?
+  profileImage        String?
+  provider            Provider   @default(LOCAL)
+  providerId          String?
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+  career              Int?
+  introduction        String?
+  description         String?
+  serviceType         MoveType[]
+  favoriteCount       Int        @default(0)
+  estimateCount       Int        @default(0)
+  averageReviewRating Float      @default(0)
+  reviewCount         Int        @default(0)
+  isProfileCompleted  Boolean    @default(false)
+
+  serviceArea        Region[]
+  estimates          Estimate[]
+  reviews            Review[]
+  favorites          Favorite[]
+  designatedRequests DesignatedRequest[]
+  communitys Community[]
+  replies Reply[]
+
+  @@unique([provider, providerId])
+}
+
+model Request {
+  id          String   @id @default(uuid())
+  clientId    String
+  moveType    MoveType
+  moveDate    DateTime
+  fromAddress String
+  toAddress   String
+  isPending   Boolean  @default(true)
+  requestedAt DateTime @default(now())
+
+  client             Client              @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  estimates          Estimate[]
+  designatedRequests DesignatedRequest[]
+}
+
+model RequestDraft {
+  id          String    @id @default(uuid())
+  clientId    String    @unique
+  moveType    MoveType?
+  moveDate    DateTime?
+  fromAddress String?
+  toAddress   String?
+  currentStep Int       @default(0)
+  updatedAt   DateTime  @updatedAt
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+}
+
+model DesignatedRequest {
+  id        String   @id @default(uuid())
+  requestId String
+  moverId   String
+  createdAt DateTime @default(now())
+
+  request Request @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  mover   Mover   @relation(fields: [moverId], references: [id], onDelete: Cascade)
+
+  @@unique([requestId, moverId])
+}
+
+model Estimate {
+  id                String         @id @default(uuid())
+  clientId          String
+  moverId           String
+  requestId         String
+  price             Int?
+  moverStatus       EstimateStatus
+  isClientConfirmed Boolean        @default(false)
+  comment           String
+  createdAt         DateTime       @default(now())
+
+  client  Client  @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  mover   Mover   @relation(fields: [moverId], references: [id], onDelete: Cascade)
+  request Request @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  review  Review?
+
+  @@unique([requestId, moverId])
+}
+
+model Review {
+  id         String   @id @default(uuid())
+  rating     Int      @default(0)
+  content    String
+  images     String[] @default([])
+  createdAt  DateTime @default(now())
+  clientId   String
+  moverId    String
+  estimateId String   @unique
+
+  client   Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  mover    Mover    @relation(fields: [moverId], references: [id], onDelete: Cascade)
+  estimate Estimate @relation(fields: [estimateId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String
+  content   String
+  type      NotificationType
+  targetId  String?
+  targetUrl String?
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+}
+
+model Favorite {
+  id       String @id @default(uuid())
+  clientId String
+  moverId  String
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  mover  Mover  @relation(fields: [moverId], references: [id], onDelete: Cascade)
+
+  @@unique([clientId, moverId])
+}
+
+model Region {
+  id         String @id @default(uuid())
+  regionName String @unique
+
+  clients Client[]
+  movers  Mover[]
+}
+
+model Community {
+  id String @id @default(uuid())
+  title String
+  content String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  clientId String?
+  moverId String?
+
+  client Client? @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  mover Mover? @relation(fields: [moverId], references: [id], onDelete: Cascade)
+
+  replies Reply[]
+  }
+
+model Reply {
+  id String @id @default(uuid())
+  content String
+  createdAt DateTime @default(now())
+
+  communityId String
+  clientId String?
+  moverId String?
+
+  community Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  client Client? @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  mover Mover? @relation(fields: [moverId], references: [id], onDelete: Cascade)
+}
+
+enum Provider {
+  LOCAL
+  GOOGLE
+  KAKAO
+  NAVER
+}
+
+enum MoveType {
+  SMALL
+  HOME
+  OFFICE
+}
+
+enum EstimateStatus {
+  CONFIRMED
+  REJECTED
+}
+
+enum NotificationType {
+  NEW_ESTIMATE
+  ESTIMATE_CONFIRMED
+  ESTIMATE_REJECTED
+  CANCELED
+  MOVING_DAY
+}

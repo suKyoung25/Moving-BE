@@ -1,0 +1,338 @@
+import communityRepository from "../repositories/community.repository";
+import { CreateCommunityData, CreateReplyData } from "../types";
+import { translateData } from "../utils/translation.util";
+
+async function getAllCommunity(
+  offset: number,
+  limit: number,
+  search?: string,
+  targetLang?: string,
+) {
+  try {
+    const communities = await communityRepository.findAllCommunity(offset, limit, search);
+    const result = {
+      success: true,
+      data: communities,
+    };
+
+    // 번역이 필요한 경우 번역 수행
+    if (targetLang) {
+      return (await translateData(
+        result,
+        ["data.communities.content", "data.communities.title", "data.communities.replies.content"],
+        targetLang,
+      )) as typeof result;
+    }
+
+    return result;
+  } catch (e) {
+    console.error(e);
+    throw new Error("커뮤니티 목록 조회 실패");
+  }
+}
+
+async function getCommunity(id: string, targetLang?: string) {
+  try {
+    const community = await communityRepository.findByIdWithDetails(id);
+
+    if (!community) {
+      return {
+        success: false,
+        message: "존재하지 않는 게시글입니다.",
+      };
+    }
+
+    const result = {
+      success: true,
+      data: community,
+    };
+
+    // 번역이 필요한 경우 번역 수행
+    if (targetLang) {
+      return (await translateData(
+        result,
+        ["data.content", "data.title"],
+        targetLang,
+      )) as typeof result;
+    }
+
+    return result;
+  } catch (e) {
+    console.error(e);
+    throw new Error("게시글을 불러올 수 없습니다.");
+  }
+}
+
+async function createCommunity(data: CreateCommunityData) {
+  try {
+    if (!data.clientId && !data.moverId) {
+      return {
+        success: false,
+        message: "로그인이 필요합니다.",
+      };
+    }
+
+    if (!data.title.trim() || !data.content.trim()) {
+      return {
+        success: false,
+        message: "제목과 내용을 입력해주세요.",
+      };
+    }
+
+    const newCommunity = await communityRepository.create({
+      title: data.title.trim(),
+      content: data.content.trim(),
+      clientId: data.clientId,
+      moverId: data.moverId,
+    });
+
+    return {
+      success: true,
+      data: newCommunity,
+    };
+  } catch (e) {
+    console.error(e);
+    throw new Error("게시글 작성에 실패했습니다.");
+  }
+}
+
+async function createReply(data: CreateReplyData) {
+  try {
+    if (!data.content.trim()) {
+      return {
+        success: false,
+        message: "댓글 내용을 입력해주세요.",
+      };
+    }
+
+    // 게시글 존재 확인
+    const community = await communityRepository.findByIdWithDetails(data.communityId);
+    if (!community) {
+      return {
+        success: false,
+        message: "존재하지 않는 게시글입니다.",
+      };
+    }
+
+    // 댓글 생성
+    const newReply = await communityRepository.createReply({
+      content: data.content.trim(),
+      communityId: data.communityId,
+      clientId: data.clientId,
+      moverId: data.moverId,
+    });
+
+    return {
+      success: true,
+      data: newReply,
+    };
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+async function updateCommunity(
+  id: string,
+  data: CreateCommunityData,
+  userId: string,
+  userType: "client" | "mover",
+) {
+  try {
+    // 게시글 존재 확인 및 작성자 확인
+    const community = await communityRepository.findByIdWithDetails(id);
+
+    if (!community) {
+      return {
+        success: false,
+        message: "존재하지 않는 게시글입니다.",
+      };
+    }
+
+    // 작성자 본인인지 확인
+    const isAuthor =
+      (userType === "client" && community.clientId === userId) ||
+      (userType === "mover" && community.moverId === userId);
+
+    if (!isAuthor) {
+      return {
+        success: false,
+        message: "본인이 작성한 게시글만 수정할 수 있습니다.",
+      };
+    }
+
+    // 내용 유효성 검사
+    if (!data.title.trim() || !data.content.trim()) {
+      return {
+        success: false,
+        message: "제목과 내용을 입력해주세요.",
+      };
+    }
+
+    // 게시글 수정
+    const updatedCommunity = await communityRepository.update(id, {
+      title: data.title.trim(),
+      content: data.content.trim(),
+    });
+
+    return {
+      success: true,
+      data: updatedCommunity,
+      message: "게시글이 수정되었습니다.",
+    };
+  } catch (e) {
+    console.error(e);
+    throw new Error("게시글 수정에 실패했습니다.");
+  }
+}
+
+async function updateReply(
+  id: string,
+  content: string,
+  userId: string,
+  userType: "client" | "mover",
+) {
+  try {
+    // 댓글 존재 확인 및 작성자 확인
+    const reply = await communityRepository.findByIdReply(id);
+
+    if (!reply) {
+      return {
+        success: false,
+        message: "존재하지 않는 댓글입니다.",
+      };
+    }
+
+    // 작성자 본인인지 확인
+    const isAuthor =
+      (userType === "client" && reply.clientId === userId) ||
+      (userType === "mover" && reply.moverId === userId);
+
+    if (!isAuthor) {
+      return {
+        success: false,
+        message: "본인이 작성한 댓글만 수정할 수 있습니다.",
+      };
+    }
+
+    // 내용 유효성 검사
+    if (!content.trim()) {
+      return {
+        success: false,
+        message: "댓글 내용을 입력해주세요.",
+      };
+    }
+
+    // 댓글 수정
+    const updatedReply = await communityRepository.updateReply(id, content.trim());
+
+    return {
+      success: true,
+      data: updatedReply,
+      message: "댓글이 수정되었습니다.",
+    };
+  } catch (e) {
+    console.error(e);
+    throw new Error("댓글 수정에 실패했습니다.");
+  }
+}
+
+async function getRepliesByCommunityId(communityId: string, targetLang?: string) {
+  if (!communityId) {
+    return {
+      success: false,
+      message: "커뮤니티 Id가 필요합니다",
+    };
+  }
+  const communities = communityRepository.findRepliesByCommunityId(communityId);
+
+  // 번역이 필요한 경우 번역 수행
+  if (targetLang) {
+    return (await translateData(
+      communities,
+      ["data.content", "data.title"],
+      targetLang,
+    )) as typeof communities;
+  }
+
+  return communities;
+}
+
+async function deleteCommunity(id: string, userId: string, userType: "client" | "mover") {
+  try {
+    const community = await communityRepository.findByIdWithDetails(id);
+
+    if (!community) {
+      return {
+        success: false,
+        message: "존재하지 않는 게시글입니다.",
+      };
+    }
+
+    const isAuthor =
+      (userType === "client" && community.clientId === userId) ||
+      (userType === "mover" && community.moverId === userId);
+
+    if (!isAuthor) {
+      return {
+        success: false,
+        message: "본인이 작성한 게시글만 삭제할 수 있습니다.",
+      };
+    }
+
+    await communityRepository.deleteCommunity(id);
+
+    return {
+      success: true,
+      message: "게시글이 삭제되었습니다.",
+    };
+  } catch (e) {
+    console.error(e);
+    throw new Error("게시글 삭제에 실패했습니다.");
+  }
+}
+
+async function deleteReply(id: string, userId: string, userType: "client" | "mover") {
+  try {
+    const reply = await communityRepository.findByIdReply(id);
+
+    if (!reply) {
+      return {
+        success: false,
+        message: "존재하지 않는 댓글입니다.",
+      };
+    }
+
+    const isAuthor =
+      (userType === "client" && reply.clientId === userId) ||
+      (userType === "mover" && reply.moverId === userId);
+
+    if (!isAuthor) {
+      return {
+        success: false,
+        message: "본인이 작성한 게시글만 삭제할 수 있습니다.",
+      };
+    }
+
+    await communityRepository.deleteReply(id);
+
+    return {
+      success: true,
+      message: "댓글이 삭제되었습니다.",
+    };
+  } catch (e) {
+    console.error(e);
+    throw new Error("댓글 삭제에 실패했습니다.");
+  }
+}
+
+export default {
+  getAllCommunity,
+  createCommunity,
+  createReply,
+  updateCommunity,
+  updateReply,
+  getCommunity,
+  getRepliesByCommunityId,
+  deleteCommunity,
+  deleteReply,
+};
