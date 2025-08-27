@@ -260,11 +260,13 @@
   - express-rate-limit 미들웨어
 
 - **김수경**  
-  - 기사님 로그인/회원가입 API
-  - 기사님 프로필 등록/수정 API
-  - 기사님 기본 정보 수정 API
-  - 소셜 로그인 초기 셋업
-  - 회원 탈퇴 기능
+  - 기사님 로그인/회원가입 페이지 및 api
+  - 일반유저/기사님 회원 탈퇴 컴포넌트 및 api 
+  - 기사님 소셜 로그인 api 
+  - 일반유저/기사님 프로필 페이지 공통 컴포넌트 
+  - 기사님 프로필 등록/수정 페이지 및 api
+  - 일반유저/기사님 프로필 이미지 수정 컴포넌트
+  - 기사님 기본정보 수정 페이지 및 api
 
 - **임정빈**  
   - 대기 중인 견적 조회 API
@@ -288,25 +290,99 @@
 
 ## 트러블 슈팅
 
-<details>
-<summary><strong> 한글 입력 시 채팅 중복 전송 문제 (Mac / Safari / macOS 환경) </strong></summary>
-<div markdown="1">
+## 1. 소셜 인증 사용자의 경우 비밀번호 필수 관련 문제
 
-#### 문제 상황
-- Windows 환경에서는 채팅이 Enter 키 한 번으로 정상 전송됨  
-- Mac / Safari / macOS 환경에서는 한글 조합 입력 후 Enter 키를 누르면 동일 메시지가 2번 전송됨  
-- 주로 조합형 입력(IME, Input Method Editor) 사용 시 발생  
+- **문제 상황**
+  - 기본정보 수정 페이지에는 **비밀번호 관련 input**이 존재
+  - 비밀번호 수정 시 **현재 비밀번호** 입력을 통해 본인 인증이 필요  
+  - 그러나 **소셜 로그인 사용자는 비밀번호 자체가 없음**  
+  - 기존 스키마(`MoverBasicInfoSchema`)에서는 `existedPassword`를 필수로 요구했기 때문에, 소셜 로그인 사용자가 기본정보를 수정하려 할 경우 **무조건 에러 발생**
 
-#### 원인 분석
-- macOS에서 한글 입력 시 이벤트 흐름이 다음과 같음:  
-  `keydown → compositionstart → compositionupdate → compositionend → keydown`  
-- compositionend 이후 keydown 이벤트가 다시 발생해 Enter 이벤트가 이중으로 호출됨  
-- 현 메시지 전송 로직은 Enter 키 이벤트만 감지하여 실행하므로, 조합 완료 직후 Enter가 두 번 호출되어 중복 전송 발생  
+- **원인 분석**
+  - 스키마 설계 문제
+    - `existedPassword`이 **필수**로 설정되어있음 → 로컬 로그인 사용자에겐 정상 동작하지만, 소셜 로그인 사용자에게는 **불필요한 제약** 발생  
+  - UI/UX 문제
+    - 소셜 로그인 사용자는 화면에서 비밀번호 입력 필드 자체를 볼 수 없음
+    - 따라서 UI 상 optional이어야 하지만, 스키마는 필수값을 요구 → 불일치로 인한 **버튼 비활성화** 발생  
+  - **분기 처리 부족**  
+    - 사용자의 `provider`(local, google, naver 등)에 따른 조건 분기 로직이 없음  
 
-#### 해결 방법
-- 한글 입력 조합 중(`compositionstart` ~ `compositionend`)에는 Enter 이벤트 무시  
-- `onKeyDown` 이벤트 핸들러에서 `isComposing` 상태를 확인해 메시지 전송 여부 결정  
-- Windows / Mac / 모바일 환경 모두 동일 동작 테스트 완료
+- **해결 방법**
+  - 스키마에 조건부 분기 도입  
+     - `existedPassword` 필드를 기본적으로 optional 처리. 단, `isLocal === true`일 경우에만 필수 검증 수행  
+
+  - 컨텍스트 기반 refine 로직 추가
+    - `ctx.context.isLocal` 값을 전달받아, 로컬 로그인 사용자일 때만 기존 비밀번호를 검증하도록 수정
+      
+    ``` tsx
+    if (isLocal && (!data.existedPassword || data.existedPassword.length < 8)) {
+       ctx.addIssue({
+          path: ["existedPassword"],
+          message: "기존 비밀번호를 입력해주세요.",
+          code: z.ZodIssueCode.custom,
+       });
+    }
+    ```
+
+## 2. useActionState 기반 실시간 유효성 검사 관련 문제
+
+- **문제 상황**
+  - `useActionState` 훅과 `moverProfileSchema`를 활용해 프로필 작성 폼을 구현
+    - 서버로 전송 시에 유효성 검사를 하기 때문에 클라이언트 단에서 **실시간 유효성 검사**를 하려면 매 입력마다 `zod`의 전체 스키마를 돌려야함  
+    - 서버/클라이언트에서 유효성 검증 로직이 중복되거나 모호해지는 문제가 있었음
+  - 서버 요청 후 유효성에 걸리는 것까진 정상 동작을 하는데 그 이후, 사용자가 input 값을 변경해도 에러메세지가 그대로 남아있음
+    - `handleChange`에서 `setError("")`로 초기화 시도했으나, `useEffect`가 다시 `serverError`를 세팅해버려 동작 꼬임
+      useEffect 조건을 바꿨더니 이번에는 에러 메시지가 아예 표시되지 않음. **(useEffect 남용으로 인해 코드가 꼬임)**
+
+- **원인 분석**  
+  - 필드별 유효성 검사(zod.partial())를 상위에서 수행 → **로직 복잡**
+  - `serverError`와 로컬 `error` 상태 충돌
+    - 서버에서 내려온 에러를 useEffect로 setError(serverError)에 반영.
+    - 하지만 handleChange로 에러를 지워도, useEffect가 다시 실행되면서 이전 serverError를 재세팅 → 지워지지 않음.
+  - 버튼 활성화 조건 계산이 여러 필드와 오류를 동시에 체크 → **유지보수 어려움** 
+```tsx
+const isDisabled = isPending || Object.values(errors).some(err) || !requiredFieldsFilled;
+```
+
+- **해결 방법**  
+  - 근본적인 해결을 위해 폼 제출 및 유효성 검사는 `react-hook-form`으로 리팩터링
+    - 클라이언트에서 입력 즉시 필드 단위 유효성 검사가 가능
+    - 서버에서는 최종 폼 유효성을 단일 스키마로 검증 → 코드 중복 최소화
+    - useActionState의 경우 서버 액션과는 다르게 결과값을 리턴하는데 이 때문에 에러를 띄워줄 때 불필요한 **형식맞춤**이 필요했음 (객체 형식) 그러나 `react-hook-form`을 사용함으로써 그런 것들이 사라짐
+
+## 3. 소셜 로그인에 따른 기본정보(이름/폰) 누락 처리 및 UI 분기
+
+- **문제 상황 및 원인 분석**
+  - 각 OAuth 제공자별 (provider별) 제공하는 사용자 정보가 다름. 때문에 ERD에서 name, phone을 nullable로 변경. 이로 인해 화면/서버 흐름에서 여전히 해당 값을 필수로 가정하면 런타임 에러 또는 UX 붕괴 발생.
+  - 소셜 사용자는 비밀번호가 없는데 기존 UI/검증이 현재 비밀번호를 전제하면 진입 장벽 발생.
+  - 흐름상 프로필 생성 전 기본정보가 없으면 기본정보 수정 페이지로 리다이렉트 로직을 추가하는게 맞다고 판단.
+  - 소셜 인증자는 "현재 비밀번호"가 없음 → 이름/폰이 없을 때는 현재 비밀번호 input을 숨기고, 기존의 “수정” 표기는 “등록”으로 바꿔야 함.
+
+- **해결 방법**
+  - 기본정보 페이지에서 `context`를 통해 불러온 `user` 데이터에 따라 UI 분기처리 (수정 → 등록)
+  - 현재 비밀번호 input을 숨김(사회 로그인 사용자이므로 비밀번호 요구 x)
+  - 비밀번호 변경 시 현재 비밀번호 입력 요구(로컬 계정일 때만)
+
+## 4. 한글 입력 시 채팅 중복 전송 문제 (Mac / Safari / macOS 환경)
+
+- **문제 상황**
+
+  - Windows 환경에서는 채팅이 Enter 키 한 번으로 정상 전송됨
+  - Mac / Safari / macOS 환경에서는 한글 조합 입력 후 Enter 키를 누르면 동일 메시지가 2번 전송됨
+  - 주로 조합형 입력(IME, Input Method Editor) 사용 시 발생
+
+- **원인 분석**
+
+  - macOS에서 한글 입력 시 이벤트 흐름이 다음과 같음:  
+    `keydown → compositionstart → compositionupdate → compositionend → keydown`
+  - compositionend 이후 keydown 이벤트가 다시 발생해 Enter 이벤트가 이중으로 호출됨
+  - 현 메시지 전송 로직은 Enter 키 이벤트만 감지하여 실행하므로, 조합 완료 직후 Enter가 두 번 호출되어 중복 전송 발생
+
+- **해결 방법**
+
+  - 한글 입력 조합 중(`compositionstart` ~ `compositionend`)에는 Enter 이벤트 무시
+  - `onKeyDown` 이벤트 핸들러에서 `isComposing` 상태를 확인해 메시지 전송 여부 결정
+  - Windows / Mac / 모바일 환경 모두 동일 동작 테스트 완료
 
 ```typescript
 const [isComposing, setIsComposing] = useState(false);
@@ -320,30 +396,26 @@ sendMessage();
 
  <textarea onCompositionStart={() => setIsComposing(true)} onCompositionEnd={() => setIsComposing(false)} onKeyDown={handleKeyDown} />
 ```
-</div>
-</details>
 
-<details>
-<summary><strong> 견적 요청 폼 draft 저장 및 동기화 문제 </strong></summary>
-<div markdown="1">
+## 5. 견적 요청 폼 draft 저장 및 동기화 문제
 
-#### 문제 상황
-- 견적 요청 시 서버에 자동으로 폼의 중간 상태를 저장하도록 구현하여, 초기에 서버에 저장된 draft를 불러오고 폼 상태 업데이트 시 `saveDraft` 로직을 통해 서버에 갱신하도록 설계함  
-- 하지만 `savedDraft`에는 최신 상태가 반영되어 있음에도 불구하고, draft를 다시 조회할 때는 이전 상태가 반환되어 새로고침이나 페이지 이동 시 최신 저장 상태가 반영되지 않는 문제 발생  
+- **문제 상황**
 
-#### 원인 분석
-- 기존에 `debouncedSave`를 사용하면서 저장 타이밍이 맞지 않아 최신 상태가 서버에 완전히 반영되지 않는 경우 발생  
-- React Query 적용으로 새 요청 시 이전 draft 캐시가 유지되면서 최신 데이터가 반영되지 않는 문제 발생  
-- `currentStep` 값이 컨텍스트에서 초기화되지 않고 이전 상태로 다시 세팅되면서, 서버 draft와 로컬 상태 간 불일치 발생  
+  - 견적 요청 시 서버에 자동으로 폼의 중간 상태를 저장하도록 구현하여, 초기에 서버에 저장된 draft를 불러오고 폼 상태 업데이트 시 `saveDraft` 로직을 통해 서버에 갱신하도록 설계함
+  - 하지만 `savedDraft`에는 최신 상태가 반영되어 있음에도 불구하고, draft를 다시 조회할 때는 이전 상태가 반환되어 새로고침이나 페이지 이동 시 최신 저장 상태가 반영되지 않는 문제 발생
 
-#### 해결방안
-- **debouncedSave 제거**: 저장 타이밍 문제를 없애고 즉시 저장되도록 변경  
-- **이중 저장 구조 적용**: 폼 상태 업데이트 시 `localStorage`와 서버 draft를 동시에 갱신 → 새로고침/페이지 이동 시에도 동일한 상태 유지  
-- **초기 로딩 우선순위**: `localStorage` 값이 존재하면 이를 우선 반영, 없을 경우 서버 draft를 불러와 초기 상태로 사용  
-- **currentStep 동기화 개선**: 서버 draft의 `currentStep`을 기준으로 초기화하고, 이후에는 클라이언트 업데이트 시 항상 로컬/서버 양쪽에 반영되도록 수정
+- **원인 분석**
 
-</div>
-</details>
+  - 기존에 `debouncedSave`를 사용하면서 저장 타이밍이 맞지 않아 최신 상태가 서버에 완전히 반영되지 않는 경우 발생
+  - React Query 적용으로 새 요청 시 이전 draft 캐시가 유지되면서 최신 데이터가 반영되지 않는 문제 발생
+  - `currentStep` 값이 컨텍스트에서 초기화되지 않고 이전 상태로 다시 세팅되면서, 서버 draft와 로컬 상태 간 불일치 발생
+
+- **해결방안**
+
+  - debouncedSave 제거: 저장 타이밍 문제를 없애고 즉시 저장되도록 변경
+  - 이중 저장 구조 적용: 폼 상태 업데이트 시 `localStorage`와 서버 draft를 동시에 갱신 → 새로고침/페이지 이동 시에도 동일한 상태 유지
+  - 초기 로딩 우선순위: `localStorage` 값이 존재하면 이를 우선 반영, 없을 경우 서버 draft를 불러와 초기 상태로 사용
+  - currentStep 동기화 개선: 서버 draft의 `currentStep`을 기준으로 초기화하고, 이후에는 클라이언트 업데이트 시 항상 로컬/서버 양쪽에 반영되도록 수정
 
 ## 백엔드 폴더 구조
 
